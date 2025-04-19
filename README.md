@@ -1,8 +1,12 @@
 # PROJECT NAME
 
 ## Contributors
-- PERSON
-- PERSON
+- Qimeng Chao
+- Liming Luo
+- Shao Jin
+- Minjun Liang
+- Xiaoqin Bai
+  
 
 ## Dependencies
 - JDK 11
