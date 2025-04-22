@@ -1,7 +1,7 @@
 ![Gradle Build](https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/actions/workflows/main.yml/badge.svg)
 
-# PROJECT NAME
-Exploding Kitten
+## PROJECT NAME
+Exploding Kitten T2
 
 ## Contributors
 - Qimeng Chao
