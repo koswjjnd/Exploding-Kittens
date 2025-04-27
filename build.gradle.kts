@@ -18,7 +18,7 @@ repositories {
 }
 
 application {
-    mainClass = "Code.Main"
+    mainClass = "ui.Main"
 }
 
 dependencies {
@@ -108,10 +108,10 @@ tasks.jacocoTestReport {
 }
 
 pitest {
-    targetClasses = setOf("nu.csse.sqe.*") //by default "${project.group}.*"
-    targetTests = setOf("nu.csse.sqe.*")
+    targetClasses = setOf("ui.*")
+    targetTests = setOf("ui.*")
     junit5PluginVersion = "1.2.1"
-    pitestVersion = "1.15.0" //not needed when a default PIT version should be used
+    pitestVersion = "1.15.0"
 
     threads = 4
     outputFormats = setOf("HTML")
@@ -119,7 +119,7 @@ pitest {
     testSourceSets.set(listOf(sourceSets.test.get()))
     mainSourceSets.set(listOf(sourceSets.main.get()))
     jvmArgs.set(listOf("-Xmx1024m"))
-    useClasspathFile.set(true) //useful with bigger projects on Windows
+    useClasspathFile.set(true)
     fileExtensionsToFilter.addAll("xml")
     exportLineCoverage = true
 }
@@ -137,13 +137,14 @@ task("cucumber") {
             mainClass.set("io.cucumber.core.cli.Main")
             classpath = cucumberRuntime + sourceSets.main.get().output + sourceSets.test.get().output
             args = listOf("--plugin", "pretty",
-                "--glue", "nu.csse.sqe",                // where the step definitions are.
+                "--glue", "ui",
                 "src/test/resources")                   // where the feature files are.
             // Configure jacoco agent for the test coverage.
             val jacocoAgent = zipTree(configurations.jacocoAgent.get().singleFile)
                 .filter { it.name == "jacocoagent.jar" }
                 .singleFile
-            jvmArgs = listOf("-javaagent:$jacocoAgent=destfile=$buildDir/results/jacoco/cucumber.exec,append=false")
+            jvmArgs = listOf("-javaagent:$jacocoAgent=destfile=${layout.buildDirectory.file("results/jacoco/cucumber.exec").get()},append=false")
         }
     }
 }
+
