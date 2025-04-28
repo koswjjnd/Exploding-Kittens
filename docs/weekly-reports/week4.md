@@ -12,6 +12,7 @@
 **Item Progress**:
 1. [done] set up spotbugs and checkstyle in github
 2. [80% done] work on completing software requirement document
+link: https://docs.google.com/document/d/17fKfEntz4Oe3gZOVxvIlRoEypfMeoxUT25XK9rdg8lA/edit?usp=sharing
 
 # Part 3. Individual Progress of the Week :coffee:
 
