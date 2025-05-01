@@ -49,6 +49,9 @@ class DeckFactoryTest {
 				case NOPE:
 					nopeCount++;
 					break;
+				default:
+					// 其他类型的牌不做统计
+					break;
 			}
 		}
 
