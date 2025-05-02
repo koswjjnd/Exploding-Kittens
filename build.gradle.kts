@@ -22,6 +22,7 @@ application {
 }
 
 dependencies {
+    checkstyle("com.puppycrawl.tools:checkstyle:10.13.0")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.platform:junit-platform-suite")
@@ -58,8 +59,9 @@ tasks.withType<Checkstyle>().configureEach {
     }
 }
 
-checkstyle{
+checkstyle {
     isIgnoreFailures = false
+    configFile = file("config/checkstyle/checkstyle.xml")
 }
 // Spotbugs README: https://github.com/spotbugs/spotbugs-gradle-plugin#readme
 // SpotBugs Gradle Plugin: https://spotbugs.readthedocs.io/en/latest/gradle.html
@@ -124,7 +126,14 @@ pitest {
     exportLineCoverage = true
 }
 
-configurations {}
+configurations {
+    all {
+        resolutionStrategy {
+            force("com.google.guava:guava:33.0.0-jre")
+            exclude(group = "com.google.collections", module = "google-collections")
+        }
+    }
+}
 
 val cucumberRuntime by configurations.creating {
     extendsFrom(configurations["testImplementation"])
@@ -147,4 +156,3 @@ task("cucumber") {
         }
     }
 }
-
