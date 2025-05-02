@@ -100,6 +100,7 @@ tasks.build {
 }
 
 tasks.test {
+    finalizedBy(tasks.checkstyleMain)
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
     finalizedBy(tasks.pitest)
 }
