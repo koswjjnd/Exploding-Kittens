@@ -13,4 +13,10 @@ class PlayerServiceTest {
             playerService.validateCount(1);
         });
     }
+    @Test
+    void validateCount_WithCount2_DoesNotThrowException() {
+        assertDoesNotThrow(() -> {
+            playerService.validateCount(2);
+        });
+    }
 } 
