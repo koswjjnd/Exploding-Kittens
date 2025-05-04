@@ -33,4 +33,12 @@ public class GameContextTest {
 		assertEquals(1, result.size());
 		assertEquals("B", result.get(0).getName());
 	}
+
+	@Test
+	void testSetTurnOrder_nullInput_shouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			GameContext.setTurnOrder(null);
+		});
+	}
+
 }
