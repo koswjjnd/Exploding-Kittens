@@ -10,6 +10,10 @@ public class GameContext {
 	private static List<Player> turnOrder;
 
 	public static void setTurnOrder(List<Player> order) {
+		if (order == null) {
+			throw new IllegalArgumentException("Turn order cannot be null.");
+		}
+
 		turnOrder = order;
 	}
 
