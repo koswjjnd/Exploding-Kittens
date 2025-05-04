@@ -27,5 +27,10 @@ class PlayerServiceTest {
     void whenCountIsTypicalMiddleValue_thenDoesNotThrow() {
         assertDoesNotThrow(() -> service.validateCount(3));
     }
+
+    @Test
+    void whenCountIsAtMaximum_thenDoesNotThrow() {
+        assertDoesNotThrow(() -> service.validateCount(4));
+    }
 }
 
