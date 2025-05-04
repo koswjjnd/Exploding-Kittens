@@ -183,4 +183,12 @@ class GameSetupControllerTest {
 		assertEquals(p1, result.get(0));
 		assertNull(result.get(1));
 	}
+    
+	@Test
+	void testInitializeTurnOrder_nullList_shouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			controller.initializeTurnOrder(null);
+		});
+	}
+
 }
