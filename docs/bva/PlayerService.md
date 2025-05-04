@@ -14,18 +14,18 @@
 
 ##### All-combination or each-choice: each-choice
 
-|              | System under test | Expected output                    | Implemented? |
-|--------------|-------------------|------------------------------------|--------------|
-| Test Case 1  | validateCount(1)  | throws InvalidPlayerCountException |              |
-| Test Case 2  | validateCount(2)  | completes normally                 |              |
-| Test Case 3  | validateCount(3)  | completes normally                 |              |
-| Test Case 4  | validateCount(4)  | completes normally                 |              |
-| Test Case 5  | validateCount(5)  | throws InvalidPlayerCountException |              |
-| Test Case 6  |                   |                                    |              |
-| Test Case 7  |                   |                                    |              |
-| Test Case 8  |                   |                                    |              |
-| Test Case 9  |                   |                                    |              |
-| Test Case 10 |                   |                                    |              |
+|              | System under test | Expected output                 | Implemented? |
+|--------------|-------------------|---------------------------------|--------------|
+| Test Case 1  | validateCount(1)  | throws IllegalArgumentException | Yes          |
+| Test Case 2  | validateCount(2)  | completes normally              | Yes          |
+| Test Case 3  | validateCount(3)  | completes normally              |              |
+| Test Case 4  | validateCount(4)  | completes normally              |              |
+| Test Case 5  | validateCount(5)  | throws IllegalArgumentException |              |
+| Test Case 6  |                   |                                 |              |
+| Test Case 7  |                   |                                 |              |
+| Test Case 8  |                   |                                 |              |
+| Test Case 9  |                   |                                 |              |
+| Test Case 10 |                   |                                 |              |
 
 ## Recall the 4 steps of BVA
 

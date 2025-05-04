@@ -17,5 +17,10 @@ class PlayerServiceTest {
     void whenCountIsBelowMinimum_thenThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> service.validateCount(1));
     }
+
+    @Test
+    void whenCountIsAtMinimum_thenDoesNotThrow() {
+        assertDoesNotThrow(() -> service.validateCount(2));
+    }
 }
 
