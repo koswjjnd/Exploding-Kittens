@@ -31,4 +31,10 @@ class PlayerServiceTest {
             playerService.validateCount(4);
         });
     }
+    @Test
+    void validateCount_WithCount5_ThrowsInvalidPlayerCountException() {
+        assertThrows(InvalidPlayerCountException.class, () -> {
+            playerService.validateCount(5);
+        });
+    }
 } 
