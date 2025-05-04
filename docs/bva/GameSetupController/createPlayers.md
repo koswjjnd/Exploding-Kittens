@@ -24,7 +24,7 @@
 | Test Case 6 | count = 4         | calls promptNickname four times  | Yes          |
 | Test Case 7 | count = 2         | calls createPlayer twice         | Yes          |
 | Test Case 8 | count = 3         | calls createPlayer three times   | Yes          |
-| Test Case 9 | count = 4         | calls createPlayer four times    | No           |
+| Test Case 9 | count = 4         | calls createPlayer four times    | Yes          |
 
 ## Recall the 4 steps of BVA
 
