@@ -3,7 +3,6 @@ package explodingkittens.controller;
 import explodingkittens.player.Player;
 import explodingkittens.service.PlayerService;
 import explodingkittens.view.GameSetupView;
-import explodingkittens.exceptions.InvalidNicknameException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -11,8 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -25,15 +29,18 @@ class GameSetupControllerTest {
     private GameSetupController controller;
 
     @Test
-    void createPlayers_WithCount2_ReturnsListWith2Players() throws Exception {
+    void createPlayersWithCount2ReturnsListWith2Players() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
+
         List<Player> players = controller.createPlayers(2);
+
         assertEquals(2, players.size());
     }
+
     @Test
-    void createPlayers_WithCount3_ReturnsListWith3Players() throws Exception {
+    void createPlayersWithCount3ReturnsListWith3Players() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -42,8 +49,9 @@ class GameSetupControllerTest {
 
         assertEquals(3, players.size());
     }
+
     @Test
-    void createPlayers_WithCount4_ReturnsListWith4Players() throws Exception {
+    void createPlayersWithCount4ReturnsListWith4Players() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -52,8 +60,9 @@ class GameSetupControllerTest {
 
         assertEquals(4, players.size());
     }
+
     @Test
-    void createPlayers_WithCount2_CallsPromptNicknameTwice() throws Exception {
+    void createPlayersWithCount2CallsPromptNicknameTwice() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -62,8 +71,9 @@ class GameSetupControllerTest {
 
         verify(view, times(2)).promptNickname(anyInt());
     }
+
     @Test
-    void createPlayers_WithCount3_CallsPromptNicknameThreeTimes() throws Exception {
+    void createPlayersWithCount3CallsPromptNicknameThreeTimes() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -72,8 +82,9 @@ class GameSetupControllerTest {
 
         verify(view, times(3)).promptNickname(anyInt());
     }
+
     @Test
-    void createPlayers_WithCount4_CallsPromptNicknameFourTimes() throws Exception {
+    void createPlayersWithCount4CallsPromptNicknameFourTimes() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -82,8 +93,9 @@ class GameSetupControllerTest {
 
         verify(view, times(4)).promptNickname(anyInt());
     }
+
     @Test
-    void createPlayers_WithCount2_CallsCreatePlayerTwice() throws Exception {
+    void createPlayersWithCount2CallsCreatePlayerTwice() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -92,8 +104,9 @@ class GameSetupControllerTest {
 
         verify(playerService, times(2)).createPlayer(anyString());
     }
+
     @Test
-    void createPlayers_WithCount3_CallsCreatePlayerThreeTimes() throws Exception {
+    void createPlayersWithCount3CallsCreatePlayerThreeTimes() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
@@ -102,8 +115,9 @@ class GameSetupControllerTest {
 
         verify(playerService, times(3)).createPlayer(anyString());
     }
+
     @Test
-    void createPlayers_WithCount4_CallsCreatePlayerFourTimes() throws Exception {
+    void createPlayersWithCount4CallsCreatePlayerFourTimes() throws Exception {
         controller = new GameSetupController(view, playerService);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
         when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));

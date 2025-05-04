@@ -106,6 +106,7 @@ tasks.build {
 }
 
 tasks.test {
+    finalizedBy(tasks.checkstyleMain)
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
     finalizedBy(tasks.pitest)
 }
@@ -114,8 +115,8 @@ tasks.jacocoTestReport {
 }
 
 pitest {
-    targetClasses = setOf("ui.*")
-    targetTests = setOf("ui.*")
+    targetClasses = setOf("explodingkittens.*")
+    targetTests = setOf("explodingkittens.*")
     junit5PluginVersion = "1.2.1"
     pitestVersion = "1.15.0"
 
@@ -128,6 +129,8 @@ pitest {
     useClasspathFile.set(true)
     fileExtensionsToFilter.addAll("xml")
     exportLineCoverage = true
+    mutators.set(listOf("STRONGER", "ALL"))
+    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging"))
 }
 
 configurations {
