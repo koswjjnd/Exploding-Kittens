@@ -46,7 +46,14 @@ public class DeckTest {
         assertEquals(4, cardCounts.get("CatCard_CATTERMELON"));
         assertEquals(4, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
+
+    @Test
+    public void test_initializeBaseDeck_invalidPlayerCount5() {
+        Deck deck = new Deck();
+        assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(5));
+        
     
+
 
     
 }
