@@ -22,7 +22,7 @@
 | Test Case 4 | count = 2         | calls promptNickname twice       | Yes          |
 | Test Case 5 | count = 3         | calls promptNickname three times | Yes          |
 | Test Case 6 | count = 4         | calls promptNickname four times  | Yes          |
-| Test Case 7 | count = 2         | calls createPlayer twice         | No           |
+| Test Case 7 | count = 2         | calls createPlayer twice         | Yes          |
 | Test Case 8 | count = 3         | calls createPlayer three times   | No           |
 | Test Case 9 | count = 4         | calls createPlayer four times    | No           |
 
