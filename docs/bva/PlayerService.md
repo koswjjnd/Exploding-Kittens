@@ -20,7 +20,7 @@
 | Test Case 2  | validateCount(2)  | completes normally              | Yes          |
 | Test Case 3  | validateCount(3)  | completes normally              | Yes          |
 | Test Case 4  | validateCount(4)  | completes normally              | Yes          |
-| Test Case 5  | validateCount(5)  | throws IllegalArgumentException |              |
+| Test Case 5  | validateCount(5)  | throws IllegalArgumentException | Yes          |
 | Test Case 6  |                   |                                 |              |
 | Test Case 7  |                   |                                 |              |
 | Test Case 8  |                   |                                 |              |

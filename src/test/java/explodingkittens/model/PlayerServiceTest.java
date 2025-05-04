@@ -32,5 +32,10 @@ class PlayerServiceTest {
     void whenCountIsAtMaximum_thenDoesNotThrow() {
         assertDoesNotThrow(() -> service.validateCount(4));
     }
+
+    @Test
+    void whenCountIsAboveMaximum_thenThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> service.validateCount(5));
+    }
 }
 
