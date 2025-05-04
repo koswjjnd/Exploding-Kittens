@@ -2,7 +2,9 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlayerServiceTest {
 
@@ -14,28 +16,29 @@ class PlayerServiceTest {
     }
 
     @Test
-    void whenCountIsBelowMinimum_thenThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> service.validateCount(1));
+    void whenCountIsBelowMinimumThenThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.validateCount(1));
     }
 
     @Test
-    void whenCountIsAtMinimum_thenDoesNotThrow() {
+    void whenCountIsAtMinimumThenDoesNotThrow() {
         assertDoesNotThrow(() -> service.validateCount(2));
     }
 
     @Test
-    void whenCountIsTypicalMiddleValue_thenDoesNotThrow() {
+    void whenCountIsTypicalMiddleValueThenDoesNotThrow() {
         assertDoesNotThrow(() -> service.validateCount(3));
     }
 
     @Test
-    void whenCountIsAtMaximum_thenDoesNotThrow() {
+    void whenCountIsAtMaximumThenDoesNotThrow() {
         assertDoesNotThrow(() -> service.validateCount(4));
     }
 
     @Test
-    void whenCountIsAboveMaximum_thenThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> service.validateCount(5));
+    void whenCountIsAboveMaximumThenThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.validateCount(5));
     }
 }
-
