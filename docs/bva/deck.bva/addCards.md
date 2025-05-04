@@ -14,4 +14,4 @@
 |--------------|------------------------|------------------------------------|--------------|
 | Test Case 1  | addCards(Shuffle card, 0) | no cards added |          yes    |
 | Test Case 2  | addCards(Skip card, 1) | 1 card added |        yes      |
-| Test Case 3  | addCards(see the future card, 2) | 2 cards added |              |
+| Test Case 3  | addCards(see the future card, 2) | 2 cards added |      yes        |

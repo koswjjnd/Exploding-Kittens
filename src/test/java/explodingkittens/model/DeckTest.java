@@ -114,5 +114,12 @@ public class DeckTest {
         assertEquals(1, cardCounts.get("SkipCard"));
     }
 
-    
+    @Test
+    public void test_addCards_multipleCards() {
+        Deck deck = new Deck();
+        deck.addCards(new SeeTheFutureCard(), 2);
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertEquals(1, cardCounts.size());
+        assertEquals(2, cardCounts.get("SeeTheFutureCard"));
+    }
 }
