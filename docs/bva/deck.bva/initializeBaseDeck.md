@@ -12,7 +12,7 @@
 
 |              | System under test      | Expected output                    | Implemented? |
 |--------------|------------------------|------------------------------------|--------------|
-| Test Case 1  | initializeBaseDeck(1)  | Should throw IllegalArgumentException |              |
-| Test Case 2  | initializeBaseDeck(2)  | add 3 defuse card                 |              |
-| Test Case 3  | initializeBaseDeck(4)  | add 1 defuse card                 |              |
-| Test Case 4  | initializeBaseDeck(5)  | Should throw IllegalArgumentException |              |
+| Test Case 1  | initializeBaseDeck(1)  | Should throw IllegalArgumentException |         yes     |
+| Test Case 2  | initializeBaseDeck(2)  | add 3 defuse card                 |     yes         |
+| Test Case 3  | initializeBaseDeck(4)  | add 1 defuse card                 |     yes         |
+| Test Case 4  | initializeBaseDeck(5)  | Should throw IllegalArgumentException |   yes           |

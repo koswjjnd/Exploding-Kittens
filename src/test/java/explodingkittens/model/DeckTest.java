@@ -51,9 +51,14 @@ public class DeckTest {
     public void test_initializeBaseDeck_invalidPlayerCount5() {
         Deck deck = new Deck();
         assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(5));
-        
-    
+    }
 
+    @Test
+    public void test_getCardCounts_emptyDeck() {
+        Deck deck = new Deck();
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertTrue(cardCounts.isEmpty());
+    }
 
     
 }
