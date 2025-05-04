@@ -17,7 +17,7 @@
 |             | System under test | Expected output                  | Implemented? |
 | ----------- | ----------------- | -------------------------------- | ------------ |
 | Test Case 1 | count = 2         | returns list with 2 players      | Yes          |
-| Test Case 2 | count = 3         | returns list with 3 players      | No           |
+| Test Case 2 | count = 3         | returns list with 3 players      | Yes          |
 | Test Case 3 | count = 4         | returns list with 4 players      | No           |
 | Test Case 4 | count = 2         | calls promptNickname twice       | No           |
 | Test Case 5 | count = 3         | calls promptNickname three times | No           |
