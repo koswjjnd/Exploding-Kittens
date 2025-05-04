@@ -98,13 +98,13 @@ public class DeckTest {
     @Test
     public void testGetCardCountsOneOfEachType() {
         Deck deck = new Deck();
-        deck.addCard(new SkipCard());
-        deck.addCard(new ShuffleCard());
-        deck.addCard(new AttackCard());
-        deck.addCard(new DefuseCard());
-        deck.addCard(new SeeTheFutureCard());
-        deck.addCard(new NopeCard());
-        deck.addCard(new CatCard(CatType.TACOCAT));
+        deck.addCards(new SkipCard(), 1);
+        deck.addCards(new ShuffleCard(), 1);
+        deck.addCards(new AttackCard(), 1);
+        deck.addCards(new DefuseCard(), 1);
+        deck.addCards(new SeeTheFutureCard(), 1);
+        deck.addCards(new NopeCard(), 1);
+        deck.addCards(new CatCard(CatType.TACOCAT), 1);
         deck.addCard(new CatCard(CatType.BEARD_CAT));
         deck.addCard(new CatCard(CatType.CATTERMELON));
         deck.addCard(new CatCard(CatType.RAINBOW_CAT));

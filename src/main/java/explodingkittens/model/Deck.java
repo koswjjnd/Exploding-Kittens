@@ -51,6 +51,14 @@ public class Deck {
     }
     
     /**
+     * Adds a single card to the deck.
+     * @param card The card to add
+     */
+    public void addCard(Card card) {
+        this.cards.add(card);
+    }
+    
+    /**
      * Returns counts of each card type in the deck.
      * @return A map containing the count of each card type
      */
