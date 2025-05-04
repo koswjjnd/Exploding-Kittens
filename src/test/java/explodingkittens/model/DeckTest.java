@@ -30,5 +30,23 @@ public class DeckTest {
         assertEquals(4, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
 
+    @Test
+    public void test_initializeBaseDeck_playerCount4() {
+        Deck deck = new Deck();
+        deck.initializeBaseDeck(4);
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertEquals(1, cardCounts.get("DefuseCard"));
+        assertEquals(3, cardCounts.get("AttackCard"));
+        assertEquals(3, cardCounts.get("SkipCard"));
+        assertEquals(4, cardCounts.get("ShuffleCard"));
+        assertEquals(4, cardCounts.get("SeeTheFutureCard"));
+        assertEquals(4, cardCounts.get("NopeCard"));
+        assertEquals(4, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(4, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(4, cardCounts.get("CatCard_CATTERMELON"));
+        assertEquals(4, cardCounts.get("CatCard_RAINBOW_CAT"));
+    }
+    
+
     
 }
