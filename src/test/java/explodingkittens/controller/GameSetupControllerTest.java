@@ -208,4 +208,17 @@ class GameSetupControllerTest {
 		assertEquals("Alice", order.get(0).getName());
 	}
 
+	@Test
+	void testInitializeTurnOrder_multiplePlayers_shouldStoreAllPlayers() {
+		Player p1 = new Player("A");
+		Player p2 = new Player("B");
+		Player p3 = new Player("C");
+
+		List<Player> players = Arrays.asList(p1, p2, p3);
+		controller.initializeTurnOrder(players);
+
+		List<Player> result = GameContext.getTurnOrder();
+		assertEquals(3, result.size());
+		assertTrue(result.containsAll(players));
+	}
 }
