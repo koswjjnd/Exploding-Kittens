@@ -16,11 +16,11 @@
 
 |             | System under test | Expected output                    | Implemented? |
 | ----------- | ----------------- | ---------------------------------- | ------------ |
-| Test Case 1 | count = 1         | throws InvalidPlayerCountException | No           |
-| Test Case 2 | count = 2         | no exception                       | No           |
-| Test Case 3 | count = 3         | no exception                       | No           |
-| Test Case 4 | count = 4         | no exception                       | No           |
-| Test Case 5 | count = 5         | throws InvalidPlayerCountException | No           |
+| Test Case 1 | count = 1         | throws InvalidPlayerCountException | Yes          |
+| Test Case 2 | count = 2         | no exception                       | Yes          |
+| Test Case 3 | count = 3         | no exception                       | Yes          |
+| Test Case 4 | count = 4         | no exception                       | Yes          |
+| Test Case 5 | count = 5         | throws InvalidPlayerCountException | Yes          |
 
 ## Recall the 4 steps of BVA
 

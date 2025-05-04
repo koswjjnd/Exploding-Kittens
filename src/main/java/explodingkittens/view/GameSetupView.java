@@ -1,5 +1,6 @@
 package explodingkittens.view;
 
-public class GameSetupView {
-    
+public interface GameSetupView {
+    String promptNickname(int playerIndex);
+    void showError(String message);
 }
