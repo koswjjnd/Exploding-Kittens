@@ -60,5 +60,14 @@ public class DeckTest {
         assertTrue(cardCounts.isEmpty());
     }
 
+    @Test
+    public void test_getCardCounts_singleSkipCard() {
+        Deck deck = new Deck();
+        deck.addCard(new SkipCard());
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertEquals(1, cardCounts.size());
+        assertEquals(1, cardCounts.get("SkipCard"));
+    }
+
     
 }
