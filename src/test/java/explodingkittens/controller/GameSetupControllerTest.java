@@ -62,4 +62,14 @@ class GameSetupControllerTest {
 
         verify(view, times(2)).promptNickname(anyInt());
     }
+    @Test
+    void createPlayers_WithCount3_CallsPromptNicknameThreeTimes() throws Exception {
+        controller = new GameSetupController(view, playerService);
+        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
+        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
+
+        controller.createPlayers(3);
+
+        verify(view, times(3)).promptNickname(anyInt());
+    }
 }

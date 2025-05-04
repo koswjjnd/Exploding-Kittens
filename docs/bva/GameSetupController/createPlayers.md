@@ -20,7 +20,7 @@
 | Test Case 2 | count = 3         | returns list with 3 players      | Yes          |
 | Test Case 3 | count = 4         | returns list with 4 players      | Yes          |
 | Test Case 4 | count = 2         | calls promptNickname twice       | Yes          |
-| Test Case 5 | count = 3         | calls promptNickname three times | No           |
+| Test Case 5 | count = 3         | calls promptNickname three times | Yes          |
 | Test Case 6 | count = 4         | calls promptNickname four times  | No           |
 | Test Case 7 | count = 2         | calls createPlayer twice         | No           |
 | Test Case 8 | count = 3         | calls createPlayer three times   | No           |
