@@ -198,4 +198,14 @@ class GameSetupControllerTest {
 		});
 	}
 
+	@Test
+	void testInitializeTurnOrder_singlePlayer_shouldStoreCorrectOrder() {
+		Player p1 = new Player("Alice");
+		controller.initializeTurnOrder(List.of(p1));
+
+		List<Player> order = GameContext.getTurnOrder();
+		assertEquals(1, order.size());
+		assertEquals("Alice", order.get(0).getName());
+	}
+
 }
