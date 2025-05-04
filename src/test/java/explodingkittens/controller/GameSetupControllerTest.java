@@ -52,4 +52,14 @@ class GameSetupControllerTest {
 
         assertEquals(4, players.size());
     }
+    @Test
+    void createPlayers_WithCount2_CallsPromptNicknameTwice() throws Exception {
+        controller = new GameSetupController(view, playerService);
+        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
+        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
+
+        controller.createPlayers(2);
+
+        verify(view, times(2)).promptNickname(anyInt());
+    }
 }
