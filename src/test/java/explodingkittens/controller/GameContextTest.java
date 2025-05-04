@@ -21,4 +21,16 @@ public class GameContextTest {
 		assertEquals(input, result);
 	}
 
+	@Test
+	void testOverrideTurnOrder_shouldReflectNewValue() {
+		Player p1 = new Player("A");
+		GameContext.setTurnOrder(List.of(p1));
+
+		Player p2 = new Player("B");
+		GameContext.setTurnOrder(List.of(p2));
+
+		List<Player> result = GameContext.getTurnOrder();
+		assertEquals(1, result.size());
+		assertEquals("B", result.get(0).getName());
+	}
 }
