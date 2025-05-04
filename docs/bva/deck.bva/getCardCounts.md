@@ -12,6 +12,6 @@
 
 |              | System under test      | Expected output                    | Implemented? |
 |--------------|------------------------|------------------------------------|--------------|
-| Test Case 1  | getCardCounts() empty cards | empty hashmap |              |
-| Test Case 2  | getCardCounts() only 1 skip card in cards |    {"Skip": 1}          |              |
-| Test Case 3  | dgetCardCounts()  | 1 card for each type                 |  {"Skip": 1, "Shuffle", 1, ...}            |
+| Test Case 1  | getCardCounts() empty cards | empty hashmap |       yes       | 
+| Test Case 2  | getCardCounts() only 1 skip card in cards |    {"Skip": 1}          |      yes        |
+| Test Case 3  | dgetCardCounts()  1 card for each type                 |  {"Skip": 1, "Shuffle", 1, ...}｜ yes            | 

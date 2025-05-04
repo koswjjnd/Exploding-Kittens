@@ -96,4 +96,14 @@ public class DeckTest {
         assertEquals(1, cardCounts.get("CatCard_CATTERMELON"));
         assertEquals(1, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
+
+    @Test
+    public void test_addCards_zeroCount() {
+        Deck deck = new Deck();
+        deck.addCards(new ShuffleCard(), 0);
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertTrue(cardCounts.isEmpty());
+    }
+
+   
 }
