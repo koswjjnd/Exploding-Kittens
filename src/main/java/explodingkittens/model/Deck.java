@@ -39,15 +39,21 @@ public class Deck {
         }
     }
     
-    
-    /** Adds multiple copies of a card to the deck. */
+    /**
+     * Adds multiple copies of a card to the deck.
+     * @param card The card to add
+     * @param count The number of copies to add
+     */
     public void addCards(Card card, int count) {
         for (int i = 0; i < count; i++) {
             this.cards.add(card);
         }
     }
     
-    /** Returns counts of each card type in the deck. */
+    /**
+     * Returns counts of each card type in the deck.
+     * @return A map containing the count of each card type
+     */
     public Map<String, Integer> getCardCounts() {
         Map<String, Integer> counts = new HashMap<>();
         
@@ -55,12 +61,12 @@ public class Deck {
             String key;
             if (card instanceof CatCard) {
                 key = "CatCard_" + ((CatCard) card).getType().name();
-            } else {
+            } 
+            else {
                 key = card.getClass().getSimpleName();
             }
             counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
-        
         return counts;
     }
 }

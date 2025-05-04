@@ -5,55 +5,79 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a deck of cards in the Exploding Kittens game.
+ */
 public class Deck {
     private List<Card> cards;
 
+    /**
+     * Creates an empty deck.
+     */
     public Deck() {
         this.cards = new ArrayList<>();
     }
 
+    /**
+     * Initializes the deck with cards based on player count.
+     * @param playerCount number of players (2-4)
+     * @throws IllegalArgumentException if playerCount is invalid
+     */
     public void initializeBaseDeck(int playerCount) {
         if (playerCount < 2 || playerCount > 4) {
             throw new IllegalArgumentException("Player count must be between 2 and 4");
         }
         
-        // Clear existing cards
         this.cards.clear();
-        
-        // Add defuse cards based on player count
-        this.addCards(new DefuseCard(),5-playerCount);
-        
-        // Add 3 Attack cards
-        this.addCards(new AttackCard(),3);
-        
-        // Add 3 Skip cards
-        this.addCards(new SkipCard(),3);
-        
-        // Add 4 Shuffle card
-        this.addCards(new ShuffleCard(),4);
-        
-        // Add 4 See the Future card
-        this.addCards(new SeeTheFutureCard(),4);
-        
-        // Add 4 Nope card
-        this.addCards(new NopeCard(),4);
-        
-        // Add 4 of each type of Cat cards
+        addBaseCards(playerCount);
+        addCatCards();
+    }
+
+    /**
+     * Adds the base set of cards to the deck.
+     * @param playerCount number of players
+     */
+    private void addBaseCards(int playerCount) {
+        this.addCards(new DefuseCard(), 5 - playerCount);
+        this.addCards(new AttackCard(), 3);
+        this.addCards(new SkipCard(), 3);
+        this.addCards(new ShuffleCard(), 4);
+        this.addCards(new SeeTheFutureCard(), 4);
+        this.addCards(new NopeCard(), 4);
+    }
+
+    /**
+     * Adds all types of cat cards to the deck.
+     */
+    private void addCatCards() {
         for (CatType type : CatType.values()) {
-            this.addCards(new CatCard(type),4);
+            this.addCards(new CatCard(type), 4);
         }
     }
     
+    /**
+     * Adds a single card to the deck.
+     * @param card the card to add
+     */
     public void addCard(Card card) {
         this.cards.add(card);
     }
     
+    /**
+     * Adds multiple copies of a card to the deck.
+     * @param card the card to add
+     * @param count the number of copies to add
+     */
     public void addCards(Card card, int count) {
         for (int i = 0; i < count; i++) {
             this.cards.add(card);
         }
     }
     
+    /**
+     * Returns counts of each card type in the deck.
+     * @return a map containing the count of each card type
+     */
     public Map<String, Integer> getCardCounts() {
         Map<String, Integer> counts = new HashMap<>();
         
@@ -66,7 +90,6 @@ public class Deck {
             }
             counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
-        
         return counts;
     }
 } 
