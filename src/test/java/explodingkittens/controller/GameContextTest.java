@@ -48,4 +48,16 @@ public class GameContextTest {
 		assertTrue(result.isEmpty());
 	}
 
+	@Test
+	void testSetTurnOrder_containsNullPlayer_shouldIncludeNull() {
+		Player p1 = new Player("A");
+		List<Player> input = Arrays.asList(p1, null);
+		GameContext.setTurnOrder(input);
+		List<Player> result = GameContext.getTurnOrder();
+
+		assertEquals(2, result.size());
+		assertEquals(p1, result.get(0));
+		assertNull(result.get(1));
+	}
+
 }
