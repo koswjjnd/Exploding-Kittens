@@ -191,4 +191,11 @@ class GameSetupControllerTest {
 		});
 	}
 
+	@Test
+	void testInitializeTurnOrder_emptyList_shouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			controller.initializeTurnOrder(Collections.emptyList());
+		});
+	}
+
 }
