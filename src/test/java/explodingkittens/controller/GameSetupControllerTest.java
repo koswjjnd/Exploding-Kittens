@@ -42,4 +42,14 @@ class GameSetupControllerTest {
 
         assertEquals(3, players.size());
     }
+    @Test
+    void createPlayers_WithCount4_ReturnsListWith4Players() throws Exception {
+        controller = new GameSetupController(view, playerService);
+        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
+        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
+
+        List<Player> players = controller.createPlayers(4);
+
+        assertEquals(4, players.size());
+    }
 }
