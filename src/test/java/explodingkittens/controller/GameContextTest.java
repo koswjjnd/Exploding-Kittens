@@ -41,4 +41,11 @@ public class GameContextTest {
 		});
 	}
 
+	@Test
+	void testSetTurnOrder_emptyList_shouldStoreEmptyOrder() {
+		GameContext.setTurnOrder(List.of());
+		List<Player> result = GameContext.getTurnOrder();
+		assertTrue(result.isEmpty());
+	}
+
 }
