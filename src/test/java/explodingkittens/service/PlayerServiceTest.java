@@ -19,4 +19,16 @@ class PlayerServiceTest {
             playerService.validateCount(2);
         });
     }
+    @Test
+    void validateCount_WithCount3_DoesNotThrowException() {
+        assertDoesNotThrow(() -> {
+            playerService.validateCount(3);
+        });
+    }
+    @Test
+    void validateCount_WithCount4_DoesNotThrowException() {
+        assertDoesNotThrow(() -> {
+            playerService.validateCount(4);
+        });
+    }
 } 
