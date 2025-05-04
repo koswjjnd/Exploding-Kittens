@@ -22,10 +22,10 @@ public class Deck {
         
         // Add defuse cards based on player count
         this.addCards(new DefuseCard(),5-playerCount);
-
         
         // Add 3 Attack cards
         this.addCards(new AttackCard(),3);
+        
         // Add 3 Skip cards
         this.addCards(new SkipCard(),3);
         
@@ -54,14 +54,19 @@ public class Deck {
         }
     }
     
-    public Map<Class<? extends Card>, Integer> getCardCounts() {
-        Map<Class<? extends Card>, Integer> counts = new HashMap<>();
+    public Map<String, Integer> getCardCounts() {
+        Map<String, Integer> counts = new HashMap<>();
         
         for (Card card : cards) {
-            Class<? extends Card> cardClass = card.getClass();
-            counts.put(cardClass, counts.getOrDefault(cardClass, 0) + 1);
+            String key;
+            if (card instanceof CatCard) {
+                key = "CatCard_" + ((CatCard) card).getType().name();
+            } else {
+                key = card.getClass().getSimpleName();
+            }
+            counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
         
         return counts;
     }
-}
+} 
