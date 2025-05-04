@@ -221,4 +221,18 @@ class GameSetupControllerTest {
 		assertEquals(3, result.size());
 		assertTrue(result.containsAll(players));
 	}
+
+	@Test
+	void testInitializeTurnOrder_containsNullPlayer_shouldStoreIncludingNull() {
+		Player p1 = new Player("A");
+		List<Player> players = Arrays.asList(p1, null);
+
+		controller.initializeTurnOrder(players);
+		List<Player> result = GameContext.getTurnOrder();
+
+		assertEquals(2, result.size());
+		assertEquals(p1, result.get(0));
+		assertNull(result.get(1));
+	}
+
 }
