@@ -1,4 +1,4 @@
-package explodingkittens.service;
+package explodingkittens.model;
 
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
