@@ -5,12 +5,15 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GameContextTest {
 
 	@Test
-	void testSetAndGetTurnOrder_shouldBeConsistent() {
+	void testSetAndGetTurnOrderShouldBeConsistent() {
 		Player p1 = new Player("A");
 		Player p2 = new Player("B");
 		List<Player> input = Arrays.asList(p1, p2);
@@ -22,7 +25,7 @@ public class GameContextTest {
 	}
 
 	@Test
-	void testOverrideTurnOrder_shouldReflectNewValue() {
+	void testOverrideTurnOrderShouldReflectNewValue() {
 		Player p1 = new Player("A");
 		GameContext.setTurnOrder(List.of(p1));
 
@@ -35,21 +38,21 @@ public class GameContextTest {
 	}
 
 	@Test
-	void testSetTurnOrder_nullInput_shouldThrow() {
+	void testSetTurnOrderNullInputShouldThrow() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			GameContext.setTurnOrder(null);
 		});
 	}
 
 	@Test
-	void testSetTurnOrder_emptyList_shouldStoreEmptyOrder() {
+	void testSetTurnOrderEmptyListShouldStoreEmptyOrder() {
 		GameContext.setTurnOrder(List.of());
 		List<Player> result = GameContext.getTurnOrder();
 		assertTrue(result.isEmpty());
 	}
 
 	@Test
-	void testSetTurnOrder_containsNullPlayer_shouldIncludeNull() {
+	void testSetTurnOrderContainsNullPlayerShouldIncludeNull() {
 		Player p1 = new Player("A");
 		List<Player> input = Arrays.asList(p1, null);
 		GameContext.setTurnOrder(input);

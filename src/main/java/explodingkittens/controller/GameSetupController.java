@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The GameSetupController class manages the initial setup phase of the
+ * Exploding Kittens game.
+ * It handles player count confirmation, nickname input, card dealing, bomb
+ * insertion,
+ * and turn order initialization before the game starts.
+ * 
+ * This controller ensures that all necessary game setup steps are completed
+ * in the correct order before the main game loop begins.
  * Controller for game setup phase, responsible for creating players and handling setup logic.
  */
 public class GameSetupController {
