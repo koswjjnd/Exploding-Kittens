@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -17,6 +18,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -126,4 +132,55 @@ class GameSetupControllerTest {
 
         verify(playerService, times(4)).createPlayer(anyString());
     }
+
+    @Test
+	void testInitializeTurnOrderNullListShouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			controller.initializeTurnOrder(null);
+		});
+	}
+
+	@Test
+	void testInitializeTurnOrderEmptyListShouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			controller.initializeTurnOrder(Collections.emptyList());
+		});
+	}
+
+	@Test
+	void testInitializeTurnOrderSinglePlayerShouldStoreCorrectOrder() {
+		Player p1 = new Player("Alice");
+		controller.initializeTurnOrder(List.of(p1));
+
+		List<Player> order = GameContext.getTurnOrder();
+		assertEquals(1, order.size());
+		assertEquals("Alice", order.get(0).getName());
+	}
+
+	@Test
+	void testInitializeTurnOrderMultiplePlayersShouldStoreAllPlayers() {
+		Player p1 = new Player("A");
+		Player p2 = new Player("B");
+		Player p3 = new Player("C");
+
+		List<Player> players = Arrays.asList(p1, p2, p3);
+		controller.initializeTurnOrder(players);
+
+		List<Player> result = GameContext.getTurnOrder();
+		assertEquals(3, result.size());
+		assertTrue(result.containsAll(players));
+	}
+
+	@Test
+	void testInitializeTurnOrderContainsNullPlayerShouldStoreIncludingNull() {
+		Player p1 = new Player("A");
+		List<Player> players = Arrays.asList(p1, null);
+
+		controller.initializeTurnOrder(players);
+		List<Player> result = GameContext.getTurnOrder();
+
+		assertEquals(2, result.size());
+		assertEquals(p1, result.get(0));
+		assertNull(result.get(1));
+	}
 }

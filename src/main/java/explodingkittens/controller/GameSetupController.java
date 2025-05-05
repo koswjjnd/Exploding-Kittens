@@ -4,6 +4,7 @@ import explodingkittens.player.Player;
 import explodingkittens.service.PlayerService;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.exceptions.InvalidNicknameException;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,4 +49,25 @@ public class GameSetupController {
         }
         return players;
     }
+
+	/**
+	 * Initializes the turn order for the game by randomly shuffling the player
+	 * list.
+	 * The shuffled order is stored in the global game context for use during
+	 * gameplay.
+	 * 
+	 * @param players The list of players participating in the game. Must not be
+	 *                null or empty.
+	 * @throws IllegalArgumentException if the players list is null or empty
+	 */
+	public void initializeTurnOrder(List<Player> players) {
+		if (players == null || players.isEmpty()) {
+			throw new IllegalArgumentException("Player list cannot be null or empty.");
+		}
+
+		List<Player> turnOrder = new ArrayList<>(players);
+		Collections.shuffle(turnOrder); // 可按需要保留或去除
+
+		GameContext.setTurnOrder(turnOrder);
+	}
 }

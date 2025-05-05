@@ -1,0 +1,24 @@
+package explodingkittens.controller;
+
+import explodingkittens.player.Player;
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class GameContextTest {
+
+	@Test
+	void testSetAndGetTurnOrder_shouldBeConsistent() {
+		Player p1 = new Player("A");
+		Player p2 = new Player("B");
+		List<Player> input = Arrays.asList(p1, p2);
+
+		GameContext.setTurnOrder(input);
+		List<Player> result = GameContext.getTurnOrder();
+
+		assertEquals(input, result);
+	}
+
+}
