@@ -1,12 +1,15 @@
-package explodingkittens.model;
+package explodingkittens.service;
 
-import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.exceptions.InvalidPlayerCountException;
+import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.player.Player;
 
+/**
+ * Service for player-related operations such as validation and creation.
+ */
 public class PlayerService {
-    public static final int MIN_PLAYERS = 2;
-    public static final int MAX_PLAYERS = 4;
+    private static final int MIN_PLAYERS = 2;
+    private static final int MAX_PLAYERS = 4;
 
     /**
      * Validates the player count.
@@ -20,7 +23,7 @@ public class PlayerService {
             );
         }
     }
-    
+
     /**
      * Creates a Player with the given nickname after validation.
      * @param rawNickname the raw nickname input
@@ -39,4 +42,4 @@ public class PlayerService {
 
         return new Player(trimmedNickname);
     }
-}
+} 
