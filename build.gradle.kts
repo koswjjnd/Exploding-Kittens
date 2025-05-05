@@ -1,3 +1,4 @@
+
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
