@@ -169,15 +169,12 @@ class GameSetupControllerTest {
 	}
 
 	@Test
-	void testInitializeTurnOrderContainsNullPlayerShouldStoreIncludingNull() {
+	void testInitializeTurnOrderContainsNullPlayerShouldThrow() {
 		Player p1 = new Player("A");
 		List<Player> players = Arrays.asList(p1, null);
 
-		controller.initializeTurnOrder(players);
-		List<Player> result = GameContext.getTurnOrder();
-
-		assertEquals(2, result.size());
-		assertEquals(p1, result.get(0));
-		assertNull(result.get(1));
+		assertThrows(IllegalArgumentException.class, () -> {
+			controller.initializeTurnOrder(players);
+		});
 	}
 }

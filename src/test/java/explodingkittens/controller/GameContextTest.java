@@ -27,10 +27,10 @@ public class GameContextTest {
 	@Test
 	void testOverrideTurnOrderShouldReflectNewValue() {
 		Player p1 = new Player("A");
-		GameContext.setTurnOrder(List.of(p1));
+		GameContext.setTurnOrder(Arrays.asList(p1));
 
 		Player p2 = new Player("B");
-		GameContext.setTurnOrder(List.of(p2));
+		GameContext.setTurnOrder(Arrays.asList(p2));
 
 		List<Player> result = GameContext.getTurnOrder();
 		assertEquals(1, result.size());
@@ -45,22 +45,19 @@ public class GameContextTest {
 	}
 
 	@Test
-	void testSetTurnOrderEmptyListShouldStoreEmptyOrder() {
-		GameContext.setTurnOrder(List.of());
-		List<Player> result = GameContext.getTurnOrder();
-		assertTrue(result.isEmpty());
+	void testSetTurnOrderEmptyListShouldThrow() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			GameContext.setTurnOrder(List.of());
+		});
 	}
 
 	@Test
-	void testSetTurnOrderContainsNullPlayerShouldIncludeNull() {
+	void testSetTurnOrderContainsNullPlayerShouldThrow() {
 		Player p1 = new Player("A");
 		List<Player> input = Arrays.asList(p1, null);
-		GameContext.setTurnOrder(input);
-		List<Player> result = GameContext.getTurnOrder();
-
-		assertEquals(2, result.size());
-		assertEquals(p1, result.get(0));
-		assertNull(result.get(1));
+		assertThrows(IllegalArgumentException.class, () -> {
+			GameContext.setTurnOrder(input);
+		});
 	}
 
 }
