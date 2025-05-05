@@ -6,7 +6,6 @@ import explodingkittens.view.GameSetupView;
 import explodingkittens.exceptions.InvalidNicknameException;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The GameSetupController class manages the initial setup phase of the
