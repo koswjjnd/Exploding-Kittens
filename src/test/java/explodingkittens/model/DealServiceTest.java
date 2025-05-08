@@ -51,4 +51,11 @@ public class DealServiceTest {
         }
     }
 
+    @Test
+    void testDealDefusesWithTooManyPlayers() {
+        List<Player> players = List.of(
+            new Player("name1"), new Player("name2"), new Player("name3"), new Player("name4"), new Player("name5")
+        );
+        assertThrows(IllegalArgumentException.class, () -> dealService.dealDefuses(players));
+    }
 }
