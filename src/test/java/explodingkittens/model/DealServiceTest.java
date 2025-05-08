@@ -1,6 +1,8 @@
 package explodingkittens.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +20,11 @@ public class DealServiceTest {
     }
 
     @Test
-    void testDealDefusesWithEmptyPlayers_throwException() {
+    void testDealDefusesWithEmptyPlayersThrowException() {
         List<Player> players = new ArrayList<>();
         assertThrows(IllegalArgumentException.class, () -> dealService.dealDefuses(players));
     }
+
     @Test
     void testDealDefusesWithOnePlayer() {
         Player player = new Player("name1");
@@ -33,6 +36,7 @@ public class DealServiceTest {
         assertEquals(1, hand.size(), "Player should receive exactly one card");
         assertTrue(hand.get(0) instanceof DefuseCard, "Card should be of type DefuseCard");
     }
+
     @Test
     void testDealDefusesWithMultiplePlayers() {
         Player player1 = new Player("name1");
@@ -54,7 +58,11 @@ public class DealServiceTest {
     @Test
     void testDealDefusesWithTooManyPlayers() {
         List<Player> players = List.of(
-            new Player("name1"), new Player("name2"), new Player("name3"), new Player("name4"), new Player("name5")
+            new Player("name1"),
+            new Player("name2"),
+            new Player("name3"),
+            new Player("name4"),
+            new Player("name5")
         );
         assertThrows(IllegalArgumentException.class, () -> dealService.dealDefuses(players));
     }
