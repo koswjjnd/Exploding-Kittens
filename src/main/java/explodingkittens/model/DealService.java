@@ -2,8 +2,7 @@ package explodingkittens.model;
 
 import java.util.List;
 
-import explodingkittens.model.Card;
-import explodingkittens.model.DefuseCard;
+
 
 /**
  * Service class for dealing cards to players.
