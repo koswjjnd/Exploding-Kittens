@@ -13,6 +13,6 @@
 |             | System under test            | Expected output                       | Implemented? |
 | ----------- | ---------------------------- | ------------------------------------- | ------------ |
 | Test Case 1 | dealDefuses(players size =0) | Should throw IllegalArgumentException |              |
-| Test Case 2 | dealDefuses(players size =1) | add 3 defuse card                     |              |
-| Test Case 3 | dealDefuses(players size =4) | add 1 defuse card                     |              |
+| Test Case 2 | dealDefuses(players size =1) | player.getHand() return a card list containg only one defuse card                    |              |
+| Test Case 3 | dealDefuses(players size =4) | each player.getHand() return a card list containg only one defuse card                     |              |
 | Test Case 4 | dealDefuses(players size =5) | Should throw IllegalArgumentException |              |

@@ -1,9 +1,10 @@
 package explodingkittens.controller;
 
-import explodingkittens.player.Player;
-import explodingkittens.service.PlayerService;
+import explodingkittens.model.PlayerService;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.exceptions.InvalidNicknameException;
+import explodingkittens.model.Player;
+
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;

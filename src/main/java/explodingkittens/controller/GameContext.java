@@ -1,7 +1,9 @@
 package explodingkittens.controller;
 
-import explodingkittens.player.Player;
 import java.util.List;
+
+import explodingkittens.model.Player;
+
 import java.util.ArrayList;
 
 /**

@@ -1,7 +1,9 @@
 package explodingkittens.controller;
 
-import explodingkittens.player.Player;
 import org.junit.jupiter.api.Test;
+
+import explodingkittens.model.Player;
+
 import java.util.List;
 import java.util.Arrays;
 
