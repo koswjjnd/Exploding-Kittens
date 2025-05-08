@@ -22,6 +22,18 @@ public class DealServiceTest {
         List<Player> players = new ArrayList<>();
         assertThrows(IllegalArgumentException.class, () -> dealService.dealDefuses(players));
     }
+    @Test
+    void testDealDefusesWithOnePlayer() {
+        Player player = new Player("name1");
+        List<Player> players = List.of(player);
 
+        dealService.dealDefuses(players);
+
+        List<Card> hand = player.getHand();
+        assertEquals(1, hand.size(), "Player should receive exactly one card");
+        assertTrue(hand.get(0) instanceof DefuseCard, "Card should be of type DefuseCard");
+    }
+
+    
     
 }
