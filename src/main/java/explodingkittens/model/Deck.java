@@ -1,9 +1,11 @@
 package explodingkittens.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Represents a deck of cards in the Exploding Kittens game.
@@ -46,7 +48,7 @@ public class Deck {
      */
     public void addCards(Card card, int count) {
         for (int i = 0; i < count; i++) {
-            this.cards.add(card);
+            this.cards.add(card.clone());
         }
     }
     
@@ -55,7 +57,7 @@ public class Deck {
      * @param card The card to add
      */
     public void addCard(Card card) {
-        this.cards.add(card);
+        this.cards.add(card.clone());
     }
     
     /**
@@ -76,5 +78,23 @@ public class Deck {
             counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
         return counts;
+    }
+
+    /**
+     * Shuffles the deck of cards using the provided random generator.
+     * If no random generator is provided, uses a default one.
+     * @param random the random generator to use for shuffling, or null to use default
+     */
+    public void shuffle(Random random) {
+        Collections.shuffle(cards, random != null ? random : new Random());
+    }
+
+    /**
+     * Returns an unmodifiable view of the cards in the deck.
+     * This method is primarily for testing purposes to verify card order.
+     * @return an unmodifiable list containing all cards in the deck
+     */
+    public List<Card> getCards() {
+        return Collections.unmodifiableList(cards);
     }
 }

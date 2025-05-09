@@ -16,7 +16,7 @@
 
 | Test Case ID | System Under Test      | Input Description                   | Expected Output                                                            | Implemented |
 |--------------|------------------------|--------------------------------------|-----------------------------------------------------------------------------|-------------|
-| TC1          | deck.shuffle()       | Empty deck (size = 0)              | No exception; deck remains empty                                           |      |
+| TC1          | deck.shuffle()       | Empty deck (size = 0)              | No exception; deck remains empty                                           |   yes   |
 | TC2          | deck.shuffle()       | One card in deck (size = 1)        | No exception; order remains unchanged                                      |     |                           
 | TC3          | deck.shuffle()       | Five cards (all different types)     | Cards preserved; order likely changed                                      |     |
 | TC4          | deck.shuffle()       | Full initialized deck (e.g., 52 cards) | Cards preserved (count & type); order changed                             |      |
