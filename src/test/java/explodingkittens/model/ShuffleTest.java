@@ -28,5 +28,20 @@ public class ShuffleTest {
         assertEquals(0, deck.getCardCounts().size(), "Empty deck should remain empty after shuffle");
     }
 
+    @Test
+    void testShuffleSingleCard() {
+        // test single card
+        deck.addCard(new DefuseCard());
+        Map<String, Integer> originalCounts = new HashMap<>(deck.getCardCounts());
+        List<Card> originalOrder = new ArrayList<>(deck.getCards());
+        
+        deck.shuffle(null);
+        
+        assertEquals(originalCounts, deck.getCardCounts(), 
+            "Card counts should remain the same after shuffle");
+        assertEquals(originalOrder, deck.getCards(), 
+            "Single card should remain in the same position");
+    }
+
     
 }
