@@ -20,7 +20,7 @@
 | TC2          | deck.shuffle()       | One card in deck (size = 1)        | No exception; order remains unchanged                                      |   yes  |                           
 | TC3          | deck.shuffle()       | Five cards (all different types)     | Cards preserved; order likely changed                                      |  yes   |
 | TC4          | deck.shuffle()       | Full initialized deck (e.g., 52 cards) | Cards preserved (count & type); order changed                             |   yes   |
-| TC5          | deck.shuffle() called multiple times | Deck with >1 card        | At least one shuffle results in different order                            |      |
+| TC5          | deck.shuffle() called multiple times | Deck with >1 card        | At least one shuffle results in different order                            |  yes    |
 
 ---
 
