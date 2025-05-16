@@ -61,6 +61,7 @@ public class DealService {
      * @throws InvalidDeckException if the deck is null
      * @throws EmptyDeckException if the deck is empty
      * @throws TooManyPlayersException if there are more than 4 players
+     * @throws TooFewPlayersException if there are fewer than 2 players
      */
     public void dealInitialHands(Deck deck, List<Player> players) {
         if (deck == null) {
@@ -71,6 +72,9 @@ public class DealService {
         }
         if (players.size() > 4) {
             throw new TooManyPlayersException();
+        }
+        if (players.size() < 2) {
+            throw new TooFewPlayersException();
         }
 
         // 给每个玩家发4张牌

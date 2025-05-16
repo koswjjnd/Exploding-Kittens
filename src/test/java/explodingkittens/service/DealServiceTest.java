@@ -274,4 +274,18 @@ class DealServiceTest {
         });
         verify(mockDeck).isEmpty();
     }
+
+    @Test
+    void dealInitialHands_WithTooFewPlayers_ShouldThrowTooFewPlayersException() {
+        // Arrange
+        List<Player> singlePlayer = new ArrayList<>();
+        singlePlayer.add(new Player("Player1"));
+        when(mockDeck.isEmpty()).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(TooFewPlayersException.class, () -> {
+            dealService.dealInitialHands(mockDeck, singlePlayer);
+        });
+        verify(mockDeck).isEmpty();
+    }
 } 
