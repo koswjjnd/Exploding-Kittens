@@ -258,4 +258,20 @@ class DealServiceTest {
             assertEquals(4, player.getHand().size(), "Each player should have 4 cards");
         }
     }
+
+    @Test
+    void dealInitialHands_WithTooManyPlayers_ShouldThrowTooManyPlayersException() {
+        // Arrange
+        List<Player> tooManyPlayers = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            tooManyPlayers.add(new Player("Player" + i));
+        }
+        when(mockDeck.isEmpty()).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(TooManyPlayersException.class, () -> {
+            dealService.dealInitialHands(mockDeck, tooManyPlayers);
+        });
+        verify(mockDeck).isEmpty();
+    }
 } 
