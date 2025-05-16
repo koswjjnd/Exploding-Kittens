@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -176,5 +177,25 @@ public class DeckTest {
         assertThrows(NullPointerException.class, () -> {
             deck.isEmpty();
         });
+    }
+
+    @Test
+    void testIsEmpty_EmptyList() {
+        // Given
+        Deck deck = new Deck();
+        // 确保cards是空列表
+        try {
+            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            cardsField.set(deck, new ArrayList<>());
+        } catch (Exception e) {
+            fail("Failed to set cards to empty list", e);
+        }
+
+        // When
+        boolean result = deck.isEmpty();
+
+        // Then
+        assertTrue(result, "Empty deck should return true for isEmpty()");
     }
 }
