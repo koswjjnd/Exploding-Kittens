@@ -7,6 +7,11 @@ import explodingkittens.player.Player;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
 import explodingkittens.exceptions.InsufficientDefuseCardsException;
+import explodingkittens.exceptions.TooManyPlayersException;
+import explodingkittens.exceptions.InvalidPlayersListException;
+import explodingkittens.exceptions.EmptyPlayersListException;
+import explodingkittens.exceptions.TooFewPlayersException;
+import explodingkittens.exceptions.NoDefuseCardsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -131,6 +136,40 @@ class DealServiceTest {
     }
 
     @Test
+    void testDealDefuses_TooManyPlayers() {
+        // Given
+        List<Player> tooManyPlayers = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            tooManyPlayers.add(new Player("Player" + i));
+        }
+
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 4);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When & Then
+        assertThrows(TooManyPlayersException.class, () -> {
+            dealService.dealDefuses(mockDeck, tooManyPlayers);
+        });
+    }
+
+    @Test
+    void testDealDefuses_NullPlayerList() {
+        // Given
+        List<Player> nullPlayers = null;
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 1);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When & Then
+        assertThrows(InvalidPlayersListException.class, () -> {
+            dealService.dealDefuses(mockDeck, nullPlayers);
+        });
+    }
+
+    @Test
     void testDealDefuses_EmptyPlayerList() {
         // Given
         List<Player> emptyPlayers = new ArrayList<>();
@@ -139,14 +178,42 @@ class DealServiceTest {
         when(mockDeck.isEmpty()).thenReturn(false);
         when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
-        // When
-        dealService.dealDefuses(mockDeck, emptyPlayers);
+        // When & Then
+        assertThrows(EmptyPlayersListException.class, () -> {
+            dealService.dealDefuses(mockDeck, emptyPlayers);
+        });
+    }
 
-        // Then
+    @Test
+    void testDealDefuses_TooFewPlayers() {
+        // Given
+        List<Player> singlePlayer = new ArrayList<>();
+        singlePlayer.add(new Player("Player1"));
+
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 1);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When & Then
+        assertThrows(TooFewPlayersException.class, () -> {
+            dealService.dealDefuses(mockDeck, singlePlayer);
+        });
+    }
+
+    @Test
+    void testDealDefuses_NoDefuseCards() {
+        // Given
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 0);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When & Then
+        assertThrows(NoDefuseCardsException.class, () -> {
+            dealService.dealDefuses(mockDeck, players);
+        });
         verify(mockDeck).isEmpty();
         verify(mockDeck).getCardCounts();
-        
-        // 验证没有玩家收到卡牌
-        assertTrue(emptyPlayers.isEmpty(), "Player list should remain empty");
     }
 } 
