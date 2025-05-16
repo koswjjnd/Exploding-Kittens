@@ -3,6 +3,7 @@ package explodingkittens.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Map;
 
@@ -156,5 +157,24 @@ public class DeckTest {
         Map<String, Integer> cardCounts = deck.getCardCounts();
         assertEquals(1, cardCounts.size());
         assertEquals(2, cardCounts.get("SeeTheFutureCard"));
+    }
+
+    @Test
+    void testIsEmpty_NullCards() {
+        // Given
+        Deck deck = new Deck();
+        // 使用反射将cards设置为null
+        try {
+            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            cardsField.set(deck, null);
+        } catch (Exception e) {
+            fail("Failed to set cards to null", e);
+        }
+
+        // When & Then
+        assertThrows(NullPointerException.class, () -> {
+            deck.isEmpty();
+        });
     }
 }
