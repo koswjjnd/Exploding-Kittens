@@ -38,6 +38,8 @@ class DealServiceTest {
     void testDealDefuses_EmptyDeck() {
         // Given
         Deck deck = new Deck();
+        // 确保牌组为空
+        assertTrue(deck.isEmpty(), "Deck should be empty");
 
         // When & Then
         assertThrows(EmptyDeckException.class, () -> {
