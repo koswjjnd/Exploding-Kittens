@@ -3,6 +3,7 @@ package explodingkittens.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -197,5 +198,18 @@ public class DeckTest {
 
         // Then
         assertTrue(result, "Empty deck should return true for isEmpty()");
+    }
+
+    @Test
+    void testIsEmpty_SingleCard() {
+        // Given
+        Deck deck = new Deck();
+        deck.addCard(new SkipCard());
+
+        // When
+        boolean result = deck.isEmpty();
+
+        // Then
+        assertFalse(result, "Deck with one card should return false for isEmpty()");
     }
 }
