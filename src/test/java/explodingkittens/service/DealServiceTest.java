@@ -239,4 +239,23 @@ class DealServiceTest {
         });
         verify(mockDeck).isEmpty();
     }
+
+    @Test
+    void dealInitialHands_WithValidDeck_ShouldDealCardsSuccessfully() {
+        // Arrange
+        when(mockDeck.isEmpty()).thenReturn(false);
+        Card mockCard = mock(Card.class);
+        when(mockDrawService.drawCard(mockDeck)).thenReturn(mockCard);
+
+        // Act
+        dealService.dealInitialHands(mockDeck, players);
+
+        // Assert
+        verify(mockDeck).isEmpty();
+        // 验证每个玩家收到4张牌
+        verify(mockDrawService, times(8)).drawCard(mockDeck);
+        for (Player player : players) {
+            assertEquals(4, player.getHand().size(), "Each player should have 4 cards");
+        }
+    }
 } 

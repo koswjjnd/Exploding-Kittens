@@ -68,5 +68,13 @@ public class DealService {
         if (deck.isEmpty()) {
             throw new EmptyDeckException();
         }
+
+        // 给每个玩家发4张牌
+        for (Player player : players) {
+            for (int i = 0; i < 4; i++) {
+                Card card = drawService.drawCard(deck);
+                player.receiveCard(card);
+            }
+        }
     }
 } 
