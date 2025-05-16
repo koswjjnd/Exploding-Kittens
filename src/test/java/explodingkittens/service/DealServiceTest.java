@@ -100,4 +100,33 @@ class DealServiceTest {
             assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
         }
     }
+
+    @Test
+    void testDealDefuses_MultiplePlayers() {
+        // Given
+        List<Player> multiplePlayers = new ArrayList<>();
+        multiplePlayers.add(new Player("Player1"));
+        multiplePlayers.add(new Player("Player2"));
+        multiplePlayers.add(new Player("Player3"));
+        multiplePlayers.add(new Player("Player4"));
+
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 4);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When
+        dealService.dealDefuses(mockDeck, multiplePlayers);
+
+        // Then
+        verify(mockDeck).isEmpty();
+        verify(mockDeck).getCardCounts();
+        
+        // 验证每个玩家都收到了一张拆弹卡
+        for (Player player : multiplePlayers) {
+            List<Card> hand = player.getHand();
+            assertEquals(1, hand.size(), "Player should have exactly one card");
+            assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
+        }
+    }
 } 

@@ -14,5 +14,5 @@
 
 | Test Case   | System under test             | Expected output           | Implemented? |
 |-------------|-------------------------------|---------------------------|--------------|
-| Test Case 1 | getCards() on empty deck      | Empty list                |              |
-| Test Case 2 | getCards() on deck with cards | List containing all cards |              | 
+| Test Case 1 | getCards() on empty deck      | Empty list                | Yes          |
+| Test Case 2 | getCards() on deck with cards | List containing all cards | Yes          | 
