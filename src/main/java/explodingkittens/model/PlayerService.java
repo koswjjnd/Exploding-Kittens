@@ -2,7 +2,6 @@ package explodingkittens.model;
 
 import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.exceptions.InvalidPlayerCountException;
-import explodingkittens.player.Player;
 
 public class PlayerService {
     public static final int MIN_PLAYERS = 2;

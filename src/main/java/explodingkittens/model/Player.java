@@ -1,8 +1,7 @@
-package explodingkittens.player;
+package explodingkittens.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import explodingkittens.model.Card;
 
 /**
  * Represents a player in the game.

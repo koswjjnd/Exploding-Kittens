@@ -1,7 +1,7 @@
 package explodingkittens.controller;
 
-import explodingkittens.player.Player;
-import explodingkittens.service.PlayerService;
+import explodingkittens.model.Player;
+import explodingkittens.model.PlayerService;
 import explodingkittens.view.GameSetupView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
