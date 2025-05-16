@@ -53,4 +53,16 @@ public class DealService {
         
         players.forEach(player -> player.receiveCard(new DefuseCard()));
     }
+
+    /**
+     * Deals initial hands to players.
+     * @param deck the deck to deal from
+     * @param players the list of players to deal to
+     * @throws InvalidDeckException if the deck is null
+     */
+    public void dealInitialHands(Deck deck, List<Player> players) {
+        if (deck == null) {
+            throw new InvalidDeckException();
+        }
+    }
 } 

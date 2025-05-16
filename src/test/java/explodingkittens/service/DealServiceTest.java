@@ -216,4 +216,15 @@ class DealServiceTest {
         verify(mockDeck).isEmpty();
         verify(mockDeck).getCardCounts();
     }
+
+    @Test
+    void dealInitialHands_WithNullDeck_ShouldThrowInvalidDeckException() {
+        // Arrange
+        Deck deck = null;
+
+        // Act & Assert
+        assertThrows(InvalidDeckException.class, () -> {
+            dealService.dealInitialHands(deck, players);
+        });
+    }
 } 
