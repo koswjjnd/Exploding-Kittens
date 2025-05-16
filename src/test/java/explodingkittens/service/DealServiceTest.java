@@ -227,4 +227,16 @@ class DealServiceTest {
             dealService.dealInitialHands(deck, players);
         });
     }
+
+    @Test
+    void dealInitialHands_WithEmptyDeck_ShouldThrowEmptyDeckException() {
+        // Arrange
+        when(mockDeck.isEmpty()).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(EmptyDeckException.class, () -> {
+            dealService.dealInitialHands(mockDeck, players);
+        });
+        verify(mockDeck).isEmpty();
+    }
 } 

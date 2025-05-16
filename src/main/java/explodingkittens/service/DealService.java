@@ -59,10 +59,14 @@ public class DealService {
      * @param deck the deck to deal from
      * @param players the list of players to deal to
      * @throws InvalidDeckException if the deck is null
+     * @throws EmptyDeckException if the deck is empty
      */
     public void dealInitialHands(Deck deck, List<Player> players) {
         if (deck == null) {
             throw new InvalidDeckException();
+        }
+        if (deck.isEmpty()) {
+            throw new EmptyDeckException();
         }
     }
 } 
