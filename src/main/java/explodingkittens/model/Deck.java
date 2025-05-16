@@ -17,6 +17,14 @@ public class Deck {
     }
 
     /**
+     * Checks if the deck is empty.
+     * @return true if the deck has no cards, false otherwise
+     */
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
+    /**
      * Initializes the deck with cards based on player count.
      * @param playerCount number of players (2-4)
      * @throws IllegalArgumentException if playerCount is invalid

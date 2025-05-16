@@ -3,6 +3,7 @@ package explodingkittens.service;
 import explodingkittens.model.Deck;
 import explodingkittens.player.Player;
 import explodingkittens.exceptions.InvalidDeckException;
+import explodingkittens.exceptions.EmptyDeckException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -29,6 +30,17 @@ class DealServiceTest {
 
         // When & Then
         assertThrows(InvalidDeckException.class, () -> {
+            dealService.dealDefuses(deck, players);
+        });
+    }
+
+    @Test
+    void testDealDefuses_EmptyDeck() {
+        // Given
+        Deck deck = new Deck();
+
+        // When & Then
+        assertThrows(EmptyDeckException.class, () -> {
             dealService.dealDefuses(deck, players);
         });
     }
