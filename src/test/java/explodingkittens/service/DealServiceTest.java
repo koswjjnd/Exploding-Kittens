@@ -1,9 +1,11 @@
 package explodingkittens.service;
 
 import explodingkittens.model.Deck;
+import explodingkittens.model.DefuseCard;
 import explodingkittens.player.Player;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
+import explodingkittens.exceptions.InsufficientDefuseCardsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -43,6 +45,18 @@ class DealServiceTest {
 
         // When & Then
         assertThrows(EmptyDeckException.class, () -> {
+            dealService.dealDefuses(deck, players);
+        });
+    }
+
+    @Test
+    void testDealDefuses_InsufficientDefuseCards() {
+        // Given
+        Deck deck = new Deck();
+        deck.addCard(new DefuseCard()); // 只添加一张拆弹卡，但有两个玩家
+
+        // When & Then
+        assertThrows(InsufficientDefuseCardsException.class, () -> {
             dealService.dealDefuses(deck, players);
         });
     }
