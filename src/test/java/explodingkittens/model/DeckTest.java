@@ -212,4 +212,21 @@ public class DeckTest {
         // Then
         assertFalse(result, "Deck with one card should return false for isEmpty()");
     }
+
+    @Test
+    void testIsEmpty_MultipleCards() {
+        // Given
+        Deck deck = new Deck();
+        deck.addCards(new SkipCard(), 3);
+        deck.addCards(new AttackCard(), 2);
+        deck.addCards(new DefuseCard(), 1);
+
+        // When
+        boolean result = deck.isEmpty();
+
+        // Then
+        assertFalse(result, "Deck with multiple cards should return false for isEmpty()");
+        assertEquals(6, deck.getCardCounts().values().stream().mapToInt(Integer::intValue).sum(), 
+            "Deck should contain exactly 6 cards");
+    }
 }
