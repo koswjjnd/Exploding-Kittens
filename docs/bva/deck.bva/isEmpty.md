@@ -16,10 +16,10 @@
 
 |             | System under test    | Expected output      | Implemented? |
 |-------------|----------------------|----------------------|--------------|
-| Test Case 1 | cards=null           | NullPointerException | No           |
-| Test Case 2 | cards=empty list     | true                 | No           |
-| Test Case 3 | cards=one card       | false                | No           |
-| Test Case 4 | cards=multiple cards | false                | No           |
+| Test Case 1 | cards=null           | NullPointerException | Yes          |
+| Test Case 2 | cards=empty list     | true                 | Yes          |
+| Test Case 3 | cards=one card       | false                | Yes          |
+| Test Case 4 | cards=multiple cards | false                | Yes          |
 
 ## Recall the 4 steps of BVA
 
