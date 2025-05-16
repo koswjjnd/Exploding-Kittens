@@ -32,12 +32,10 @@ public class DealService {
      * @param players the list of players to deal to
      * @throws InvalidDeckException if the deck is null
      * @throws EmptyDeckException if the deck is empty
-     * @throws InsufficientDefuseCardsException if there are not enough defuse cards
      * @throws TooManyPlayersException if there are more than 4 players
      * @throws InvalidPlayersListException if the players list is null
      * @throws EmptyPlayersListException if the players list is empty
      * @throws TooFewPlayersException if there are fewer than 2 players
-     * @throws NoDefuseCardsException if there are no defuse cards in the deck
      */
     public void dealDefuses(Deck deck, List<Player> players) {
         if (deck == null) throw new InvalidDeckException();
@@ -46,10 +44,6 @@ public class DealService {
         if (players.size() < 2) throw new TooFewPlayersException();
         if (players.size() > 4) throw new TooManyPlayersException();
         if (deck.isEmpty()) throw new EmptyDeckException();
-
-        int defuseCardCount = deck.getCardCounts().getOrDefault("DefuseCard", 0);
-        if (defuseCardCount == 0) throw new NoDefuseCardsException();
-        if (defuseCardCount < players.size()) throw new InsufficientDefuseCardsException();
         
         players.forEach(player -> player.receiveCard(new DefuseCard()));
     }
@@ -77,7 +71,6 @@ public class DealService {
             throw new TooFewPlayersException();
         }
 
-        // 给每个玩家发4张牌
         for (Player player : players) {
             for (int i = 0; i < 4; i++) {
                 Card card = drawService.drawCard(deck);

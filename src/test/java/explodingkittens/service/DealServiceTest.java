@@ -68,67 +68,18 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_InsufficientDefuseCards() {
-        // Given
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 1);
-        when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
-
-        // When & Then
-        assertThrows(InsufficientDefuseCardsException.class, () -> {
-            dealService.dealDefuses(mockDeck, players);
-        });
-        verify(mockDeck).isEmpty();
-        verify(mockDeck).getCardCounts();
-    }
-
-    @Test
     void testDealDefuses_SuccessfulDeal() {
         // Given
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 2);
         when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
         // When
         dealService.dealDefuses(mockDeck, players);
 
         // Then
         verify(mockDeck).isEmpty();
-        verify(mockDeck).getCardCounts();
         
         // 验证每个玩家都收到了一张拆弹卡
         for (Player player : players) {
-            List<Card> hand = player.getHand();
-            assertEquals(1, hand.size(), "Player should have exactly one card");
-            assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
-        }
-    }
-
-    @Test
-    void testDealDefuses_MultiplePlayers() {
-        // Given
-        List<Player> multiplePlayers = new ArrayList<>();
-        multiplePlayers.add(new Player("Player1"));
-        multiplePlayers.add(new Player("Player2"));
-        multiplePlayers.add(new Player("Player3"));
-        multiplePlayers.add(new Player("Player4"));
-
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 4);
-        when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
-
-        // When
-        dealService.dealDefuses(mockDeck, multiplePlayers);
-
-        // Then
-        verify(mockDeck).isEmpty();
-        verify(mockDeck).getCardCounts();
-        
-        // 验证每个玩家都收到了一张拆弹卡
-        for (Player player : multiplePlayers) {
             List<Card> hand = player.getHand();
             assertEquals(1, hand.size(), "Player should have exactly one card");
             assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
@@ -143,10 +94,7 @@ class DealServiceTest {
             tooManyPlayers.add(new Player("Player" + i));
         }
 
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 4);
         when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
         // When & Then
         assertThrows(TooManyPlayersException.class, () -> {
@@ -155,13 +103,49 @@ class DealServiceTest {
     }
 
     @Test
+    void testDealDefuses_TooFewPlayers() {
+        // Given
+        List<Player> singlePlayer = new ArrayList<>();
+        singlePlayer.add(new Player("Player1"));
+
+        when(mockDeck.isEmpty()).thenReturn(false);
+
+        // When & Then
+        assertThrows(TooFewPlayersException.class, () -> {
+            dealService.dealDefuses(mockDeck, singlePlayer);
+        });
+    }
+
+    @Test
+    void testDealDefuses_MultiplePlayers() {
+        // Given
+        List<Player> multiplePlayers = new ArrayList<>();
+        multiplePlayers.add(new Player("Player1"));
+        multiplePlayers.add(new Player("Player2"));
+        multiplePlayers.add(new Player("Player3"));
+        multiplePlayers.add(new Player("Player4"));
+
+        when(mockDeck.isEmpty()).thenReturn(false);
+
+        // When
+        dealService.dealDefuses(mockDeck, multiplePlayers);
+
+        // Then
+        verify(mockDeck).isEmpty();
+        
+        // 验证每个玩家都收到了一张拆弹卡
+        for (Player player : multiplePlayers) {
+            List<Card> hand = player.getHand();
+            assertEquals(1, hand.size(), "Player should have exactly one card");
+            assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
+        }
+    }
+
+    @Test
     void testDealDefuses_NullPlayerList() {
         // Given
         List<Player> nullPlayers = null;
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 1);
         when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
         // When & Then
         assertThrows(InvalidPlayersListException.class, () -> {
@@ -173,48 +157,12 @@ class DealServiceTest {
     void testDealDefuses_EmptyPlayerList() {
         // Given
         List<Player> emptyPlayers = new ArrayList<>();
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 1);
         when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
         // When & Then
         assertThrows(EmptyPlayersListException.class, () -> {
             dealService.dealDefuses(mockDeck, emptyPlayers);
         });
-    }
-
-    @Test
-    void testDealDefuses_TooFewPlayers() {
-        // Given
-        List<Player> singlePlayer = new ArrayList<>();
-        singlePlayer.add(new Player("Player1"));
-
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 1);
-        when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
-
-        // When & Then
-        assertThrows(TooFewPlayersException.class, () -> {
-            dealService.dealDefuses(mockDeck, singlePlayer);
-        });
-    }
-
-    @Test
-    void testDealDefuses_NoDefuseCards() {
-        // Given
-        Map<String, Integer> cardCounts = new HashMap<>();
-        cardCounts.put("DefuseCard", 0);
-        when(mockDeck.isEmpty()).thenReturn(false);
-        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
-
-        // When & Then
-        assertThrows(NoDefuseCardsException.class, () -> {
-            dealService.dealDefuses(mockDeck, players);
-        });
-        verify(mockDeck).isEmpty();
-        verify(mockDeck).getCardCounts();
     }
 
     @Test
