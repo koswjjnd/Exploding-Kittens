@@ -129,4 +129,24 @@ class DealServiceTest {
             assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
         }
     }
+
+    @Test
+    void testDealDefuses_EmptyPlayerList() {
+        // Given
+        List<Player> emptyPlayers = new ArrayList<>();
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 1);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When
+        dealService.dealDefuses(mockDeck, emptyPlayers);
+
+        // Then
+        verify(mockDeck).isEmpty();
+        verify(mockDeck).getCardCounts();
+        
+        // 验证没有玩家收到卡牌
+        assertTrue(emptyPlayers.isEmpty(), "Player list should remain empty");
+    }
 } 
