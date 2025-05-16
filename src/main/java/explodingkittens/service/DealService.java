@@ -2,6 +2,7 @@ package explodingkittens.service;
 
 import explodingkittens.model.Deck;
 import explodingkittens.model.DefuseCard;
+import explodingkittens.model.Card;
 import explodingkittens.player.Player;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
@@ -10,6 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 public class DealService {
+    private final DrawService drawService;
+    
+    public DealService() {
+        this.drawService = new DrawService();
+    }
+    
+    public DealService(DrawService drawService) {
+        this.drawService = drawService;
+    }
     
     /**
      * Deals defuse cards to players.
@@ -33,6 +43,11 @@ public class DealService {
         if (defuseCardCount < players.size()) {
             throw new InsufficientDefuseCardsException();
         }
-        // TODO: Implement the rest of the method
+        
+        // 给每个玩家发一张拆弹卡
+        for (Player player : players) {
+            Card defuseCard = new DefuseCard();
+            player.receiveCard(defuseCard);
+        }
     }
 } 

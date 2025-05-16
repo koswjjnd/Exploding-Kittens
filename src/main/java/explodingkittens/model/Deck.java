@@ -17,15 +17,19 @@ public class Deck {
     }
 
     /**
+     * Returns the list of cards in the deck.
+     * @return the list of cards
+     */
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    /**
      * Checks if the deck is empty.
-     * @return true if the deck has no cards, false otherwise
-     * @throws NullPointerException if the cards list is null
+     * @return true if the deck is empty, false otherwise
      */
     public boolean isEmpty() {
-        if (cards == null) {
-            throw new NullPointerException("Cards list cannot be null");
-        }
-        return cards.isEmpty();
+        return cards == null || cards.isEmpty();
     }
 
     /**

@@ -2,24 +2,38 @@ package explodingkittens.service;
 
 import explodingkittens.model.Deck;
 import explodingkittens.model.DefuseCard;
+import explodingkittens.model.Card;
 import explodingkittens.player.Player;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
 import explodingkittens.exceptions.InsufficientDefuseCardsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class DealServiceTest {
     private DealService dealService;
+
+    @Mock
+    private Deck mockDeck;
+    
+    @Mock
+    private DrawService mockDrawService;
+
     private List<Player> players;
 
     @BeforeEach
     void setUp() {
-        dealService = new DealService();
+        MockitoAnnotations.openMocks(this);
+        dealService = new DealService(mockDrawService);
         players = new ArrayList<>();
         players.add(new Player("Player1"));
         players.add(new Player("Player2"));
@@ -39,25 +53,51 @@ class DealServiceTest {
     @Test
     void testDealDefuses_EmptyDeck() {
         // Given
-        Deck deck = new Deck();
-        // 确保牌组为空
-        assertTrue(deck.isEmpty(), "Deck should be empty");
+        when(mockDeck.isEmpty()).thenReturn(true);
 
         // When & Then
         assertThrows(EmptyDeckException.class, () -> {
-            dealService.dealDefuses(deck, players);
+            dealService.dealDefuses(mockDeck, players);
         });
+        verify(mockDeck).isEmpty();
     }
 
     @Test
     void testDealDefuses_InsufficientDefuseCards() {
         // Given
-        Deck deck = new Deck();
-        deck.addCard(new DefuseCard()); // 只添加一张拆弹卡，但有两个玩家
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 1);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
 
         // When & Then
         assertThrows(InsufficientDefuseCardsException.class, () -> {
-            dealService.dealDefuses(deck, players);
+            dealService.dealDefuses(mockDeck, players);
         });
+        verify(mockDeck).isEmpty();
+        verify(mockDeck).getCardCounts();
+    }
+
+    @Test
+    void testDealDefuses_SuccessfulDeal() {
+        // Given
+        Map<String, Integer> cardCounts = new HashMap<>();
+        cardCounts.put("DefuseCard", 2);
+        when(mockDeck.isEmpty()).thenReturn(false);
+        when(mockDeck.getCardCounts()).thenReturn(cardCounts);
+
+        // When
+        dealService.dealDefuses(mockDeck, players);
+
+        // Then
+        verify(mockDeck).isEmpty();
+        verify(mockDeck).getCardCounts();
+        
+        // 验证每个玩家都收到了一张拆弹卡
+        for (Player player : players) {
+            List<Card> hand = player.getHand();
+            assertEquals(1, hand.size(), "Player should have exactly one card");
+            assertTrue(hand.get(0) instanceof DefuseCard, "Card should be a DefuseCard");
+        }
     }
 } 

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -228,5 +229,35 @@ public class DeckTest {
         assertFalse(result, "Deck with multiple cards should return false for isEmpty()");
         assertEquals(6, deck.getCardCounts().values().stream().mapToInt(Integer::intValue).sum(), 
             "Deck should contain exactly 6 cards");
+    }
+
+    @Test
+    void testGetCards_EmptyDeck() {
+        // Given
+        Deck deck = new Deck();
+
+        // When
+        List<Card> cards = deck.getCards();
+
+        // Then
+        assertTrue(cards.isEmpty(), "Empty deck should return empty list");
+    }
+
+    @Test
+    void testGetCards_WithCards() {
+        // Given
+        Deck deck = new Deck();
+        Card skipCard = new SkipCard();
+        Card attackCard = new AttackCard();
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
+
+        // When
+        List<Card> cards = deck.getCards();
+
+        // Then
+        assertEquals(2, cards.size(), "Deck should contain exactly 2 cards");
+        assertTrue(cards.contains(skipCard), "Deck should contain SkipCard");
+        assertTrue(cards.contains(attackCard), "Deck should contain AttackCard");
     }
 }
