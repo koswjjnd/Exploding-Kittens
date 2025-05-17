@@ -177,10 +177,7 @@ public class DeckTest {
         }
 
         // When & Then
-        assertThrows(NullPointerException.class, () -> {
-            deck.isEmpty();
-        }
-        );
+        assertThrows(NullPointerException.class, () -> deck.isEmpty());
     }
 
     @Test
