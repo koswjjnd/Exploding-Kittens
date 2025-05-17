@@ -8,22 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.eq;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -325,5 +316,26 @@ class GameSetupControllerTest {
         // Verify service calls
         verify(dealService).dealDefuses(any(Deck.class), anyList());
         verify(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
+    }
+
+    @Test
+    void testPrepareDeckWithFivePlayers() {
+        // Given
+        List<Player> players = Arrays.asList(
+            new Player("Player1"),
+            new Player("Player2"),
+            new Player("Player3"),
+            new Player("Player4"),
+            new Player("Player5")
+        );
+        
+        // When & Then
+        assertThrows(InvalidPlayerCountException.class, 
+            () -> controller.prepareDeck(5, players),
+            "Should throw InvalidPlayerCountException when player count is 5");
+            
+        // Verify no service calls were made
+        verify(dealService, never()).dealDefuses(any(Deck.class), anyList());
+        verify(dealService, never()).dealInitialHands(any(Deck.class), anyList(), anyInt());
     }
 }
