@@ -118,7 +118,7 @@ public class GameSetupController {
         // Deal initial hands
         dealService.dealInitialHands(deck, players, 5);
         
-        // Add exploding kittens
+        // Add exploding kittens (number of players - 1)
         deck.addExplodingKittens(count - 1);
         
         // Final shuffle

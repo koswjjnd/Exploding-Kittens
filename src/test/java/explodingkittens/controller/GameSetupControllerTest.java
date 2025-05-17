@@ -239,9 +239,72 @@ class GameSetupControllerTest {
         
         // Verify card distribution in deck
         assertEquals(3, deck.getCardCounts().get("DefuseCard"), 
-            "Deck should have 3 defuse cards for 2 players");
+            "Deck should have 3 defuse cards for 2 players (5-2)");
         assertEquals(1, deck.getCardCounts().get("ExplodingKittenCard"), 
             "Deck should have 1 exploding kitten for 2 players");
+            
+        // Verify players' hands
+        for (Player player : players) {
+            List<Card> hand = player.getHand();
+            assertEquals(6, hand.size(), 
+                "Each player should have 6 cards (1 defuse + 5 initial cards)");
+            
+            // Verify defuse card
+            assertTrue(hand.stream()
+                .anyMatch(card -> card instanceof DefuseCard),
+                "Each player should have exactly one defuse card");
+            assertEquals(1, hand.stream()
+                .filter(card -> card instanceof DefuseCard)
+                .count(),
+                "Each player should have exactly one defuse card");
+        }
+            
+        // Verify service calls
+        verify(dealService).dealDefuses(any(Deck.class), anyList());
+        verify(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
+    }
+
+    @Test
+    void testPrepareDeckWithFourPlayers() throws InvalidPlayerCountException {
+        // Given
+        List<Player> players = Arrays.asList(
+            new Player("Player1"),
+            new Player("Player2"),
+            new Player("Player3"),
+            new Player("Player4")
+        );
+        
+        // Mock dealService behavior
+        Mockito.doAnswer(invocation -> {
+            List<Player> playersList = invocation.getArgument(1);
+            for (Player player : playersList) {
+                player.receiveCard(new DefuseCard());
+            }
+            return null;
+        }).when(dealService).dealDefuses(any(Deck.class), anyList());
+        
+        Mockito.doAnswer(invocation -> {
+            List<Player> playersList = invocation.getArgument(1);
+            for (Player player : playersList) {
+                for (int i = 0; i < 5; i++) {
+                    player.receiveCard(new SkipCard());
+                }
+            }
+            return null;
+        }).when(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
+        
+        // When
+        Deck deck = controller.prepareDeck(4, players);
+        
+        // Then
+        assertNotNull(deck, "Deck should not be null");
+        assertFalse(deck.isEmpty(), "Deck should not be empty");
+        
+        // Verify card distribution in deck
+        assertEquals(1, deck.getCardCounts().get("DefuseCard"), 
+            "Deck should have 1 defuse card for 4 players (5-4)");
+        assertEquals(3, deck.getCardCounts().get("ExplodingKittenCard"), 
+            "Deck should have 3 exploding kittens for 4 players");
             
         // Verify players' hands
         for (Player player : players) {
