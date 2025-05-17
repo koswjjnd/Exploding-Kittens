@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -254,5 +255,19 @@ public class DeckTest {
         Deck deck = new Deck();
         assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1),
             "Should throw IllegalArgumentException when count is negative");
+    }
+
+    /**
+     * Tests that adding multiple exploding kittens adds the correct number of cards.
+     */
+    @Test
+    void testAddExplodingKittensMultipleCards() {
+        Deck deck = new Deck();
+        Deck result = deck.addExplodingKittens(2);
+        assertSame(deck, result, "Should return the same deck object");
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertEquals(1, cardCounts.size(), "Should only have one type of card");
+        assertEquals(2, cardCounts.get("ExplodingKittenCard"), 
+            "Should have exactly 2 exploding kittens");
     }
 }
