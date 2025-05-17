@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import explodingkittens.exceptions.EmptyDeckException;
 
 /**
  * Test class for the Deck class.
@@ -269,5 +270,15 @@ public class DeckTest {
         assertEquals(1, cardCounts.size(), "Should only have one type of card");
         assertEquals(2, cardCounts.get("ExplodingKittenCard"), 
             "Should have exactly 2 exploding kittens");
+    }
+
+    /**
+     * Tests that removing a card from an empty deck throws EmptyDeckException.
+     */
+    @Test
+    void testRemoveTopCard_EmptyDeck() {
+        Deck deck = new Deck();
+        assertThrows(EmptyDeckException.class, () -> deck.removeTopCard(),
+            "Should throw EmptyDeckException when removing from empty deck");
     }
 }
