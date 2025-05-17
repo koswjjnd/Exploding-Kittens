@@ -23,7 +23,7 @@ public class Deck {
      * @return the list of cards
      */
     public List<Card> getCards() {
-        return cards;
+        return new ArrayList<>(cards);
     }
 
     /**

@@ -51,10 +51,7 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithNullDeck() {
-        // Given
         Deck deck = null;
-
-        // When & Then
         assertThrows(InvalidDeckException.class, () -> {
             dealService.dealDefuses(deck, players);
         });
@@ -62,10 +59,7 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithEmptyDeck() {
-        // Given
         when(mockDeck.isEmpty()).thenReturn(true);
-
-        // When & Then
         assertThrows(EmptyDeckException.class, () -> {
             dealService.dealDefuses(mockDeck, players);
         });
@@ -74,16 +68,9 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithSuccessfulDeal() {
-        // Given
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When
         dealService.dealDefuses(mockDeck, players);
-
-        // Then
         verify(mockDeck).isEmpty();
-        
-        // 验证每个玩家都收到了一张拆弹卡
         for (Player player : players) {
             List<Card> hand = player.getHand();
             assertEquals(1, hand.size(), "Player should have exactly one card");
@@ -93,15 +80,11 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithTooManyPlayers() {
-        // Given
         List<Player> tooManyPlayers = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             tooManyPlayers.add(new Player("Player" + i));
         }
-
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When & Then
         assertThrows(TooManyPlayersException.class, () -> {
             dealService.dealDefuses(mockDeck, tooManyPlayers);
         });
@@ -109,13 +92,9 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithTooFewPlayers() {
-        // Given
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(new Player("Player1"));
-
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When & Then
         assertThrows(TooFewPlayersException.class, () -> {
             dealService.dealDefuses(mockDeck, singlePlayer);
         });
@@ -123,22 +102,14 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithMultiplePlayers() {
-        // Given
         List<Player> multiplePlayers = new ArrayList<>();
         multiplePlayers.add(new Player("Player1"));
         multiplePlayers.add(new Player("Player2"));
         multiplePlayers.add(new Player("Player3"));
         multiplePlayers.add(new Player("Player4"));
-
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When
         dealService.dealDefuses(mockDeck, multiplePlayers);
-
-        // Then
         verify(mockDeck).isEmpty();
-        
-        // 验证每个玩家都收到了一张拆弹卡
         for (Player player : multiplePlayers) {
             List<Card> hand = player.getHand();
             assertEquals(1, hand.size(), "Player should have exactly one card");
@@ -148,11 +119,8 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithNullPlayerList() {
-        // Given
         List<Player> nullPlayers = null;
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When & Then
         assertThrows(InvalidPlayersListException.class, () -> {
             dealService.dealDefuses(mockDeck, nullPlayers);
         });
@@ -160,11 +128,8 @@ class DealServiceTest {
 
     @Test
     void testDealDefusesWithEmptyPlayerList() {
-        // Given
         List<Player> emptyPlayers = new ArrayList<>();
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // When & Then
         assertThrows(EmptyPlayersListException.class, () -> {
             dealService.dealDefuses(mockDeck, emptyPlayers);
         });
@@ -172,10 +137,7 @@ class DealServiceTest {
 
     @Test
     void testDealInitialHandsWithNullDeck() {
-        // Arrange
         Deck deck = null;
-
-        // Act & Assert
         assertThrows(InvalidDeckException.class, () -> {
             dealService.dealInitialHands(deck, players);
         });
@@ -183,10 +145,7 @@ class DealServiceTest {
 
     @Test
     void testDealInitialHandsWithEmptyDeck() {
-        // Arrange
         when(mockDeck.isEmpty()).thenReturn(true);
-
-        // Act & Assert
         assertThrows(EmptyDeckException.class, () -> {
             dealService.dealInitialHands(mockDeck, players);
         });
@@ -195,17 +154,11 @@ class DealServiceTest {
 
     @Test
     void testDealInitialHandsWithValidDeck() {
-        // Arrange
         when(mockDeck.isEmpty()).thenReturn(false);
         Card mockCard = mock(Card.class);
         when(mockDrawService.drawCard(mockDeck)).thenReturn(mockCard);
-
-        // Act
         dealService.dealInitialHands(mockDeck, players);
-
-        // Assert
         verify(mockDeck).isEmpty();
-        // 验证每个玩家收到4张牌
         verify(mockDrawService, times(8)).drawCard(mockDeck);
         for (Player player : players) {
             assertEquals(4, player.getHand().size(), "Each player should have 4 cards");
@@ -214,14 +167,11 @@ class DealServiceTest {
 
     @Test
     void testDealInitialHandsWithTooManyPlayers() {
-        // Arrange
         List<Player> tooManyPlayers = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             tooManyPlayers.add(new Player("Player" + i));
         }
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // Act & Assert
         assertThrows(TooManyPlayersException.class, () -> {
             dealService.dealInitialHands(mockDeck, tooManyPlayers);
         });
@@ -230,12 +180,9 @@ class DealServiceTest {
 
     @Test
     void testDealInitialHandsWithTooFewPlayers() {
-        // Arrange
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(new Player("Player1"));
         when(mockDeck.isEmpty()).thenReturn(false);
-
-        // Act & Assert
         assertThrows(TooFewPlayersException.class, () -> {
             dealService.dealInitialHands(mockDeck, singlePlayer);
         });

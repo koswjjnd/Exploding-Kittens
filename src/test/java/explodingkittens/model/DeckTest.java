@@ -164,9 +164,7 @@ public class DeckTest {
 
     @Test
     void testIsEmptyWithNullCards() {
-        // Given
         Deck deck = new Deck();
-        // 使用反射将cards设置为null
         try {
             java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
             cardsField.setAccessible(true);
@@ -175,16 +173,15 @@ public class DeckTest {
         catch (Exception e) {
             fail("Failed to set cards to null", e);
         }
-
-        // When & Then
-        assertThrows(NullPointerException.class, () -> deck.isEmpty());
+        assertThrows(NullPointerException.class, () -> {
+            boolean result = deck.isEmpty();
+            fail("Should have thrown NullPointerException, but returned: " + result);
+        });
     }
 
     @Test
     void testIsEmptyWithEmptyList() {
-        // Given
         Deck deck = new Deck();
-        // 确保cards是空列表
         try {
             java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
             cardsField.setAccessible(true);
@@ -193,39 +190,25 @@ public class DeckTest {
         catch (Exception e) {
             fail("Failed to set cards to empty list", e);
         }
-
-        // When
         boolean result = deck.isEmpty();
-
-        // Then
         assertTrue(result, "Empty deck should return true for isEmpty()");
     }
 
     @Test
     void testIsEmptyWithSingleCard() {
-        // Given
         Deck deck = new Deck();
         deck.addCard(new SkipCard());
-
-        // When
         boolean result = deck.isEmpty();
-
-        // Then
         assertFalse(result, "Deck with one card should return false for isEmpty()");
     }
 
     @Test
     void testIsEmptyWithMultipleCards() {
-        // Given
         Deck deck = new Deck();
         deck.addCards(new SkipCard(), 3);
         deck.addCards(new AttackCard(), 2);
         deck.addCards(new DefuseCard(), 1);
-
-        // When
         boolean result = deck.isEmpty();
-
-        // Then
         assertFalse(result, "Deck with multiple cards should return false for isEmpty()");
         assertEquals(6, deck.getCardCounts().values().stream().mapToInt(Integer::intValue).sum(), 
             "Deck should contain exactly 6 cards");
@@ -233,29 +216,19 @@ public class DeckTest {
 
     @Test
     void testGetCardsWithEmptyDeck() {
-        // Given
         Deck deck = new Deck();
-
-        // When
         List<Card> cards = deck.getCards();
-
-        // Then
         assertTrue(cards.isEmpty(), "Empty deck should return empty list");
     }
 
     @Test
     void testGetCardsWithCards() {
-        // Given
         Deck deck = new Deck();
         Card skipCard = new SkipCard();
         Card attackCard = new AttackCard();
         deck.addCard(skipCard);
         deck.addCard(attackCard);
-
-        // When
         List<Card> cards = deck.getCards();
-
-        // Then
         assertEquals(2, cards.size(), "Deck should contain exactly 2 cards");
         assertTrue(cards.contains(skipCard), "Deck should contain SkipCard");
         assertTrue(cards.contains(attackCard), "Deck should contain AttackCard");
