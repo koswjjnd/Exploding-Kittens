@@ -245,4 +245,14 @@ public class DeckTest {
         assertFalse(cardCounts.containsKey("ExplodingKittenCard"), 
             "Deck should not contain any exploding kittens when count is 0");
     }
+
+    /**
+     * Tests that adding negative number of exploding kittens throws IllegalArgumentException.
+     */
+    @Test
+    void testAddExplodingKittensNegativeCount() {
+        Deck deck = new Deck();
+        assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1),
+            "Should throw IllegalArgumentException when count is negative");
+    }
 }
