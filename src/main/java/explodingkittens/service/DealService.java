@@ -6,8 +6,6 @@ import explodingkittens.model.Card;
 import explodingkittens.model.DefuseCard;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
-import explodingkittens.exceptions.TooManyPlayersException;
-import explodingkittens.exceptions.TooFewPlayersException;
 import explodingkittens.exceptions.InvalidPlayersListException;
 import explodingkittens.exceptions.EmptyPlayersListException;
 import java.util.List;
@@ -53,12 +51,13 @@ public class DealService {
      *
      * @param deck     the deck to deal from
      * @param players  the list of players to deal to
+     * @param n        the number of cards to deal to each player
      * @throws InvalidDeckException      if the deck is invalid
      * @throws EmptyDeckException        if the deck is empty
      * @throws InvalidPlayersListException if the players list is null
      * @throws EmptyPlayersListException  if the players list is empty
      */
-    public void dealInitialHands(Deck deck, List<Player> players) {
+    public void dealInitialHands(Deck deck, List<Player> players, int n) {
         if (deck == null) {
             throw new InvalidDeckException();
         }
@@ -73,7 +72,7 @@ public class DealService {
         }
 
         for (Player player : players) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < n; i++) {
                 Card card = deck.removeTopCard();
                 player.receiveCard(card);
             }
