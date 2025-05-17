@@ -31,7 +31,7 @@ public class Deck {
      * @return true if the deck is empty, false otherwise
      */
     public boolean isEmpty() {
-        return cards == null || cards.isEmpty();
+        return cards.isEmpty();
     }
 
     /**
@@ -103,14 +103,5 @@ public class Deck {
      */
     public void shuffle(Random random) {
         Collections.shuffle(cards, random != null ? random : new Random());
-    }
-
-    /**
-     * Returns an unmodifiable view of the cards in the deck.
-     * This method is primarily for testing purposes to verify card order.
-     * @return an unmodifiable list containing all cards in the deck
-     */
-    public List<Card> getCards() {
-        return Collections.unmodifiableList(cards);
     }
 }

@@ -3,7 +3,7 @@ package explodingkittens.service;
 import explodingkittens.model.Deck;
 import explodingkittens.model.DefuseCard;
 import explodingkittens.model.Card;
-import explodingkittens.player.Player;
+import explodingkittens.model.Player;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
 import explodingkittens.exceptions.InsufficientDefuseCardsException;
