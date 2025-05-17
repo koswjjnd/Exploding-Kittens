@@ -1,5 +1,7 @@
 package explodingkittens.model;
 
+import explodingkittens.exceptions.EmptyDeckException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +34,18 @@ public class Deck {
      */
     public boolean isEmpty() {
         return cards.isEmpty();
+    }
+
+    /**
+     * Removes and returns the top card from the deck.
+     * @return the removed card
+     * @throws EmptyDeckException if the deck is empty
+     */
+    public Card removeTopCard() {
+        if (cards.isEmpty()) {
+            throw new EmptyDeckException();
+        }
+        return cards.remove(0);
     }
 
     /**

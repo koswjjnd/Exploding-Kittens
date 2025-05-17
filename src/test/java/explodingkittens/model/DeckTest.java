@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import explodingkittens.exceptions.EmptyDeckException;
 
 /**
  * Test class for the Deck class.
@@ -269,5 +270,50 @@ public class DeckTest {
         assertEquals(1, cardCounts.size(), "Should only have one type of card");
         assertEquals(2, cardCounts.get("ExplodingKittenCard"), 
             "Should have exactly 2 exploding kittens");
+    }
+
+    /**
+     * Test Case 1: deck.removeTopCard() with empty deck
+     * Expected: throws EmptyDeckException
+     */
+    @Test
+    void testRemoveTopCardEmptyDeck() {
+        Deck deck = new Deck();
+        assertThrows(EmptyDeckException.class, () -> deck.removeTopCard(),
+            "Should throw EmptyDeckException when trying to remove a card from an empty deck");
+    }
+
+    /**
+     * Test Case 2: deck.removeTopCard() with single card deck
+     * Expected: returns the card and deck becomes empty
+     */
+    @Test
+    void testRemoveTopCardSingleCard() {
+        Deck deck = new Deck();
+        Card card = new SkipCard();
+        deck.addCard(card);
+        Card removedCard = deck.removeTopCard();
+        assertEquals(card, removedCard, 
+            "Removed card should be the same as the added card");
+        assertTrue(deck.isEmpty(), "Deck should be empty after removing the only card");
+    }
+
+    /**
+     * Test Case 3: deck.removeTopCard() with multiple cards deck
+     * Expected: returns the first card and deck size decreases by 1
+     */
+    @Test
+    void testRemoveTopCardMultipleCards() {
+        Deck deck = new Deck();
+        Card firstCard = new SkipCard();
+        Card secondCard = new AttackCard();
+        deck.addCard(firstCard);
+        deck.addCard(secondCard);
+        int initialSize = deck.getCards().size();
+        Card removedCard = deck.removeTopCard();
+        assertEquals(firstCard, removedCard, 
+            "Removed card should be the first card added");
+        assertEquals(initialSize - 1, deck.getCards().size(), 
+            "Deck size should decrease by 1 after removing a card");
     }
 }
