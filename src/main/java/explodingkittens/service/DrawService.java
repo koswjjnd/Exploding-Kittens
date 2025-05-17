@@ -21,6 +21,7 @@ public class DrawService {
         if (deck.isEmpty()) {
             throw new EmptyDeckException();
         }
-        return null; // Temporary return for minimal implementation
+        
+        return deck.removeTopCard();
     }
 } 
