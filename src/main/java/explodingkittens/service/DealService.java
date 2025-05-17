@@ -73,7 +73,7 @@ public class DealService {
 
         for (Player player : players) {
             for (int i = 0; i < 4; i++) {
-                Card card = drawService.drawCard(deck);
+                Card card = drawService.drawCardFromTop(deck);
                 player.receiveCard(card);
             }
         }

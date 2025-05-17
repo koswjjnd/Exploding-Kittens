@@ -156,10 +156,10 @@ class DealServiceTest {
     void testDealInitialHandsWithValidDeck() {
         when(mockDeck.isEmpty()).thenReturn(false);
         Card mockCard = mock(Card.class);
-        when(mockDrawService.drawCard(mockDeck)).thenReturn(mockCard);
+        when(mockDrawService.drawCardFromTop(mockDeck)).thenReturn(mockCard);
         dealService.dealInitialHands(mockDeck, players);
         verify(mockDeck).isEmpty();
-        verify(mockDrawService, times(8)).drawCard(mockDeck);
+        verify(mockDrawService, times(8)).drawCardFromTop(mockDeck);
         for (Player player : players) {
             assertEquals(4, player.getHand().size(), "Each player should have 4 cards");
         }
