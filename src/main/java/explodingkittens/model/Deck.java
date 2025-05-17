@@ -19,6 +19,22 @@ public class Deck {
     }
 
     /**
+     * Returns the list of cards in the deck.
+     * @return the list of cards
+     */
+    public List<Card> getCards() {
+        return new ArrayList<>(cards);
+    }
+
+    /**
+     * Checks if the deck is empty.
+     * @return true if the deck is empty, false otherwise
+     */
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
+    /**
      * Initializes the deck with cards based on player count.
      * @param playerCount number of players (2-4)
      * @throws IllegalArgumentException if playerCount is invalid
@@ -87,14 +103,5 @@ public class Deck {
      */
     public void shuffle(Random random) {
         Collections.shuffle(cards, random != null ? random : new Random());
-    }
-
-    /**
-     * Returns an unmodifiable view of the cards in the deck.
-     * This method is primarily for testing purposes to verify card order.
-     * @return an unmodifiable list containing all cards in the deck
-     */
-    public List<Card> getCards() {
-        return Collections.unmodifiableList(cards);
     }
 }
