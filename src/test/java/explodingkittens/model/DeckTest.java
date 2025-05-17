@@ -233,4 +233,16 @@ public class DeckTest {
         assertTrue(cards.contains(skipCard), "Deck should contain SkipCard");
         assertTrue(cards.contains(attackCard), "Deck should contain AttackCard");
     }
+
+    /**
+     * Tests that adding zero exploding kittens results in no exploding kittens in the deck.
+     */
+    @Test
+    void testAddExplodingKittensZeroCount() {
+        Deck deck = new Deck();
+        deck.addExplodingKittens(0);
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertFalse(cardCounts.containsKey("ExplodingKittenCard"), 
+            "Deck should not contain any exploding kittens when count is 0");
+    }
 }

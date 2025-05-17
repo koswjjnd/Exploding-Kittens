@@ -1,8 +1,10 @@
-package explodingkittens.model;
+package explodingkittens.service;
 
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
 
+import explodingkittens.model.Player;
+import explodingkittens.model.PlayerService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
