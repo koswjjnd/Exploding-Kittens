@@ -6,8 +6,6 @@ import explodingkittens.model.Card;
 import explodingkittens.model.DefuseCard;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.exceptions.EmptyDeckException;
-import explodingkittens.exceptions.TooManyPlayersException;
-import explodingkittens.exceptions.TooFewPlayersException;
 import explodingkittens.exceptions.InvalidPlayersListException;
 import explodingkittens.exceptions.EmptyPlayersListException;
 import java.util.List;
