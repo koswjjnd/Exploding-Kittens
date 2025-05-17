@@ -281,4 +281,19 @@ public class DeckTest {
         assertThrows(EmptyDeckException.class, () -> deck.removeTopCard(),
             "Should throw EmptyDeckException when removing from empty deck");
     }
+
+    /**
+     * Tests that removing a card from a deck with a single card returns the card and makes the deck empty.
+     */
+    @Test
+    void testRemoveTopCard_SingleCard() {
+        Deck deck = new Deck();
+        Card skipCard = new SkipCard();
+        deck.addCard(skipCard);
+        
+        Card drawnCard = deck.removeTopCard();
+        
+        assertTrue(deck.isEmpty(), "Deck should be empty after removing the only card");
+        assertTrue(drawnCard instanceof SkipCard, "Removed card should be a SkipCard");
+    }
 }
