@@ -94,7 +94,7 @@ public class DealServiceTest {
     @Test
     void testDealInitialHandsNullDeck() {
         assertThrows(InvalidDeckException.class, 
-            () -> dealService.dealInitialHands(null, players),
+            () -> dealService.dealInitialHands(null, players, 5),
             "Should throw InvalidDeckException when deck is null");
     }
 
@@ -105,7 +105,7 @@ public class DealServiceTest {
     @Test
     void testDealInitialHandsEmptyDeck() {
         assertThrows(EmptyDeckException.class, 
-            () -> dealService.dealInitialHands(deck, players),
+            () -> dealService.dealInitialHands(deck, players, 5),
             "Should throw EmptyDeckException when deck is empty");
     }
 
@@ -120,7 +120,7 @@ public class DealServiceTest {
             deck.addCard(new SkipCard());
         }
         
-        dealService.dealInitialHands(deck, players);
+        dealService.dealInitialHands(deck, players, 5);
         
         for (Player player : players) {
             List<Card> hand = player.getHand();
@@ -139,7 +139,7 @@ public class DealServiceTest {
     @Test
     void testDealInitialHandsNullPlayers() {
         assertThrows(InvalidPlayersListException.class, 
-            () -> dealService.dealInitialHands(deck, null),
+            () -> dealService.dealInitialHands(deck, null, 5),
             "Should throw InvalidPlayersListException when players list is null");
     }
 } 

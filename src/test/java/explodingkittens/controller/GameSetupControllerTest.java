@@ -1,8 +1,8 @@
 package explodingkittens.controller;
 
-import explodingkittens.model.Player;
-import explodingkittens.model.PlayerService;
+import explodingkittens.model.*;
 import explodingkittens.view.GameSetupView;
+import explodingkittens.service.DealService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +20,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.eq;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import explodingkittens.exceptions.InvalidPlayerCountException;
-import explodingkittens.model.Deck;
+import explodingkittens.exceptions.InvalidNicknameException;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -38,11 +44,14 @@ class GameSetupControllerTest {
     @Mock
     private PlayerService playerService;
     
+    @Mock
+    private DealService dealService;
+    
     private GameSetupController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new GameSetupController(view, playerService);
+        controller = new GameSetupController(view, playerService, dealService);
     }
 
     @Test
@@ -184,23 +193,74 @@ class GameSetupControllerTest {
 	}
 
     @Test
-    void testPrepareDeckWithOnePlayer() throws InvalidPlayerCountException {
+    void testPrepareDeckWithOnePlayer() {
+        // Given
+        List<Player> players = Collections.singletonList(new Player("Player1"));
+        
+        // When & Then
         assertThrows(InvalidPlayerCountException.class, 
-            () -> controller.prepareDeck(1),
+            () -> controller.prepareDeck(1, players),
             "Should throw InvalidPlayerCountException when player count is 1");
     }
 
     @Test
     void testPrepareDeckWithTwoPlayers() throws InvalidPlayerCountException {
+        // Given
+        List<Player> players = Arrays.asList(
+            new Player("Player1"),
+            new Player("Player2")
+        );
+        
+        // Mock dealService behavior
+        Mockito.doAnswer(invocation -> {
+            List<Player> playersList = invocation.getArgument(1);
+            for (Player player : playersList) {
+                player.receiveCard(new DefuseCard());
+            }
+            return null;
+        }).when(dealService).dealDefuses(any(Deck.class), anyList());
+        
+        Mockito.doAnswer(invocation -> {
+            List<Player> playersList = invocation.getArgument(1);
+            for (Player player : playersList) {
+                for (int i = 0; i < 5; i++) {
+                    player.receiveCard(new SkipCard());
+                }
+            }
+            return null;
+        }).when(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
+        
         // When
-        Deck deck = controller.prepareDeck(2);
+        Deck deck = controller.prepareDeck(2, players);
         
         // Then
         assertNotNull(deck, "Deck should not be null");
         assertFalse(deck.isEmpty(), "Deck should not be empty");
+        
+        // Verify card distribution in deck
         assertEquals(3, deck.getCardCounts().get("DefuseCard"), 
             "Deck should have 3 defuse cards for 2 players");
         assertEquals(1, deck.getCardCounts().get("ExplodingKittenCard"), 
             "Deck should have 1 exploding kitten for 2 players");
+            
+        // Verify players' hands
+        for (Player player : players) {
+            List<Card> hand = player.getHand();
+            assertEquals(6, hand.size(), 
+                "Each player should have 6 cards (1 defuse + 5 initial cards)");
+            
+            // Verify defuse card
+            assertTrue(hand.stream()
+                .anyMatch(card -> card instanceof DefuseCard),
+                "Each player should have exactly one defuse card");
+            assertEquals(1, hand.stream()
+                .filter(card -> card instanceof DefuseCard)
+                .count(),
+                "Each player should have exactly one defuse card");
+        }
+            
+        // Verify service calls
+        verify(dealService).dealDefuses(any(Deck.class), anyList());
+        verify(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
     }
 }
