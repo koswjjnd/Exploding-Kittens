@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -232,5 +233,41 @@ public class DeckTest {
         assertEquals(2, cards.size(), "Deck should contain exactly 2 cards");
         assertTrue(cards.contains(skipCard), "Deck should contain SkipCard");
         assertTrue(cards.contains(attackCard), "Deck should contain AttackCard");
+    }
+
+    /**
+     * Tests that adding zero exploding kittens results in no exploding kittens in the deck.
+     */
+    @Test
+    void testAddExplodingKittensZeroCount() {
+        Deck deck = new Deck();
+        deck.addExplodingKittens(0);
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertFalse(cardCounts.containsKey("ExplodingKittenCard"), 
+            "Deck should not contain any exploding kittens when count is 0");
+    }
+
+    /**
+     * Tests that adding negative number of exploding kittens throws IllegalArgumentException.
+     */
+    @Test
+    void testAddExplodingKittensNegativeCount() {
+        Deck deck = new Deck();
+        assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1),
+            "Should throw IllegalArgumentException when count is negative");
+    }
+
+    /**
+     * Tests that adding multiple exploding kittens adds the correct number of cards.
+     */
+    @Test
+    void testAddExplodingKittensMultipleCards() {
+        Deck deck = new Deck();
+        Deck result = deck.addExplodingKittens(2);
+        assertSame(deck, result, "Should return the same deck object");
+        Map<String, Integer> cardCounts = deck.getCardCounts();
+        assertEquals(1, cardCounts.size(), "Should only have one type of card");
+        assertEquals(2, cardCounts.get("ExplodingKittenCard"), 
+            "Should have exactly 2 exploding kittens");
     }
 }

@@ -104,4 +104,20 @@ public class Deck {
     public void shuffle(Random random) {
         Collections.shuffle(cards, random != null ? random : new Random());
     }
+
+    /**
+     * Adds exploding kittens to the deck.
+     * @param count The number of exploding kittens to add
+     * @return The deck with added exploding kittens
+     * @throws IllegalArgumentException if count is negative
+     */
+    public Deck addExplodingKittens(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Count cannot be negative");
+        }
+        if (count > 0) {
+            addCards(new ExplodingKittenCard(), count);
+        }
+        return this;
+    }
 }
