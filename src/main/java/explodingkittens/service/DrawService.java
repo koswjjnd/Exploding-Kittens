@@ -18,6 +18,9 @@ public class DrawService {
         if (deck == null) {
             throw new InvalidDeckException();
         }
+        if (deck.isEmpty()) {
+            throw new EmptyDeckException();
+        }
         return null; // Temporary return for minimal implementation
     }
 } 
