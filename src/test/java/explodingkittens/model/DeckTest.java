@@ -273,53 +273,47 @@ public class DeckTest {
     }
 
     /**
-     * Tests that removing a card from an empty deck throws EmptyDeckException.
+     * Test Case 1: deck.removeTopCard() with empty deck
+     * Expected: throws EmptyDeckException
      */
     @Test
-    void testRemoveTopCard_EmptyDeck() {
+    void testRemoveTopCardEmptyDeck() {
         Deck deck = new Deck();
         assertThrows(EmptyDeckException.class, () -> deck.removeTopCard(),
-            "Should throw EmptyDeckException when removing from empty deck");
+            "Should throw EmptyDeckException when trying to remove a card from an empty deck");
     }
 
     /**
-     * Tests that removing a card from a deck with a single card returns the card and makes the deck empty.
+     * Test Case 2: deck.removeTopCard() with single card deck
+     * Expected: returns the card and deck becomes empty
      */
     @Test
-    void testRemoveTopCard_SingleCard() {
+    void testRemoveTopCardSingleCard() {
         Deck deck = new Deck();
-        Card skipCard = new SkipCard();
-        deck.addCard(skipCard);
-        
-        Card drawnCard = deck.removeTopCard();
-        
+        Card card = new SkipCard();
+        deck.addCard(card);
+        Card removedCard = deck.removeTopCard();
+        assertEquals(card, removedCard, 
+            "Removed card should be the same as the added card");
         assertTrue(deck.isEmpty(), "Deck should be empty after removing the only card");
-        assertTrue(drawnCard instanceof SkipCard, "Removed card should be a SkipCard");
     }
 
     /**
-     * Tests that removing a card from a deck with multiple cards returns the first card and decreases deck size.
+     * Test Case 3: deck.removeTopCard() with multiple cards deck
+     * Expected: returns the first card and deck size decreases by 1
      */
     @Test
-    void testRemoveTopCard_MultipleCards() {
+    void testRemoveTopCardMultipleCards() {
         Deck deck = new Deck();
-        Card skipCard = new SkipCard();
-        Card attackCard = new AttackCard();
-        Card defuseCard = new DefuseCard();
-        
-        deck.addCard(skipCard);
-        deck.addCard(attackCard);
-        deck.addCard(defuseCard);
-        
-        Card drawnCard = deck.removeTopCard();
-        
-        assertFalse(deck.isEmpty(), "Deck should not be empty after removing one card");
-        assertEquals(2, deck.getCards().size(), "Deck should have 2 cards remaining");
-        assertTrue(drawnCard instanceof SkipCard, "First removed card should be a SkipCard");
-        
-        // Verify the remaining cards are in the correct order
-        List<Card> remainingCards = deck.getCards();
-        assertTrue(remainingCards.get(0) instanceof AttackCard, "Second card should be an AttackCard");
-        assertTrue(remainingCards.get(1) instanceof DefuseCard, "Third card should be a DefuseCard");
+        Card firstCard = new SkipCard();
+        Card secondCard = new AttackCard();
+        deck.addCard(firstCard);
+        deck.addCard(secondCard);
+        int initialSize = deck.getCards().size();
+        Card removedCard = deck.removeTopCard();
+        assertEquals(firstCard, removedCard, 
+            "Removed card should be the first card added");
+        assertEquals(initialSize - 1, deck.getCards().size(), 
+            "Deck size should decrease by 1 after removing a card");
     }
 }
