@@ -163,7 +163,7 @@ public class DeckTest {
     }
 
     @Test
-    void testIsEmpty_NullCards() {
+    void testIsEmptyWithNullCards() {
         // Given
         Deck deck = new Deck();
         // 使用反射将cards设置为null
@@ -171,18 +171,20 @@ public class DeckTest {
             java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
             cardsField.setAccessible(true);
             cardsField.set(deck, null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail("Failed to set cards to null", e);
         }
 
         // When & Then
         assertThrows(NullPointerException.class, () -> {
             deck.isEmpty();
-        });
+        }
+        );
     }
 
     @Test
-    void testIsEmpty_EmptyList() {
+    void testIsEmptyWithEmptyList() {
         // Given
         Deck deck = new Deck();
         // 确保cards是空列表
@@ -190,7 +192,8 @@ public class DeckTest {
             java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
             cardsField.setAccessible(true);
             cardsField.set(deck, new ArrayList<>());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail("Failed to set cards to empty list", e);
         }
 
@@ -202,7 +205,7 @@ public class DeckTest {
     }
 
     @Test
-    void testIsEmpty_SingleCard() {
+    void testIsEmptyWithSingleCard() {
         // Given
         Deck deck = new Deck();
         deck.addCard(new SkipCard());
@@ -215,7 +218,7 @@ public class DeckTest {
     }
 
     @Test
-    void testIsEmpty_MultipleCards() {
+    void testIsEmptyWithMultipleCards() {
         // Given
         Deck deck = new Deck();
         deck.addCards(new SkipCard(), 3);
@@ -232,7 +235,7 @@ public class DeckTest {
     }
 
     @Test
-    void testGetCards_EmptyDeck() {
+    void testGetCardsWithEmptyDeck() {
         // Given
         Deck deck = new Deck();
 
@@ -244,7 +247,7 @@ public class DeckTest {
     }
 
     @Test
-    void testGetCards_WithCards() {
+    void testGetCardsWithCards() {
         // Given
         Deck deck = new Deck();
         Card skipCard = new SkipCard();

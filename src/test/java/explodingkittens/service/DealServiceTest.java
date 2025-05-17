@@ -21,8 +21,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 class DealServiceTest {
     private DealService dealService;
@@ -45,7 +50,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_NullDeck() {
+    void testDealDefusesWithNullDeck() {
         // Given
         Deck deck = null;
 
@@ -56,7 +61,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_EmptyDeck() {
+    void testDealDefusesWithEmptyDeck() {
         // Given
         when(mockDeck.isEmpty()).thenReturn(true);
 
@@ -68,7 +73,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_SuccessfulDeal() {
+    void testDealDefusesWithSuccessfulDeal() {
         // Given
         when(mockDeck.isEmpty()).thenReturn(false);
 
@@ -87,7 +92,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_TooManyPlayers() {
+    void testDealDefusesWithTooManyPlayers() {
         // Given
         List<Player> tooManyPlayers = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
@@ -103,7 +108,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_TooFewPlayers() {
+    void testDealDefusesWithTooFewPlayers() {
         // Given
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(new Player("Player1"));
@@ -117,7 +122,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_MultiplePlayers() {
+    void testDealDefusesWithMultiplePlayers() {
         // Given
         List<Player> multiplePlayers = new ArrayList<>();
         multiplePlayers.add(new Player("Player1"));
@@ -142,7 +147,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_NullPlayerList() {
+    void testDealDefusesWithNullPlayerList() {
         // Given
         List<Player> nullPlayers = null;
         when(mockDeck.isEmpty()).thenReturn(false);
@@ -154,7 +159,7 @@ class DealServiceTest {
     }
 
     @Test
-    void testDealDefuses_EmptyPlayerList() {
+    void testDealDefusesWithEmptyPlayerList() {
         // Given
         List<Player> emptyPlayers = new ArrayList<>();
         when(mockDeck.isEmpty()).thenReturn(false);
@@ -166,7 +171,7 @@ class DealServiceTest {
     }
 
     @Test
-    void dealInitialHands_WithNullDeck_ShouldThrowInvalidDeckException() {
+    void testDealInitialHandsWithNullDeck() {
         // Arrange
         Deck deck = null;
 
@@ -177,7 +182,7 @@ class DealServiceTest {
     }
 
     @Test
-    void dealInitialHands_WithEmptyDeck_ShouldThrowEmptyDeckException() {
+    void testDealInitialHandsWithEmptyDeck() {
         // Arrange
         when(mockDeck.isEmpty()).thenReturn(true);
 
@@ -189,7 +194,7 @@ class DealServiceTest {
     }
 
     @Test
-    void dealInitialHands_WithValidDeck_ShouldDealCardsSuccessfully() {
+    void testDealInitialHandsWithValidDeck() {
         // Arrange
         when(mockDeck.isEmpty()).thenReturn(false);
         Card mockCard = mock(Card.class);
@@ -208,7 +213,7 @@ class DealServiceTest {
     }
 
     @Test
-    void dealInitialHands_WithTooManyPlayers_ShouldThrowTooManyPlayersException() {
+    void testDealInitialHandsWithTooManyPlayers() {
         // Arrange
         List<Player> tooManyPlayers = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
@@ -224,7 +229,7 @@ class DealServiceTest {
     }
 
     @Test
-    void dealInitialHands_WithTooFewPlayers_ShouldThrowTooFewPlayersException() {
+    void testDealInitialHandsWithTooFewPlayers() {
         // Arrange
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(new Player("Player1"));
