@@ -24,6 +24,11 @@ import static org.mockito.Mockito.anyString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import explodingkittens.exceptions.InvalidPlayerCountException;
+import explodingkittens.model.Deck;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -177,4 +182,25 @@ class GameSetupControllerTest {
 			controller.initializeTurnOrder(players);
 		});
 	}
+
+    @Test
+    void testPrepareDeckWithOnePlayer() throws InvalidPlayerCountException {
+        assertThrows(InvalidPlayerCountException.class, 
+            () -> controller.prepareDeck(1),
+            "Should throw InvalidPlayerCountException when player count is 1");
+    }
+
+    @Test
+    void testPrepareDeckWithTwoPlayers() throws InvalidPlayerCountException {
+        // When
+        Deck deck = controller.prepareDeck(2);
+        
+        // Then
+        assertNotNull(deck, "Deck should not be null");
+        assertFalse(deck.isEmpty(), "Deck should not be empty");
+        assertEquals(3, deck.getCardCounts().get("DefuseCard"), 
+            "Deck should have 3 defuse cards for 2 players");
+        assertEquals(1, deck.getCardCounts().get("ExplodingKittenCard"), 
+            "Deck should have 1 exploding kitten for 2 players");
+    }
 }

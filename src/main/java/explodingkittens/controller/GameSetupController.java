@@ -4,6 +4,8 @@ import explodingkittens.model.PlayerService;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.model.Player;
+import explodingkittens.exceptions.InvalidPlayerCountException;
+import explodingkittens.model.Deck;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -23,6 +25,8 @@ import java.util.List;
 public class GameSetupController {
     private final GameSetupView view;
     private final PlayerService playerService;
+    private static final int MIN_PLAYERS = 2;
+    private static final int MAX_PLAYERS = 4;
 
     /**
      * Constructs a GameSetupController with the given view and player service.
@@ -75,8 +79,22 @@ public class GameSetupController {
 		}
 
 		List<Player> turnOrder = new ArrayList<>(players);
-		Collections.shuffle(turnOrder); // 可按需要保留或去除
+		Collections.shuffle(turnOrder);
 
 		GameContext.setTurnOrder(turnOrder);
 	}
+
+    /**
+     * Prepares the game deck based on the number of players
+     * @param count the number of players
+     * @return the prepared game deck
+     * @throws InvalidPlayerCountException when the player count is invalid
+     */
+    public Deck prepareDeck(int count) throws InvalidPlayerCountException {
+        if (count < MIN_PLAYERS || count > MAX_PLAYERS) {
+            throw new InvalidPlayerCountException(
+                "Number of players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS);
+        }
+        return new Deck();
+    }
 }
