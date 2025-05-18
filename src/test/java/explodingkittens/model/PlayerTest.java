@@ -113,4 +113,11 @@ class PlayerTest {
         assertFalse(player.hasDefuse());
     }
 
+    @Test
+    void testHasDefuseOneDefuseCard() {
+        // Test Case 13: Player with one defuse card
+        player.receiveCard(defuseCard);
+        assertTrue(player.hasDefuse());
+    }
+
 } 
