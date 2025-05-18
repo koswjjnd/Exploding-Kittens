@@ -71,4 +71,11 @@ class PlayerTest {
         assertEquals(2, player.getLeftTurns());
     }
 
+    @Test
+    void testDecrementLeftTurnsNewPlayer() {
+        // Test Case 9: New player (default 1 turn)
+        player.decrementLeftTurns();
+        assertEquals(0, player.getLeftTurns());
+    }
+
 } 
