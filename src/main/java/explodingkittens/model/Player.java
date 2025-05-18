@@ -55,6 +55,13 @@ public class Player {
     }
 
     /**
+     * Gets attacked, adding 2 turns.
+     */
+    public void getAttacked() {
+        leftTurns += 2;
+    }
+
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
      */

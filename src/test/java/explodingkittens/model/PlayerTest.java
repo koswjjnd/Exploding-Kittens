@@ -40,5 +40,12 @@ class PlayerTest {
         assertEquals(0, player.getLeftTurns());
     }
 
+    @Test
+    void testGetLeftTurnsAfterAttack() {
+        // Test Case 5: Player after using attack card
+        player.setLeftTurns(1);
+        player.getAttacked();
+        assertEquals(3, player.getLeftTurns());
+    }
 
 } 
