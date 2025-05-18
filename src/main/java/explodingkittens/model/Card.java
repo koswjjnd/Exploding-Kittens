@@ -1,6 +1,24 @@
 package explodingkittens.model;
 
 public abstract class Card implements Cloneable {
+    private final CardType type;
+
+    /**
+     * Constructs a card with the specified type.
+     * @param type the type of the card
+     */
+    public Card(CardType type) {
+        this.type = type;
+    }
+
+    /**
+     * Gets the type of the card.
+     * @return the card type
+     */
+    public CardType getType() {
+        return type;
+    }
+    
     @Override
     public Card clone() {
         try {

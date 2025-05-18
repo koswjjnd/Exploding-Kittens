@@ -72,6 +72,14 @@ public class Player {
     }
 
     /**
+     * Checks if the player has a defuse card in their hand.
+     * @return true if the player has at least one defuse card, false otherwise
+     */
+    public boolean hasDefuse() {
+        return hand.stream()
+                .anyMatch(card -> card.getType() == CardType.DEFUSE);
+    }
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
      */

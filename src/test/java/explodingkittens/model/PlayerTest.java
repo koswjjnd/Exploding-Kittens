@@ -2,14 +2,27 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 class PlayerTest {
     private Player player;
 
+    @Mock
+    private Card defuseCard;
+
+    @Mock
+    private Card nonDefuseCard;
+
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         player = new Player("TestPlayer");
+        when(defuseCard.getType()).thenReturn(CardType.DEFUSE);
+        when(nonDefuseCard.getType()).thenReturn(CardType.ATTACK);
     }
 
     @Test
@@ -76,6 +89,12 @@ class PlayerTest {
         // Test Case 9: New player (default 1 turn)
         player.decrementLeftTurns();
         assertEquals(0, player.getLeftTurns());
+    }
+
+    @Test
+    void testHasDefuseEmptyHand() {
+        // Test Case 10: Player with no cards
+        assertFalse(player.hasDefuse());
     }
 
 } 
