@@ -17,12 +17,19 @@ class PlayerTest {
         // Test Case 1: New player with default turns
         assertEquals(1, player.getLeftTurns());
     }
-    
+
     @Test
     void testGetLeftTurnsZero() {
         // Test Case 2: Player with 0 turns left
         player.setLeftTurns(0);
         assertEquals(0, player.getLeftTurns());
     }
+    @Test
+    void testGetLeftTurnsMultiple() {
+        // Test Case 3: Player with multiple turns left
+        player.setLeftTurns(3);
+        assertEquals(3, player.getLeftTurns());
+    }
+    
 
 } 
