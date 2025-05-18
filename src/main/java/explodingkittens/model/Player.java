@@ -38,6 +38,14 @@ public class Player {
     }
 
     /**
+     * Sets the number of turns left for the player.
+     * @param turns The number of turns to set
+     */
+    public void setLeftTurns(int turns) {
+        this.leftTurns = turns;
+    }
+
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
      */
