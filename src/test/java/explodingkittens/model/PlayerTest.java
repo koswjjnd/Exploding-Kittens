@@ -193,5 +193,16 @@ class PlayerTest {
         assertTrue(player.getHand().contains(defuseCard));
         assertTrue(player.getHand().contains(nonDefuseCard));
     }
+
+    @Test
+    void testReceiveCardDuplicate() {
+        // Test Case 23: Receive same card twice
+        player.receiveCard(defuseCard);
+        player.receiveCard(defuseCard);
+        assertEquals(2, player.getHand().size());
+        assertEquals(2, player.getHand().stream()
+                .filter(card -> card == defuseCard)
+                .count());
+    }
     
 } 
