@@ -3,15 +3,31 @@ package explodingkittens.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test class for the Deck class.
  */
 public class DeckTest {
+    private Deck deck;
+    private AttackCard attackCard;
+    private SkipCard skipCard;
+    private NopeCard nopeCard;
+
+    @BeforeEach
+    void setUp() {
+        deck = new Deck();
+        attackCard = new AttackCard();
+        skipCard = new SkipCard();
+        nopeCard = new NopeCard();
+    }
+
     /**
      * Tests that initializing a deck with 1 player throws an IllegalArgumentException.
      */
@@ -156,5 +172,64 @@ public class DeckTest {
         Map<String, Integer> cardCounts = deck.getCardCounts();
         assertEquals(1, cardCounts.size());
         assertEquals(2, cardCounts.get("SeeTheFutureCard"));
+    }
+
+    @Test
+    void testDrawOne() {
+        deck.insertAt(attackCard, 0);
+        deck.insertAt(skipCard, 1);
+        
+        Card drawnCard = deck.drawOne();
+        assertEquals(attackCard, drawnCard);
+        assertEquals(1, deck.size());
+    }
+
+    @Test
+    void testDrawOneFromEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> deck.drawOne());
+    }
+
+    @Test
+    void testInsertAt() {
+        deck.insertAt(attackCard, 0);
+        deck.insertAt(skipCard, 1);
+        
+        assertEquals(2, deck.size());
+        assertEquals(attackCard, deck.peekTop());
+    }
+
+    @Test
+    void testInsertAtInvalidPosition() {
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(attackCard, -1));
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(attackCard, 1));
+    }
+
+    @Test
+    void testPeekTop() {
+        deck.insertAt(attackCard, 0);
+        deck.insertAt(skipCard, 1);
+        
+        assertEquals(attackCard, deck.peekTop());
+        assertEquals(2, deck.size()); // Size should not change
+    }
+
+    @Test
+    void testPeekTopFromEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> deck.peekTop());
+    }
+
+    @Test
+    void testShuffle() {
+        deck.insertAt(attackCard, 0);
+        deck.insertAt(skipCard, 1);
+        deck.insertAt(nopeCard, 2);
+        
+        List<Card> beforeShuffle = deck.getCards();
+        deck.shuffle();
+        List<Card> afterShuffle = deck.getCards();
+        
+        assertEquals(beforeShuffle.size(), afterShuffle.size());
+        // Note: There's a very small chance this could fail if shuffle returns original order
+        assertFalse(beforeShuffle.equals(afterShuffle));
     }
 }

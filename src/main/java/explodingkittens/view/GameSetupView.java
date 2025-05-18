@@ -33,7 +33,7 @@ public class GameSetupView {
      * @return the nickname entered by the user
      */
     public String promptNickname(int playerIndex){
-        System.out.printf("Input Name of Player %d \n", playerIndex);
+        System.out.printf("Input Name of Player %d ", playerIndex);
         return sc.nextLine();
     }
 
