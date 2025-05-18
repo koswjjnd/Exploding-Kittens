@@ -41,10 +41,10 @@ public class DeckTest {
         assertEquals(4, cardCounts.get("ShuffleCard"));
         assertEquals(4, cardCounts.get("SeeTheFutureCard"));
         assertEquals(4, cardCounts.get("NopeCard"));
-        assertEquals(4, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(4, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(4, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(4, cardCounts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
+        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
 
     /**
@@ -61,10 +61,10 @@ public class DeckTest {
         assertEquals(4, cardCounts.get("ShuffleCard"));
         assertEquals(4, cardCounts.get("SeeTheFutureCard"));
         assertEquals(4, cardCounts.get("NopeCard"));
-        assertEquals(4, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(4, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(4, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(4, cardCounts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
+        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
 
     /**
@@ -116,17 +116,17 @@ public class DeckTest {
         deck.addCard(new CatCard(CatType.RAINBOW_CAT));
         
         Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(10, cardCounts.size());
+        assertEquals(7, cardCounts.size());
         assertEquals(1, cardCounts.get("SkipCard"));
         assertEquals(1, cardCounts.get("ShuffleCard"));
         assertEquals(1, cardCounts.get("AttackCard"));
         assertEquals(1, cardCounts.get("DefuseCard"));
         assertEquals(1, cardCounts.get("SeeTheFutureCard"));
         assertEquals(1, cardCounts.get("NopeCard"));
-        assertEquals(1, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(1, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(1, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(1, cardCounts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
+        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
 
     /**

@@ -12,6 +12,7 @@ public class CatCard extends Card {
      * @param type The type of the cat card
      */
     public CatCard(CatType type) {
+        super(CardType.CAT_CARD);
         this.type = type;
     }
     
@@ -19,7 +20,7 @@ public class CatCard extends Card {
      * Gets the type of this cat card.
      * @return The type of the cat card
      */
-    public CatType getType() {
+    public CatType getCatType() {
         return type;
     }
 } 
