@@ -204,5 +204,20 @@ class PlayerTest {
                 .filter(card -> card == defuseCard)
                 .count());
     }
+
+    @Test
+    void testReceiveCardDifferentTypes() {
+        // Test Case 24: Receive different types of cards
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        player.receiveCard(defuseCard);
+        assertEquals(3, player.getHand().size());
+        assertEquals(2, player.getHand().stream()
+                .filter(card -> card.getType() == CardType.DEFUSE)
+                .count());
+        assertEquals(1, player.getHand().stream()
+                .filter(card -> card.getType() == CardType.ATTACK)
+                .count());
+    }
     
 } 
