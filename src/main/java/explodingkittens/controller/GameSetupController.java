@@ -135,7 +135,8 @@ public class GameSetupController {
      * @throws InvalidNicknameException if any player nickname is invalid
      * @throws InvalidDeckException if deck preparation fails
      */
-    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException, InvalidDeckException {
+    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException, 
+            InvalidDeckException {
         int count = view.promptPlayerCount();
         playerService.validateCount(count);
         
@@ -147,6 +148,6 @@ public class GameSetupController {
         }
         
         Deck deck = prepareDeck(count, players);
-        initializeTurnOrder(players);
+        initializeTurnOrder(players);  // 如果players为null或空，会抛出IllegalArgumentException
     }
 }

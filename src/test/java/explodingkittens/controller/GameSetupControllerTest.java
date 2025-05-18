@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Arrays;
@@ -421,5 +424,38 @@ class GameSetupControllerTest {
         verify(playerService).createPlayer("P2");
         verify(dealService).dealDefuses(any(), anyList());
         verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
+    }
+
+    @Test
+    void testSetupGame_TurnOrderInitializationFailure() throws InvalidPlayerCountException, InvalidNicknameException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("P1");
+        when(view.promptNickname(2)).thenReturn("P2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
+        
+        // Mock GameContext to throw exception when setting turn order
+        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
+            mockedStatic.when(() -> GameContext.setTurnOrder(anyList()))
+                .thenThrow(new IllegalArgumentException("Turn order cannot contain null players"));
+            
+            // Act & Assert
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                controller.setupGame();
+            });
+            assertEquals("Turn order cannot contain null players", exception.getMessage());
+            
+            // Verify
+            verify(view).promptPlayerCount();
+            verify(playerService).validateCount(2);
+            verify(view).promptNickname(1);
+            verify(view).promptNickname(2);
+            verify(playerService).createPlayer("P1");
+            verify(playerService).createPlayer("P2");
+            verify(dealService).dealDefuses(any(), anyList());
+            verify(dealService).dealInitialHands(any(), anyList(), anyInt());
+            mockedStatic.verify(() -> GameContext.setTurnOrder(anyList()));
+        }
     }
 }
