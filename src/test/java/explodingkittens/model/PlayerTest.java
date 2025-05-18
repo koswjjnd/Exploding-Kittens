@@ -126,4 +126,11 @@ class PlayerTest {
         player.receiveCard(defuseCard);
         player.receiveCard(nonDefuseCard);
     }
+
+    @Test
+    void testUseDefuseNoDefuseCard() {
+        // Test Case 15: Player with no defuse card
+        assertFalse(player.useDefuse());
+        assertEquals(0, player.getHand().size());
+    }
 } 

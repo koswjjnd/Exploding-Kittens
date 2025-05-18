@@ -2,6 +2,7 @@ package explodingkittens.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a player in the game.
@@ -79,6 +80,24 @@ public class Player {
         return hand.stream()
                 .anyMatch(card -> card.getType() == CardType.DEFUSE);
     }
+
+     /**
+     * Attempts to use a defuse card from the player's hand.
+     * If successful, removes one defuse card from the hand.
+     * @return true if a defuse card was successfully used, false otherwise
+     */
+    public boolean useDefuse() {
+        Optional<Card> defuseCard = hand.stream()
+                .filter(card -> card.getType() == CardType.DEFUSE)
+                .findFirst();
+        
+        if (defuseCard.isPresent()) {
+            hand.remove(defuseCard.get());
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * Adds a card to the player's hand.
      * @param card the card to add
