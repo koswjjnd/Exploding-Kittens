@@ -47,5 +47,12 @@ class PlayerTest {
         player.getAttacked();
         assertEquals(3, player.getLeftTurns());
     }
+    
+    @Test
+    void testDecrementLeftTurnsFromOne() {
+        // Test Case 1: Player with 1 turn left
+        player.decrementLeftTurns();
+        assertEquals(0, player.getLeftTurns());
+    }
 
 } 

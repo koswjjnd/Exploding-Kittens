@@ -62,6 +62,16 @@ public class Player {
     }
 
     /**
+     * Decrements the number of turns left by 1.
+     * If the player has 0 turns left, the number of turns remains 0.
+     */
+    public void decrementLeftTurns() {
+        if (leftTurns > 0) {
+            leftTurns--;
+        }
+    }
+
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
      */
