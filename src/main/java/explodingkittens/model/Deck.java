@@ -105,7 +105,7 @@ public class Deck {
             else {
                 key = card.getClass().getSimpleName();
             }
-            counts.put(key, counts.getOrDefault(key, 0) + 1);
+            counts.merge(key, 1, Integer::sum);
         }
         return counts;
     }
