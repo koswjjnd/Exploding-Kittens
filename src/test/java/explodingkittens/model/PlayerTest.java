@@ -62,5 +62,13 @@ class PlayerTest {
         player.decrementLeftTurns();
         assertEquals(0, player.getLeftTurns());
     }
-    
+
+    @Test
+    void testDecrementLeftTurnsFromMultiple() {
+        // Test Case 8: Player with multiple turns left
+        player.setLeftTurns(3);
+        player.decrementLeftTurns();
+        assertEquals(2, player.getLeftTurns());
+    }
+
 } 
