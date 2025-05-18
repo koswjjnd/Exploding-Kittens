@@ -136,6 +136,7 @@ public class GameSetupController {
     public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException {
         int count = view.promptPlayerCount();
         playerService.validateCount(count);
+        
         List<Player> players = createPlayers(count);
         Deck deck = prepareDeck(count, players);
         initializeTurnOrder(players);

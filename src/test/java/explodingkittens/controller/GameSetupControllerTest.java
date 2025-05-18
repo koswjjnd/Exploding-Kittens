@@ -24,6 +24,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
@@ -346,5 +348,26 @@ class GameSetupControllerTest {
         verify(playerService, times(2)).createPlayer(anyString());
         verify(dealService).dealDefuses(any(), anyList());
         verify(dealService).dealInitialHands(any(), anyList(), eq(5));
+    }
+
+    @Test
+    void testSetupGame_InvalidPlayerCount() throws InvalidPlayerCountException, InvalidNicknameException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(1);
+        doThrow(new InvalidPlayerCountException("Invalid count"))
+            .when(playerService).validateCount(1);
+        
+        // Act & Assert
+        InvalidPlayerCountException exception = assertThrows(InvalidPlayerCountException.class, () -> {
+            controller.setupGame();
+        });
+        
+        // Verify
+        verify(view).promptPlayerCount();
+        verify(playerService).validateCount(1);
+        verify(view, never()).promptNickname(anyInt());
+        verify(playerService, never()).createPlayer(anyString());
+        verify(dealService, never()).dealDefuses(any(), anyList());
+        verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
     }
 }
