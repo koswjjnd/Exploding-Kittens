@@ -133,4 +133,11 @@ class PlayerTest {
         assertFalse(player.useDefuse());
         assertEquals(0, player.getHand().size());
     }
+    @Test
+    void testUseDefuseOneDefuseCard() {
+        // Test Case 16: Player with one defuse card
+        player.receiveCard(defuseCard);
+        assertTrue(player.useDefuse());
+        assertEquals(0, player.getHand().size());
+    }
 } 
