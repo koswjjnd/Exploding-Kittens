@@ -159,4 +159,14 @@ class PlayerTest {
         assertFalse(player.useDefuse());
         assertEquals(2, player.getHand().size());
     }
+
+    @Test
+    void testUseDefuseMixedCards() {
+        // Test Case 19: Player with mixed cards including defuse
+        player.receiveCard(nonDefuseCard);
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        assertTrue(player.useDefuse());
+        assertEquals(2, player.getHand().size());
+    }
 } 
