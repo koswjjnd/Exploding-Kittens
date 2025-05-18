@@ -101,8 +101,12 @@ public class Player {
     /**
      * Adds a card to the player's hand.
      * @param card the card to add
+     * @throws IllegalArgumentException if card is null
      */
     public void receiveCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
         hand.add(card);
     }
 

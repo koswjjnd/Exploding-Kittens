@@ -169,4 +169,10 @@ class PlayerTest {
         assertTrue(player.useDefuse());
         assertEquals(2, player.getHand().size());
     }
+
+    @Test
+    void testReceiveCardNull() {
+        // Test Case 20: Receive null card
+        assertThrows(IllegalArgumentException.class, () -> player.receiveCard(null));
+    }
 } 
