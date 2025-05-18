@@ -370,4 +370,28 @@ class GameSetupControllerTest {
         verify(dealService, never()).dealDefuses(any(), anyList());
         verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
     }
+
+    @Test
+    void testSetupGame_InvalidNickname() throws InvalidPlayerCountException, InvalidNicknameException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("");
+        doThrow(new InvalidNicknameException("Nickname cannot be empty"))
+            .when(playerService).createPlayer("");
+        
+        // Act & Assert
+        InvalidNicknameException exception = assertThrows(InvalidNicknameException.class, () -> {
+            controller.setupGame();
+        });
+        
+        // Verify
+        verify(view).promptPlayerCount();
+        verify(playerService).validateCount(2);
+        verify(view).promptNickname(1);
+        verify(playerService).createPlayer("");
+        verify(view, never()).promptNickname(2);
+        verify(playerService, never()).createPlayer("P2");
+        verify(dealService, never()).dealDefuses(any(), anyList());
+        verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
+    }
 }

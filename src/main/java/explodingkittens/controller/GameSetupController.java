@@ -137,7 +137,13 @@ public class GameSetupController {
         int count = view.promptPlayerCount();
         playerService.validateCount(count);
         
-        List<Player> players = createPlayers(count);
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            String nickname = view.promptNickname(i + 1);
+            Player player = playerService.createPlayer(nickname);
+            players.add(player);
+        }
+        
         Deck deck = prepareDeck(count, players);
         initializeTurnOrder(players);
     }
