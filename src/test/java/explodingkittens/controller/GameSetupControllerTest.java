@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
+import explodingkittens.exceptions.InvalidDeckException;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -392,6 +393,33 @@ class GameSetupControllerTest {
         verify(view, never()).promptNickname(2);
         verify(playerService, never()).createPlayer("P2");
         verify(dealService, never()).dealDefuses(any(), anyList());
+        verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
+    }
+
+    @Test
+    void testSetupGame_DeckPreparationFailure() throws InvalidPlayerCountException, InvalidNicknameException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("P1");
+        when(view.promptNickname(2)).thenReturn("P2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
+        doThrow(new InvalidDeckException())
+            .when(dealService).dealDefuses(any(), anyList());
+        
+        // Act & Assert
+        InvalidDeckException exception = assertThrows(InvalidDeckException.class, () -> {
+            controller.setupGame();
+        });
+        
+        // Verify
+        verify(view).promptPlayerCount();
+        verify(playerService).validateCount(2);
+        verify(view).promptNickname(1);
+        verify(view).promptNickname(2);
+        verify(playerService).createPlayer("P1");
+        verify(playerService).createPlayer("P2");
+        verify(dealService).dealDefuses(any(), anyList());
         verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
     }
 }

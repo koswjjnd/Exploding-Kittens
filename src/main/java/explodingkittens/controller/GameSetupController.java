@@ -7,6 +7,7 @@ import explodingkittens.model.Player;
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.model.Deck;
 import explodingkittens.service.DealService;
+import explodingkittens.exceptions.InvalidDeckException;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -132,8 +133,9 @@ public class GameSetupController {
      * preparing the deck, and initializing turn order.
      * @throws InvalidPlayerCountException if the player count is invalid
      * @throws InvalidNicknameException if any player nickname is invalid
+     * @throws InvalidDeckException if deck preparation fails
      */
-    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException {
+    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException, InvalidDeckException {
         int count = view.promptPlayerCount();
         playerService.validateCount(count);
         
