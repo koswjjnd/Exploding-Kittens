@@ -538,4 +538,67 @@ class GameSetupControllerTest {
         verify(dealService, never()).dealDefuses(any(), anyList());
         verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
     }
+
+    @Test
+    void testSetupGame_DeckPreparationFailure() throws InvalidPlayerCountException, InvalidNicknameException, 
+            InvalidDeckException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("P1");
+        when(view.promptNickname(2)).thenReturn("P2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer("P1")).thenReturn(mockPlayer);
+        when(playerService.createPlayer("P2")).thenReturn(mockPlayer);
+        doThrow(new InvalidDeckException("Failed to prepare deck"))
+            .when(dealService).dealDefuses(any(), anyList());
+        
+        // Act & Assert
+        assertThrows(InvalidDeckException.class, () -> {
+            controller.setupGame();
+        });
+        
+        // Verify
+        verify(view).promptPlayerCount();
+        verify(playerService).validateCount(2);
+        verify(view).promptNickname(1);
+        verify(view).promptNickname(2);
+        verify(playerService).createPlayer("P1");
+        verify(playerService).createPlayer("P2");
+        verify(dealService).dealDefuses(any(), anyList());
+        verify(dealService, never()).dealInitialHands(any(), anyList(), anyInt());
+    }
+
+    @Test
+    void testSetupGame_TurnOrderInitializationFailure() throws InvalidPlayerCountException, InvalidNicknameException, 
+            InvalidDeckException {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("P1");
+        when(view.promptNickname(2)).thenReturn("P2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer("P1")).thenReturn(mockPlayer);
+        when(playerService.createPlayer("P2")).thenReturn(mockPlayer);
+        
+        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
+            mockedStatic.when(() -> GameContext.setTurnOrder(anyList()))
+                .thenThrow(new IllegalArgumentException("Turn order cannot contain null players"));
+            
+            // Act & Assert
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                controller.setupGame();
+            });
+            assertEquals("Turn order cannot contain null players", exception.getMessage());
+            
+            // Verify
+            verify(view).promptPlayerCount();
+            verify(playerService).validateCount(2);
+            verify(view).promptNickname(1);
+            verify(view).promptNickname(2);
+            verify(playerService).createPlayer("P1");
+            verify(playerService).createPlayer("P2");
+            verify(dealService).dealDefuses(any(), anyList());
+            verify(dealService).dealInitialHands(any(), anyList(), anyInt());
+            mockedStatic.verify(() -> GameContext.setTurnOrder(anyList()));
+        }
+    }
 }
