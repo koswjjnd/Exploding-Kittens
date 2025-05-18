@@ -9,6 +9,7 @@ import java.util.List;
 public class Player {
     private final String name;
     private final List<Card> hand;
+    private int leftTurns;
 
     /**
      * Constructs a Player with the given name.
@@ -17,6 +18,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         this.hand = new ArrayList<>();
+        this.leftTurns = 1;
     }
 
     /**
@@ -25,6 +27,14 @@ public class Player {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the number of turns left for the player.
+     * @return The number of turns left
+     */
+    public int getLeftTurns() {
+        return leftTurns;
     }
 
     /**
