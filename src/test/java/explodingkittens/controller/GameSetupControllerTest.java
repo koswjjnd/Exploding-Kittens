@@ -328,4 +328,23 @@ class GameSetupControllerTest {
         verify(dealService).dealDefuses(any(Deck.class), anyList());
         verify(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
     }
+
+    @Test
+    void testSetupGame_SuccessWithTwoPlayers() throws Exception {
+        // Arrange
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(anyInt())).thenReturn("P1", "P2");
+        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
+        
+        // Act
+        controller.setupGame();
+        
+        // Assert
+        verify(view).promptPlayerCount();
+        verify(playerService).validateCount(2);
+        verify(view, times(2)).promptNickname(anyInt());
+        verify(playerService, times(2)).createPlayer(anyString());
+        verify(dealService).dealDefuses(any(), anyList());
+        verify(dealService).dealInitialHands(any(), anyList(), eq(5));
+    }
 }

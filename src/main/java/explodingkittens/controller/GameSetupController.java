@@ -126,4 +126,18 @@ public class GameSetupController {
         
         return deck;
     }
+
+    /**
+     * Sets up the game by prompting for player count, creating players,
+     * preparing the deck, and initializing turn order.
+     * @throws InvalidPlayerCountException if the player count is invalid
+     * @throws InvalidNicknameException if any player nickname is invalid
+     */
+    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException {
+        int count = view.promptPlayerCount();
+        playerService.validateCount(count);
+        List<Player> players = createPlayers(count);
+        Deck deck = prepareDeck(count, players);
+        initializeTurnOrder(players);
+    }
 }
