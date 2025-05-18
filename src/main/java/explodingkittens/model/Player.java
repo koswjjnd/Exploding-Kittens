@@ -46,6 +46,15 @@ public class Player {
     }
 
     /**
+     * Uses a skip card, reducing turns by 1.
+     */
+    public void useSkipCard() {
+        if (leftTurns > 0) {
+            leftTurns--;
+        }
+    }
+
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
      */

@@ -24,12 +24,21 @@ class PlayerTest {
         player.setLeftTurns(0);
         assertEquals(0, player.getLeftTurns());
     }
+
     @Test
     void testGetLeftTurnsMultiple() {
         // Test Case 3: Player with multiple turns left
         player.setLeftTurns(3);
         assertEquals(3, player.getLeftTurns());
     }
-    
+
+    @Test
+    void testGetLeftTurnsAfterSkip() {
+        // Test Case 4: Player after using skip card
+        player.setLeftTurns(1);
+        player.useSkipCard();
+        assertEquals(0, player.getLeftTurns());
+    }
+
 
 } 
