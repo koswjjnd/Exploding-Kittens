@@ -175,4 +175,23 @@ class PlayerTest {
         // Test Case 20: Receive null card
         assertThrows(IllegalArgumentException.class, () -> player.receiveCard(null));
     }
+
+    @Test
+    void testReceiveCardOne() {
+        // Test Case 21: Receive one card
+        player.receiveCard(defuseCard);
+        assertEquals(1, player.getHand().size());
+        assertTrue(player.getHand().contains(defuseCard));
+    }
+
+    @Test
+    void testReceiveCardMultiple() {
+        // Test Case 22: Receive multiple cards
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        assertEquals(2, player.getHand().size());
+        assertTrue(player.getHand().contains(defuseCard));
+        assertTrue(player.getHand().contains(nonDefuseCard));
+    }
+    
 } 
