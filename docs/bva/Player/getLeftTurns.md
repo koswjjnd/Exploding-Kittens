@@ -20,7 +20,7 @@
 | Test Case 2 | Player with 0 turns left        | 0               | Yes          |
 | Test Case 3 | Player with multiple turns left | 3               | Yes          |
 | Test Case 4 | Player after using skip card    | 0               | Yes          |
-| Test Case 5 | Player after using attack card  | 2               | Yes          |
+| Test Case 5 | Player after using attack card  | 3               | Yes          |
 
 ## Recall the 4 steps of BVA
 
