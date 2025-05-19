@@ -1,5 +1,7 @@
 package explodingkittens.model;
 
+import java.util.List;
+
 /**
  * Represents a Cat card in the Exploding Kittens game.
  * Cat cards are used in pairs to steal cards from other players.
@@ -22,5 +24,8 @@ public class CatCard extends Card {
      */
     public CatType getCatType() {
         return type;
+    }
+    @Override
+    public void effect(List<Player> turnOrder, Deck gameDeck) {
     }
 } 
