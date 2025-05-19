@@ -1,10 +1,11 @@
 package explodingkittens.controller;
 
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
 
 import explodingkittens.model.Player;
-
-import java.util.ArrayList;
+import explodingkittens.model.Deck;
 
 /**
  * GameContext is a singleton class that manages the global state of the game,
@@ -17,6 +18,11 @@ import java.util.ArrayList;
  */
 public class GameContext {
 	private static List<Player> turnOrder;
+	private static Deck gameDeck;
+
+	private GameContext() {
+		// Private constructor to prevent instantiation
+	}
 
 	/**
 	 * Sets the turn order for the game.
@@ -43,12 +49,35 @@ public class GameContext {
 	/**
 	 * Retrieves the current turn order of players.
 	 * 
-	 * @return A list of players representing the current turn order.
+	 * @return An unmodifiable list of players representing the current turn order.
 	 */
 	public static List<Player> getTurnOrder() {
 		if (turnOrder == null) {
 			return null;
 		}
-		return new ArrayList<>(turnOrder);
+		return Collections.unmodifiableList(new ArrayList<>(turnOrder));
+	}
+
+	/**
+	 * Sets the game deck.
+	 * @param deck the deck to set
+	 * @throws IllegalArgumentException if the provided deck is null
+	 */
+	public static void setGameDeck(Deck deck) {
+		if (deck == null) {
+			throw new IllegalArgumentException("Game deck cannot be null.");
+		}
+		gameDeck = new Deck(deck); // Create a copy
+	}
+
+	/**
+	 * Gets the game deck.
+	 * @return a copy of the current game deck
+	 */
+	public static Deck getGameDeck() {
+		if (gameDeck == null) {
+			return null;
+		}
+		return new Deck(gameDeck); // Return a copy
 	}
 }

@@ -31,6 +31,7 @@ public class GameSetupController {
     private final DealService dealService;
     private static final int MIN_PLAYERS = 2;
     private static final int MAX_PLAYERS = 4;
+    private Deck gameDeck;
 
     /**
      * Constructs a GameSetupController with the given view and player service.
@@ -98,34 +99,31 @@ public class GameSetupController {
      * Prepares the game deck based on the number of players
      * @param count the number of players
      * @param players the list of players to deal cards to
-     * @return the prepared game deck
      * @throws InvalidPlayerCountException when the player count is invalid
      */
-    public Deck prepareDeck(int count, List<Player> players) throws InvalidPlayerCountException {
+    public void prepareDeck(int count, List<Player> players) throws InvalidPlayerCountException {
         if (count < MIN_PLAYERS || count > MAX_PLAYERS) {
             throw new InvalidPlayerCountException(
                 "Number of players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS);
         }
 
-        Deck deck = new Deck();
-        deck.initializeBaseDeck(count);
+        gameDeck = new Deck();  // Use public deck variable
+        gameDeck.initializeBaseDeck(count);
         
         // Deal defuse cards to players
-        dealService.dealDefuses(deck, players);
+        dealService.dealDefuses(gameDeck, players);
         
         // Shuffle the deck
-        deck.shuffle(new Random());
+        gameDeck.shuffle(new Random());
         
         // Deal initial hands
-        dealService.dealInitialHands(deck, players, 5);
+        dealService.dealInitialHands(gameDeck, players, 5);
         
         // Add exploding kittens (number of players - 1)
-        deck.addExplodingKittens(count - 1);
+        gameDeck.addExplodingKittens(count - 1);
         
         // Final shuffle
-        deck.shuffle(new Random());
-        
-        return deck;
+        gameDeck.shuffle(new Random());
     }
 
     /**
@@ -140,14 +138,21 @@ public class GameSetupController {
         int count = view.promptPlayerCount();
         playerService.validateCount(count);
         
-        List<Player> players = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            String nickname = view.promptNickname(i + 1);
-            Player player = playerService.createPlayer(nickname);
-            players.add(player);
-        }
+        List<Player> players = createPlayers(count);
         
-        Deck deck = prepareDeck(count, players);
-        initializeTurnOrder(players);  // 如果players为null或空，会抛出IllegalArgumentException
+        prepareDeck(count, players);
+        GameContext.setGameDeck(gameDeck);
+        initializeTurnOrder(players);
+    }
+
+    /**
+     * Gets the current game deck.
+     * @return a copy of the current game deck
+     */
+    public Deck getGameDeck() {
+        if (gameDeck == null) {
+            return null;
+        }
+        return new Deck(gameDeck);
     }
 }
