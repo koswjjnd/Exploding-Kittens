@@ -28,6 +28,15 @@ public class AttackCard extends Card {
         if (turnOrder.isEmpty()) {
             throw new IllegalArgumentException("Turn order cannot be empty");
         }
-        // TODO: Implement the transfer of left turns
+
+        Player currentPlayer = turnOrder.get(0);
+        Player nextPlayer = turnOrder.get(1);
+        
+        // Get current player's left turns and add 2
+        int currentLeftTurns = currentPlayer.getLeftTurns();
+        int newLeftTurns = currentLeftTurns + 2;
+        
+        // Set next player's left turns
+        nextPlayer.setLeftTurns(newLeftTurns);
     }
 } 
