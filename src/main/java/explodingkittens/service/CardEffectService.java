@@ -31,6 +31,7 @@ public class CardEffectService {
      * @param card The card to handle the effect for
      * @param ctx The game context class
      * @throws IllegalArgumentException if either card or ctx is null
+     * @throws IllegalStateException if the game context is not properly initialized
      */
     public void handleCardEffect(Card card, Class<GameContext> ctx) {
         if (card == null || ctx == null) {
@@ -55,6 +56,8 @@ public class CardEffectService {
     /**
      * Handles the effect of an attack card.
      * When an attack card is played, the next player gets two additional turns.
+     * 
+     * @param turnOrder The list of players in the current turn order
      */
     private void handleAttack(List<Player> turnOrder) {
         attackService.handleAttack(turnOrder, 2);

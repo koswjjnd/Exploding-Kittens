@@ -5,6 +5,7 @@ import explodingkittens.model.CardType;
 import explodingkittens.model.AttackCard;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Player;
+import explodingkittens.model.Deck;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -30,6 +31,9 @@ class CardEffectServiceTest {
     
     @Mock
     private Player player2;
+    
+    @Mock
+    private Deck gameDeck;
     
     private CardEffectService cardEffectService;
     private List<Player> turnOrder;
@@ -57,10 +61,31 @@ class CardEffectServiceTest {
             cardEffectService.handleCardEffect(null, GameContext.class));
     }
     
-   @Test
+    @Test
     void handleCardEffect_nullCtx_throws() {
         assertThrows(IllegalArgumentException.class, () -> {
             cardEffectService.handleCardEffect(new AttackCard(), null);
         });
+    }
+
+    /**
+     * BVA Test Case 4: card = ATTACK, ctx = valid GameContext
+     * Expected: Execute attack effect normally
+     */
+    @Test
+    void handleCardEffect_attack_invokesAttack() {
+        // Given
+        Card attackCard = new AttackCard();
+        
+        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
+            // When
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            cardEffectService.handleCardEffect(attackCard, GameContext.class);
+            
+            // Then
+            verify(attackService, times(1)).handleAttack(turnOrder, 2);
+        }
     }
 } 
