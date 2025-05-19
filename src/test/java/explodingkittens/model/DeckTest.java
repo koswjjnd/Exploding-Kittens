@@ -6,27 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import explodingkittens.exceptions.EmptyDeckException;
+
 
 /**
  * Test class for the Deck class.
  */
 public class DeckTest {
-    private Deck deck;
-    private AttackCard attackCard;
-    private SkipCard skipCard;
-    private NopeCard nopeCard;
-
-    @BeforeEach
-    void setUp() {
-        deck = new Deck();
-        attackCard = new AttackCard();
-        skipCard = new SkipCard();
-        nopeCard = new NopeCard();
-    }
-
     /**
      * Tests that initializing a deck with 1 player throws an IllegalArgumentException.
      */

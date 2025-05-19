@@ -203,7 +203,10 @@ public class Deck {
         } 
         if (card instanceof NopeCard) {
             return "NopeCard";
-        } 
+        }
+        if (card instanceof ExplodingKittenCard) {
+            return "ExplodingKittenCard";
+        }
         return "UnknownCard";
     }
 
@@ -268,5 +271,19 @@ public class Deck {
             }
         }
         return true;
+    }
+
+    /**
+     * Adds exploding kittens to the deck.
+     * @param count The number of exploding kittens to add
+     * @throws IllegalArgumentException if count is negative
+     */
+    public void addExplodingKittens(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Count cannot be negative");
+        }
+        for (int i = 0; i < count; i++) {
+            this.cards.add(new ExplodingKittenCard());
+        }
     }
 }

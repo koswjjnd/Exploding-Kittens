@@ -4,14 +4,15 @@ package explodingkittens.model;
  * Represents a basic card in the Exploding Kittens game.
  */
 public class BasicCard extends Card {
-    private final String type;
+    private final CardType type;
 
     /**
      * Creates a new basic card with the specified type.
      * 
-     * @param type The type of the card (e.g., "Attack", "Skip", "Favor", "Nope")
+     * @param type The type of the card
      */
-    public BasicCard(String type) {
+    public BasicCard(CardType type) {
+        super(type);
         this.type = type;
     }
 
@@ -20,7 +21,8 @@ public class BasicCard extends Card {
      * 
      * @return The type of the card
      */
-    public String getType() {
+    @Override
+    public CardType getType() {
         return type;
     }
 
@@ -28,7 +30,7 @@ public class BasicCard extends Card {
     public boolean equals(Object obj) {
         if (!super.equals(obj)) return false;
         BasicCard other = (BasicCard) obj;
-        return type.equals(other.type);
+        return type == other.type;
     }
 
     @Override
@@ -38,6 +40,6 @@ public class BasicCard extends Card {
 
     @Override
     public String toString() {
-        return type;
+        return type.name();
     }
 } 

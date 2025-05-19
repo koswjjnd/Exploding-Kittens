@@ -2,6 +2,7 @@ package explodingkittens.service;
 
 import explodingkittens.model.Card;
 import explodingkittens.model.BasicCard;
+import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class NopeService {
      *                 The order of cards in the list represents the sequence in which
      *                 they were played. Must not be null, but can be empty.
      *                 Can contain any type of Card, but only BasicCard instances with
-     *                 type "Nope" are counted.
+     *                 type NOPE are counted.
      * 
      * @return true if the effect is negated (odd number of Nope cards), false otherwise.
      *         - Returns true when there is an odd number of valid Nope cards
@@ -51,7 +52,7 @@ public class NopeService {
         // Count the number of Nope cards
         int nopeCount = 0;
         for (Card card : nopeCards) {
-            if (card instanceof BasicCard && "Nope".equals(((BasicCard) card).getType())) {
+            if (card instanceof BasicCard && CardType.NOPE.equals(((BasicCard) card).getType())) {
                 nopeCount++;
             }
         }

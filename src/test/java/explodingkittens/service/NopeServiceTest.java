@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import explodingkittens.model.BasicCard;
+import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +50,8 @@ public class NopeServiceTest {
     void setUp() {
         nopeService = new NopeService();
         player1 = new Player("Player1");
-        nopeCard = new BasicCard("Nope");
-        skipCard = new BasicCard("Skip");
+        nopeCard = new BasicCard(CardType.NOPE);
+        skipCard = new BasicCard(CardType.SKIP);
     }
 
     /**
