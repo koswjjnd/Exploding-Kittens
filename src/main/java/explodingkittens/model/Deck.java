@@ -15,14 +15,76 @@ import java.util.Random;
 public class Deck {
     private List<Card> cards;
 
-    /** Creates an empty deck. */
+    /**
+     * Creates a new empty deck.
+     */
     public Deck() {
         this.cards = new ArrayList<>();
     }
 
     /**
-     * Returns the list of cards in the deck.
-     * @return the list of cards
+     * Draws one card from the top of the deck.
+     * 
+     * @return The card drawn from the top of the deck
+     * @throws IllegalStateException if the deck is empty
+     */
+    public Card drawOne() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("Cannot draw from an empty deck");
+        }
+        return cards.remove(0);
+    }
+
+    /**
+     * Inserts a card at the specified position in the deck.
+     * 
+     * @param card The card to insert
+     * @param position The position to insert the card at (0-based)
+     * @throws IllegalArgumentException if position is invalid or card is null
+     */
+    public void insertAt(Card card, int position) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (position < 0 || position > cards.size()) {
+            throw new IllegalArgumentException("Invalid position: " + position);
+        }
+        cards.add(position, card);
+    }
+
+    /**
+     * Returns the top card of the deck without removing it.
+     * 
+     * @return The top card of the deck
+     * @throws IllegalStateException if the deck is empty
+     */
+    public Card peekTop() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("Cannot peek at an empty deck");
+        }
+        return cards.get(0);
+    }
+
+    /**
+     * Shuffles the deck.
+     */
+    public void shuffle() {
+        Collections.shuffle(cards);
+    }
+
+    /**
+     * Returns the number of cards in the deck.
+     * 
+     * @return The size of the deck
+     */
+    public int size() {
+        return cards.size();
+    }
+
+    /**
+     * Returns a copy of the cards in the deck.
+     * 
+     * @return A list of cards in the deck
      */
     public List<Card> getCards() {
         return new ArrayList<>(cards);
@@ -59,15 +121,15 @@ public class Deck {
         }
         
         this.cards.clear();
-        this.addCards(new DefuseCard(),5-playerCount);
-        this.addCards(new AttackCard(),3);
-        this.addCards(new SkipCard(),3);
-        this.addCards(new ShuffleCard(),4);
-        this.addCards(new SeeTheFutureCard(),4);
-        this.addCards(new NopeCard(),4);
+        this.addCards(new DefuseCard(), 5-playerCount);
+        this.addCards(new AttackCard(), 3);
+        this.addCards(new SkipCard(), 3);
+        this.addCards(new ShuffleCard(), 4);
+        this.addCards(new SeeTheFutureCard(), 4);
+        this.addCards(new NopeCard(), 4);
         
         for (CatType type : CatType.values()) {
-            this.addCards(new CatCard(type),4);
+            this.addCards(new CatCard(type), 4);
         }
     }
     
@@ -75,8 +137,15 @@ public class Deck {
      * Adds multiple copies of a card to the deck.
      * @param card The card to add
      * @param count The number of copies to add
+     * @throws IllegalArgumentException if card is null or count is negative
      */
     public void addCards(Card card, int count) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (count < 0) {
+            throw new IllegalArgumentException("Count cannot be negative");
+        }
         for (int i = 0; i < count; i++) {
             this.cards.add(card.clone());
         }
@@ -85,8 +154,12 @@ public class Deck {
     /**
      * Adds a single card to the deck.
      * @param card The card to add
+     * @throws IllegalArgumentException if card is null
      */
     public void addCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
         this.cards.add(card.clone());
     }
     
@@ -98,16 +171,43 @@ public class Deck {
         Map<String, Integer> counts = new HashMap<>();
         
         for (Card card : cards) {
-            String key;
-            if (card instanceof CatCard) {
-                key = "CatCard_" + ((CatCard) card).getType().name();
-            } 
-            else {
-                key = card.getClass().getSimpleName();
-            }
-            counts.merge(key, 1, Integer::sum);
+            String key = getCardTypeKey(card);
+            counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
         return counts;
+    }
+
+    /**
+     * Determines the type key for a card.
+     * @param card The card to determine the type for
+     * @return A string key representing the card type
+     */
+    private String getCardTypeKey(Card card) {
+        if (card instanceof CatCard) {
+            return "CatCard_" + ((CatCard) card).getType().name();
+        } 
+        if (card instanceof DefuseCard) {
+            return "DefuseCard";
+        } 
+        if (card instanceof AttackCard) {
+            return "AttackCard";
+        } 
+        if (card instanceof SkipCard) {
+            return "SkipCard";
+        } 
+        if (card instanceof ShuffleCard) {
+            return "ShuffleCard";
+        } 
+        if (card instanceof SeeTheFutureCard) {
+            return "SeeTheFutureCard";
+        } 
+        if (card instanceof NopeCard) {
+            return "NopeCard";
+        }
+        if (card instanceof ExplodingKittenCard) {
+            return "ExplodingKittenCard";
+        }
+        return "UnknownCard";
     }
 
     /**
@@ -120,18 +220,70 @@ public class Deck {
     }
 
     /**
+     * Validates that the deck contains the correct number of cards for the given player count.
+     * @param playerCount the number of players in the game
+     * @return true if the deck is valid, false otherwise
+     */
+    public boolean validateDeck(int playerCount) {
+        if (playerCount < 2 || playerCount > 4) {
+            return false;
+        }
+        Map<String, Integer> counts = getCardCounts();
+        if (!validateDefuse(counts, playerCount)) {
+            return false;
+        }
+        if (!validateMainCards(counts)) {
+            return false;
+        }
+        if (!validateCatCards(counts)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateDefuse(Map<String, Integer> counts, int playerCount) {
+        return counts.getOrDefault("DefuseCard", 0) == 5 - playerCount;
+    }
+
+    private boolean validateMainCards(Map<String, Integer> counts) {
+        if (counts.getOrDefault("AttackCard", 0) != 3) {
+            return false;
+        }
+        if (counts.getOrDefault("SkipCard", 0) != 3) {
+            return false;
+        }
+        if (counts.getOrDefault("ShuffleCard", 0) != 4) {
+            return false;
+        }
+        if (counts.getOrDefault("SeeTheFutureCard", 0) != 4) {
+            return false;
+        }
+        if (counts.getOrDefault("NopeCard", 0) != 4) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateCatCards(Map<String, Integer> counts) {
+        for (CatType type : CatType.values()) {
+            if (counts.getOrDefault("CatCard_" + type.name(), 0) != 4) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Adds exploding kittens to the deck.
      * @param count The number of exploding kittens to add
-     * @return The deck with added exploding kittens
      * @throws IllegalArgumentException if count is negative
      */
-    public Deck addExplodingKittens(int count) {
+    public void addExplodingKittens(int count) {
         if (count < 0) {
             throw new IllegalArgumentException("Count cannot be negative");
         }
-        if (count > 0) {
-            addCards(new ExplodingKittenCard(), count);
+        for (int i = 0; i < count; i++) {
+            this.cards.add(new ExplodingKittenCard());
         }
-        return this;
     }
 }

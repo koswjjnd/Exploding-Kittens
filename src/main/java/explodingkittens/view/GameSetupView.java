@@ -18,7 +18,7 @@ public class GameSetupView {
     public int promptPlayerCount() {
         while (true) {
             try {
-                System.out.print("Player Count: ");
+                System.out.print("Player Count: \n");
                 return sc.nextInt();
             }
             catch (InputMismatchException e) {
@@ -33,7 +33,7 @@ public class GameSetupView {
      * @return the nickname entered by the user
      */
     public String promptNickname(int playerIndex){
-        System.out.printf("Input Name of Player %d", playerIndex);
+        System.out.printf("Input Name of Player %d ", playerIndex);
         return sc.nextLine();
     }
 

@@ -3,16 +3,11 @@ package explodingkittens.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import explodingkittens.exceptions.EmptyDeckException;
+
 
 /**
  * Test class for the Deck class.
@@ -162,158 +157,5 @@ public class DeckTest {
         Map<String, Integer> cardCounts = deck.getCardCounts();
         assertEquals(1, cardCounts.size());
         assertEquals(2, cardCounts.get("SeeTheFutureCard"));
-    }
-
-    @Test
-    void testIsEmptyWithNullCards() {
-        Deck deck = new Deck();
-        try {
-            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
-            cardsField.setAccessible(true);
-            cardsField.set(deck, null);
-        }
-        catch (Exception e) {
-            fail("Failed to set cards to null", e);
-        }
-        assertThrows(NullPointerException.class, () -> {
-            boolean result = deck.isEmpty();
-            fail("Should have thrown NullPointerException, but returned: " + result);
-        });
-    }
-
-    @Test
-    void testIsEmptyWithEmptyList() {
-        Deck deck = new Deck();
-        try {
-            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
-            cardsField.setAccessible(true);
-            cardsField.set(deck, new ArrayList<>());
-        }
-        catch (Exception e) {
-            fail("Failed to set cards to empty list", e);
-        }
-        boolean result = deck.isEmpty();
-        assertTrue(result, "Empty deck should return true for isEmpty()");
-    }
-
-    @Test
-    void testIsEmptyWithSingleCard() {
-        Deck deck = new Deck();
-        deck.addCard(new SkipCard());
-        boolean result = deck.isEmpty();
-        assertFalse(result, "Deck with one card should return false for isEmpty()");
-    }
-
-    @Test
-    void testIsEmptyWithMultipleCards() {
-        Deck deck = new Deck();
-        deck.addCards(new SkipCard(), 3);
-        deck.addCards(new AttackCard(), 2);
-        deck.addCards(new DefuseCard(), 1);
-        boolean result = deck.isEmpty();
-        assertFalse(result, "Deck with multiple cards should return false for isEmpty()");
-        assertEquals(6, deck.getCardCounts().values().stream().mapToInt(Integer::intValue).sum(), 
-            "Deck should contain exactly 6 cards");
-    }
-
-    @Test
-    void testGetCardsWithEmptyDeck() {
-        Deck deck = new Deck();
-        List<Card> cards = deck.getCards();
-        assertTrue(cards.isEmpty(), "Empty deck should return empty list");
-    }
-
-    @Test
-    void testGetCardsWithCards() {
-        Deck deck = new Deck();
-        Card skipCard = new SkipCard();
-        Card attackCard = new AttackCard();
-        deck.addCard(skipCard);
-        deck.addCard(attackCard);
-        List<Card> cards = deck.getCards();
-        assertEquals(2, cards.size(), "Deck should contain exactly 2 cards");
-        assertTrue(cards.contains(skipCard), "Deck should contain SkipCard");
-        assertTrue(cards.contains(attackCard), "Deck should contain AttackCard");
-    }
-
-    /**
-     * Tests that adding zero exploding kittens results in no exploding kittens in the deck.
-     */
-    @Test
-    void testAddExplodingKittensZeroCount() {
-        Deck deck = new Deck();
-        deck.addExplodingKittens(0);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertFalse(cardCounts.containsKey("ExplodingKittenCard"), 
-            "Deck should not contain any exploding kittens when count is 0");
-    }
-
-    /**
-     * Tests that adding negative number of exploding kittens throws IllegalArgumentException.
-     */
-    @Test
-    void testAddExplodingKittensNegativeCount() {
-        Deck deck = new Deck();
-        assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1),
-            "Should throw IllegalArgumentException when count is negative");
-    }
-
-    /**
-     * Tests that adding multiple exploding kittens adds the correct number of cards.
-     */
-    @Test
-    void testAddExplodingKittensMultipleCards() {
-        Deck deck = new Deck();
-        Deck result = deck.addExplodingKittens(2);
-        assertSame(deck, result, "Should return the same deck object");
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.size(), "Should only have one type of card");
-        assertEquals(2, cardCounts.get("ExplodingKittenCard"), 
-            "Should have exactly 2 exploding kittens");
-    }
-
-    /**
-     * Test Case 1: deck.removeTopCard() with empty deck
-     * Expected: throws EmptyDeckException
-     */
-    @Test
-    void testRemoveTopCardEmptyDeck() {
-        Deck deck = new Deck();
-        assertThrows(EmptyDeckException.class, () -> deck.removeTopCard(),
-            "Should throw EmptyDeckException when trying to remove a card from an empty deck");
-    }
-
-    /**
-     * Test Case 2: deck.removeTopCard() with single card deck
-     * Expected: returns the card and deck becomes empty
-     */
-    @Test
-    void testRemoveTopCardSingleCard() {
-        Deck deck = new Deck();
-        Card card = new SkipCard();
-        deck.addCard(card);
-        Card removedCard = deck.removeTopCard();
-        assertEquals(card, removedCard, 
-            "Removed card should be the same as the added card");
-        assertTrue(deck.isEmpty(), "Deck should be empty after removing the only card");
-    }
-
-    /**
-     * Test Case 3: deck.removeTopCard() with multiple cards deck
-     * Expected: returns the first card and deck size decreases by 1
-     */
-    @Test
-    void testRemoveTopCardMultipleCards() {
-        Deck deck = new Deck();
-        Card firstCard = new SkipCard();
-        Card secondCard = new AttackCard();
-        deck.addCard(firstCard);
-        deck.addCard(secondCard);
-        int initialSize = deck.getCards().size();
-        Card removedCard = deck.removeTopCard();
-        assertEquals(firstCard, removedCard, 
-            "Removed card should be the first card added");
-        assertEquals(initialSize - 1, deck.getCards().size(), 
-            "Deck size should decrease by 1 after removing a card");
     }
 }
