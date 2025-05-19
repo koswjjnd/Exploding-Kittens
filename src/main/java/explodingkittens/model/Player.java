@@ -2,7 +2,7 @@ package explodingkittens.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 
 /**
  * Represents a player in the game.
@@ -10,6 +10,7 @@ import java.util.List;
 public class Player {
     private final String name;
     private final List<Card> hand;
+    private int leftTurns;
 
     /**
      * Constructs a Player with the given name.
@@ -18,6 +19,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         this.hand = new ArrayList<>();
+        this.leftTurns = 1;
     }
 
     /**
@@ -29,10 +31,82 @@ public class Player {
     }
 
     /**
+     * Gets the number of turns left for the player.
+     * @return The number of turns left
+     */
+    public int getLeftTurns() {
+        return leftTurns;
+    }
+
+    /**
+     * Sets the number of turns left for the player.
+     * @param turns The number of turns to set
+     */
+    public void setLeftTurns(int turns) {
+        this.leftTurns = turns;
+    }
+
+    /**
+     * Uses a skip card, reducing turns by 1.
+     */
+    public void useSkipCard() {
+        if (leftTurns > 0) {
+            leftTurns--;
+        }
+    }
+
+    /**
+     * Gets attacked, adding 2 turns.
+     */
+    public void getAttacked() {
+        leftTurns += 2;
+    }
+
+    /**
+     * Decrements the number of turns left by 1.
+     * If the player has 0 turns left, the number of turns remains 0.
+     */
+    public void decrementLeftTurns() {
+        if (leftTurns > 0) {
+            leftTurns--;
+        }
+    }
+
+    /**
+     * Checks if the player has a defuse card in their hand.
+     * @return true if the player has at least one defuse card, false otherwise
+     */
+    public boolean hasDefuse() {
+        return hand.stream()
+                .anyMatch(card -> card.getType() == CardType.DEFUSE);
+    }
+
+     /**
+     * Attempts to use a defuse card from the player's hand.
+     * If successful, removes one defuse card from the hand.
+     * @return true if a defuse card was successfully used, false otherwise
+     */
+    public boolean useDefuse() {
+        Optional<Card> defuseCard = hand.stream()
+                .filter(card -> card.getType() == CardType.DEFUSE)
+                .findFirst();
+        
+        if (defuseCard.isPresent()) {
+            hand.remove(defuseCard.get());
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Adds a card to the player's hand.
      * @param card the card to add
+     * @throws IllegalArgumentException if card is null
      */
     public void receiveCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
         hand.add(card);
     }
 

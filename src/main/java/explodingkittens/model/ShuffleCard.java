@@ -1,5 +1,7 @@
 package explodingkittens.model;
 
 public class ShuffleCard extends Card {
-    // Shuffle card specific implementation
+    public ShuffleCard() {
+        super(CardType.SHUFFLE);
+    }
 } 
