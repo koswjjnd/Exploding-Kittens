@@ -57,4 +57,27 @@ class AttackCardTest {
         // Verify next player's left turns is set to 2
         verify(nextPlayer).setLeftTurns(2);
     }
+
+    /**
+     * BVA Test Case 3: turnOrder = multiple players, current player's left turns = 1
+     * Expected: Next player's left turns = 3
+     */
+    @Test
+    void testOneLeftTurn() {
+        MockitoAnnotations.openMocks(this);
+        AttackCard attackCard = new AttackCard();
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(currentPlayer);
+        turnOrder.add(nextPlayer);
+        Deck gameDeck = new Deck();
+
+        // Set up current player with 1 left turn
+        when(currentPlayer.getLeftTurns()).thenReturn(1);
+
+        // Execute effect
+        attackCard.effect(turnOrder, gameDeck);
+
+        // Verify next player's left turns is set to 3
+        verify(nextPlayer).setLeftTurns(3);
+    }
 } 
