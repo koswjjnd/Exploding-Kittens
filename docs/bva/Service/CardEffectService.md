@@ -14,12 +14,12 @@
 
 ##### Focus on dispatching and exceptions, not card effect details
 
-|             | System under test                              | Expected output          | Implemented? |
-|-------------|------------------------------------------------|--------------------------|--------------|
-| Test Case 1 | card = null, ctx = null                        | IllegalArgumentException |              |
-| Test Case 2 | card = null, ctx = valid GameContext           | IllegalArgumentException |              |
-| Test Case 3 | card = valid Card, ctx = null                  | IllegalArgumentException |              |
-| Test Case 4 | card = valid Card, ctx = valid GameContext     | card.effect() is called once |              |
+|             | System under test                          | Expected output              | Implemented? |
+|-------------|--------------------------------------------|------------------------------|--------------|
+| Test Case 1 | card = null, ctx = null                    | IllegalArgumentException     |              |
+| Test Case 2 | card = null, ctx = valid GameContext       | IllegalArgumentException     |              |
+| Test Case 3 | card = valid Card, ctx = null              | IllegalArgumentException     |              |
+| Test Case 4 | card = valid Card, ctx = valid GameContext | card.effect() is called once |              |
 
 ## Recall the 4 steps of BVA
 
