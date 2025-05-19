@@ -1,5 +1,7 @@
 package explodingkittens.model;
 
+import java.util.List;
+
 /**
  * Represents a basic card in the Exploding Kittens game.
  */
@@ -33,6 +35,9 @@ public class BasicCard extends Card {
         return type == other.type;
     }
 
+    @Override
+    public void effect(List<Player> turnOrder, Deck gameDeck) {
+    }
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + type.hashCode();

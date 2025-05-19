@@ -12,19 +12,14 @@
 
 ### Step 4:
 
-##### Using each-choice strategy as there is no combination relationship between input parameters
+##### Focus on dispatching and exceptions, not card effect details
 
-|             | System under test                              | Expected output                    | Implemented? |
-|-------------|------------------------------------------------|------------------------------------|--------------|
-| Test Case 1 | card = null, ctx = null                        | IllegalArgumentException           |              |
-| Test Case 2 | card = null, ctx = valid GameContext           | IllegalArgumentException           |              |
-| Test Case 3 | card = ATTACK, ctx = null                      | IllegalArgumentException           |              |
-| Test Case 4 | card = ATTACK, ctx = valid GameContext         | Execute attack effect normally     |              |
-| Test Case 5 | card = SKIP, ctx = valid GameContext           | Execute skip effect normally       |              |
-| Test Case 6 | card = SEE_THE_FUTURE, ctx = valid GameContext | Execute see future effect normally |              |
-| Test Case 7 | card = SHUFFLE, ctx = valid GameContext        | Execute shuffle effect normally    |              |
-| Test Case 8 | card = CAT, ctx = valid GameContext            | Execute cat card effect normally   |              |
-| Test Case 9 | card = DEFUSE, ctx = valid GameContext         | Execute defuse effect normally     |              |
+|             | System under test                              | Expected output          | Implemented? |
+|-------------|------------------------------------------------|--------------------------|--------------|
+| Test Case 1 | card = null, ctx = null                        | IllegalArgumentException |              |
+| Test Case 2 | card = null, ctx = valid GameContext           | IllegalArgumentException |              |
+| Test Case 3 | card = valid Card, ctx = null                  | IllegalArgumentException |              |
+| Test Case 4 | card = valid Card, ctx = valid GameContext     | card.effect() is called once |              |
 
 ## Recall the 4 steps of BVA
 
@@ -42,11 +37,11 @@
 
 ### Step 3: Select concrete values along the edges for the input and the output
 
-- Card: null, various card types (excluding NOPE)
+- Card: null, valid Card object
 - GameContext: null, valid GameContext object
 
 ### Step 4: Determine the test cases using each-choice strategy
 
 - Test null inputs
-- Test each card type (excluding NOPE)
+- Test valid inputs
 - Test invalid GameContext

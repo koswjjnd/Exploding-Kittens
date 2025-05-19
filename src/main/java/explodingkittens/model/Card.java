@@ -1,5 +1,10 @@
 package explodingkittens.model;
 
+import java.util.List;
+
+/**
+ * Abstract class representing a card in the game.
+ */
 public abstract class Card implements Cloneable {
     private final CardType type;
 
@@ -18,6 +23,14 @@ public abstract class Card implements Cloneable {
     public CardType getType() {
         return type;
     }
+    
+    /**
+     * Execute the effect of this card.
+     * 
+     * @param turnOrder The list of players in the current turn order
+     * @param gameDeck The game deck
+     */
+    public abstract void effect(List<Player> turnOrder, Deck gameDeck);
     
     @Override
     public Card clone() {
