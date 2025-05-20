@@ -39,6 +39,9 @@ dependencies {
     // Mockito
     testImplementation("org.mockito:mockito-core:5.10.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
+
+    // Spotbugs annotations
+    implementation("com.github.spotbugs:spotbugs-annotations:4.8.6")
 }
 
 java {

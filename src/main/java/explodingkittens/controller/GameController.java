@@ -7,6 +7,8 @@ import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 /**
  * GameController manages the main game loop and game state for Exploding Kittens.
@@ -14,6 +16,7 @@ import java.util.List;
  */
 public class GameController {
     private final GameView view;
+
     private final GameSetupController setupController;
 
     /**
@@ -88,28 +91,34 @@ public class GameController {
      * @param action the action to process
      */
     private void processPlayerAction(Player player, String action) {
-        if (action.equals("draw")) {
-            // Draw a card
-            Card drawn = GameContext.getGameDeck().drawOne();
-            
-            if (drawn instanceof ExplodingKittenCard) {
-                if (player.hasDefuse()) {
-                    // TODO: Handle defuse card usage
-                } 
-                else {
-                    player.setAlive(false);
-                }
-            } 
-            else {
-                player.receiveCard(drawn);
-            }
-        } 
-        else {
+        if (!action.equals("draw")) {
             // TODO: Implement card action processing
-            // This will be implemented based on the specific card types and their effects
-            // For example, AttackCard will increase next player's turns
-            // SkipCard will decrease current player's turns
+            // This will be implemented by the card effect module
+            return;
         }
+
+        // Draw a card
+        Card drawn = GameContext.getGameDeck().drawOne();
+        
+        if (!(drawn instanceof ExplodingKittenCard)) {
+            player.receiveCard(drawn);
+            return;
+        }
+
+        // Handle exploding kitten
+        if (!player.hasDefuse()) {
+            player.setAlive(false);
+            return;
+        }
+
+        // Handle defuse card usage
+        if (!player.useDefuse()) {
+            player.setAlive(false);
+            return;
+        }
+
+        // TODO: Handle defuse card insertion
+        // This will be implemented by the card effect module
     }
 
     /**
