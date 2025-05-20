@@ -15,6 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
+import explodingkittens.model.Card;
+import explodingkittens.model.CardType;
+import explodingkittens.model.CatCard;
+import explodingkittens.model.CatType;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import explodingkittens.exceptions.InvalidPlayerCountException;
@@ -43,6 +47,30 @@ class GameControllerTest {
         testPlayers.add(new Player("Player2"));
     }
 
+    /**
+     * Initializes a deck with the specified number of cat cards.
+     * @param numCards number of cards to add to the deck
+     * @return the initialized deck
+     */
+    private Deck initializeDeck(int numCards) {
+        Deck deck = new Deck();
+        for (int i = 0; i < numCards; i++) {
+            deck.addCard(new CatCard(CatType.TACOCAT));
+        }
+        return deck;
+    }
+
+    /**
+     * Sets up the game context with players and deck.
+     * @param players list of players
+     * @param numCards number of cards to add to the deck
+     */
+    private void setupGameContext(List<Player> players, int numCards) {
+        GameContext.setTurnOrder(players);
+        GameContext.setGameDeck(initializeDeck(numCards));
+        GameContext.setGameOver(false);
+    }
+
     @Test
     void testStartGame() throws GameOverException, 
             InvalidPlayerCountException, InvalidNicknameException {
@@ -50,19 +78,13 @@ class GameControllerTest {
         doNothing().when(mockSetupController).setupGame();
         when(mockView.promptPlayerAction(any())).thenReturn("draw");
         
-        // Set up game context with two players
-        List<Player> players = new ArrayList<>();
-        Player player1 = new Player("Player1");
-        Player player2 = new Player("Player2");
-        players.add(player1);
-        players.add(player2);
-        GameContext.setTurnOrder(players);
-        GameContext.setGameDeck(new Deck());
+        // Set up game context
+        setupGameContext(testPlayers, 10);
         
         // Make second player not alive after first turn
         doAnswer(invocation -> {
-            if (GameContext.getCurrentPlayer() == player2) {
-                player2.setAlive(false);
+            if (GameContext.getCurrentPlayer() == testPlayers.get(1)) {
+                testPlayers.get(1).setAlive(false);
             }
             return "draw";
         }).when(mockView).promptPlayerAction(any());
@@ -91,9 +113,7 @@ class GameControllerTest {
         when(mockView.promptPlayerAction(any())).thenReturn("draw");
         
         // Set up game context
-        GameContext.setTurnOrder(testPlayers);
-        GameContext.setGameDeck(new Deck());
-        GameContext.setGameOver(false);  // Ensure game is not over initially
+        setupGameContext(testPlayers, 10);
         
         // Make second player not alive after first turn
         doAnswer(invocation -> {
@@ -117,8 +137,7 @@ class GameControllerTest {
         Player winner = testPlayers.get(0);
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(winner);
-        GameContext.setTurnOrder(singlePlayer);
-        GameContext.setGameDeck(new Deck());
+        setupGameContext(singlePlayer, 10);
         
         // Execute
         gameController.start();
@@ -132,7 +151,10 @@ class GameControllerTest {
         // Setup
         Player player = testPlayers.get(0);
         player.setAlive(false);
-        GameContext.setTurnOrder(testPlayers);
+        setupGameContext(testPlayers, 10);
+        
+        // Set up mock view
+        when(mockView.promptPlayerAction(any())).thenReturn("draw");
         
         // Execute
         gameController.start();

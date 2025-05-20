@@ -2,6 +2,8 @@ package explodingkittens.controller;
 
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
+import explodingkittens.model.Card;
+import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
@@ -58,18 +60,25 @@ public class GameController {
      * @param player the current player
      */
     private void handlePlayerTurn(Player player) {
-        view.displayPlayerHand(player);
-        
-        // Get player's action
-        String action = view.promptPlayerAction(player);
-        
-        // Process the action
-        processPlayerAction(player, action);
-        
-        // Check if player is still alive
-        if (!player.isAlive()) {
-            GameContext.removePlayer(player);
-            view.displayPlayerEliminated(player);
+        // Process all turns for the current player
+        while (player.getLeftTurns() > 0 && !GameContext.isGameOver()) {
+            view.displayPlayerHand(player);
+            
+            // Get player's action
+            String action = view.promptPlayerAction(player);
+            
+            // Process the action
+            processPlayerAction(player, action);
+            
+            // Check if player is still alive
+            if (!player.isAlive()) {
+                GameContext.removePlayer(player);
+                view.displayPlayerEliminated(player);
+                break;
+            }
+            
+            // Decrement remaining turns
+            player.decrementLeftTurns();
         }
     }
 
@@ -79,8 +88,28 @@ public class GameController {
      * @param action the action to process
      */
     private void processPlayerAction(Player player, String action) {
-        // TODO: Implement card action processing
-        // This will be implemented based on the specific card types and their effects
+        if (action.equals("draw")) {
+            // Draw a card
+            Card drawn = GameContext.getGameDeck().drawOne();
+            
+            if (drawn instanceof ExplodingKittenCard) {
+                if (player.hasDefuse()) {
+                    // TODO: Handle defuse card usage
+                } 
+                else {
+                    player.setAlive(false);
+                }
+            } 
+            else {
+                player.receiveCard(drawn);
+            }
+        } 
+        else {
+            // TODO: Implement card action processing
+            // This will be implemented based on the specific card types and their effects
+            // For example, AttackCard will increase next player's turns
+            // SkipCard will decrease current player's turns
+        }
     }
 
     /**
