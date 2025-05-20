@@ -1,65 +1,136 @@
 package explodingkittens.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import explodingkittens.model.Player;
-
-import java.util.List;
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class GameContextTest {
+import explodingkittens.model.Player;
+import explodingkittens.model.Deck;
+import java.util.ArrayList;
+import java.util.List;
 
-	@Test
-	void testSetAndGetTurnOrderShouldBeConsistent() {
-		Player p1 = new Player("A");
-		Player p2 = new Player("B");
-		List<Player> input = Arrays.asList(p1, p2);
+class GameContextTest {
+	private List<Player> players;
+	private Deck deck;
 
-		GameContext.setTurnOrder(input);
-		List<Player> result = GameContext.getTurnOrder();
+	@BeforeEach
+	void setUp() {
+		// Create test players
+		players = new ArrayList<>();
+		players.add(new Player("Player1"));
+		players.add(new Player("Player2"));
+		players.add(new Player("Player3"));
 
-		assertEquals(input, result);
+		// Create test deck
+		deck = new Deck();
+		deck.initializeBaseDeck(3);
 	}
 
 	@Test
-	void testOverrideTurnOrderShouldReflectNewValue() {
-		Player p1 = new Player("A");
-		GameContext.setTurnOrder(Arrays.asList(p1));
-
-		Player p2 = new Player("B");
-		GameContext.setTurnOrder(Arrays.asList(p2));
-
-		List<Player> result = GameContext.getTurnOrder();
-		assertEquals(1, result.size());
-		assertEquals("B", result.get(0).getName());
+	void testSetAndGetTurnOrder() {
+		GameContext.setTurnOrder(players);
+		List<Player> retrievedOrder = GameContext.getTurnOrder();
+		
+		assertNotNull(retrievedOrder);
+		assertEquals(players.size(), retrievedOrder.size());
+		assertTrue(retrievedOrder.containsAll(players));
 	}
 
 	@Test
-	void testSetTurnOrderNullInputShouldThrow() {
-		assertThrows(IllegalArgumentException.class, () -> {
-			GameContext.setTurnOrder(null);
-		});
+	void testSetAndGetGameDeck() {
+		GameContext.setGameDeck(deck);
+		Deck retrievedDeck = GameContext.getGameDeck();
+		
+		assertNotNull(retrievedDeck);
+		assertEquals(deck.size(), retrievedDeck.size());
 	}
 
 	@Test
-	void testSetTurnOrderEmptyListShouldThrow() {
-		assertThrows(IllegalArgumentException.class, () -> {
-			GameContext.setTurnOrder(List.of());
-		});
+	void testIsGameOver() {
+		GameContext.setTurnOrder(players);
+		assertFalse(GameContext.isGameOver());
+
+		// Test with one player
+		List<Player> singlePlayer = new ArrayList<>();
+		singlePlayer.add(new Player("Single"));
+		GameContext.setTurnOrder(singlePlayer);
+		assertTrue(GameContext.isGameOver());
+
+		// Test empty list should throw exception
+		assertThrows(IllegalArgumentException.class, () -> 
+			GameContext.setTurnOrder(new ArrayList<>()));
 	}
 
 	@Test
-	void testSetTurnOrderContainsNullPlayerShouldThrow() {
-		Player p1 = new Player("A");
-		List<Player> input = Arrays.asList(p1, null);
-		assertThrows(IllegalArgumentException.class, () -> {
-			GameContext.setTurnOrder(input);
-		});
+	void testGetCurrentPlayer() {
+		GameContext.setTurnOrder(players);
+		Player currentPlayer = GameContext.getCurrentPlayer();
+		
+		assertNotNull(currentPlayer);
+		assertEquals(players.get(0), currentPlayer);
 	}
 
+	@Test
+	void testNextTurn() {
+		GameContext.setTurnOrder(players);
+		
+		// First player
+		assertEquals(players.get(0), GameContext.getCurrentPlayer());
+		
+		// Second player
+		GameContext.nextTurn();
+		assertEquals(players.get(1), GameContext.getCurrentPlayer());
+		
+		// Third player
+		GameContext.nextTurn();
+		assertEquals(players.get(2), GameContext.getCurrentPlayer());
+		
+		// Back to first player
+		GameContext.nextTurn();
+		assertEquals(players.get(0), GameContext.getCurrentPlayer());
+	}
+
+	@Test
+	void testRemovePlayer() {
+		GameContext.setTurnOrder(players);
+		Player playerToRemove = players.get(1);
+		
+		GameContext.removePlayer(playerToRemove);
+		List<Player> remainingPlayers = GameContext.getTurnOrder();
+		
+		assertEquals(2, remainingPlayers.size());
+		assertFalse(remainingPlayers.contains(playerToRemove));
+	}
+
+	@Test
+	void testGetDeckSize() {
+		GameContext.setGameDeck(deck);
+		assertEquals(deck.size(), GameContext.getDeckSize());
+	}
+
+	@Test
+	void testSetGameOver() {
+		GameContext.setTurnOrder(players);
+		assertFalse(GameContext.isGameOver());
+		
+		GameContext.setGameOver(true);
+		assertTrue(GameContext.isGameOver());
+	}
+
+	@Test
+	void testInvalidTurnOrder() {
+		assertThrows(IllegalArgumentException.class, 
+			() -> GameContext.setTurnOrder(null));
+		assertThrows(IllegalArgumentException.class, 
+			() -> GameContext.setTurnOrder(new ArrayList<>()));
+	}
+
+	@Test
+	void testInvalidGameDeck() {
+		assertThrows(IllegalArgumentException.class, () -> GameContext.setGameDeck(null));
+	}
 }

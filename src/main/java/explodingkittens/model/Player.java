@@ -11,6 +11,7 @@ public class Player {
     private final String name;
     private final List<Card> hand;
     private int leftTurns;
+    private boolean alive;
 
     /**
      * Constructs a Player with the given name.
@@ -20,6 +21,7 @@ public class Player {
         this.name = name;
         this.hand = new ArrayList<>();
         this.leftTurns = 1;
+        this.alive = true;
     }
 
     /**
@@ -116,5 +118,21 @@ public class Player {
      */
     public List<Card> getHand() {
         return List.copyOf(hand);
+    }
+
+    /**
+     * Checks if the player is still alive in the game.
+     * @return true if the player is alive, false otherwise
+     */
+    public boolean isAlive() {
+        return alive;
+    }
+
+    /**
+     * Sets the player's alive status.
+     * @param alive true if the player is alive, false if eliminated
+     */
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 } 
