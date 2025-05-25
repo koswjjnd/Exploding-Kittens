@@ -55,4 +55,9 @@ class DrawFromBottomCardTest {
         assertFalse(cards.contains(c3));
         verify(player).receiveCard(c3);
     }
+
+    @Test
+    void testNullTurnOrderThrows() {
+        assertThrows(IllegalArgumentException.class, () -> card.effect(null, deck));
+    }
 } 
