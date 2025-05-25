@@ -14,6 +14,6 @@
 
 |             | System under test                    | Expected output                      | Implemented? |
 | ----------- | ------------------------------------ | ------------------------------------ | ------------ |
-| Test Case 1 | display() with empty list            | prints header, no cards listed      |          |
-| Test Case 2 | display() with 1 card                | prints header, 1 card type listed   |           |
-| Test Case 3 | display() with 2+ cards              | prints header, all card types listed |           |
+| Test Case 1 | display() with empty list            | prints header, no cards listed      |    yes      |
+| Test Case 2 | display() with 1 card                | prints header, 1 card type listed   |    yes       |
+| Test Case 3 | display() with 2+ cards              | prints header, all card types listed |     yes      |

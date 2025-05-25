@@ -44,5 +44,15 @@ public class SeeTheFutureViewTest {
         assertTrue(output.contains("ATTACK"));
     }
 
-    
+    @Test
+    public void testDisplayTwoCards() {
+        List<Card> cards = List.of(new AttackCard(), new SkipCard());
+        view.display(cards);
+
+        String output = outContent.toString();
+
+        assertTrue(output.contains("You see the future cards"));
+        assertTrue(output.contains("ATTACK"));
+        assertTrue(output.contains("SKIP"));
+    }  
 }
