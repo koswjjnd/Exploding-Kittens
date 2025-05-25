@@ -15,7 +15,7 @@
 |             | System under test                                  | Expected output                                                              | Implemented? |
 | ----------- | --------------------------------------------------- | ---------------------------------------------------------------------------- | ------------ |
 | Test Case 1 | effect() with deck == null                          | IllegalArgumentException thrown                                              |    yes       |
-| Test Case 2 | effect() with deck.size = 0                         | No changes to deck                                                           |          |
+| Test Case 2 | effect() with deck.size = 0                         | No changes to deck                                                           |   yes       |
 | Test Case 3 | effect() with deck.size = 1                         | No changes to deck                                                           |           |
 | Test Case 4 | effect() with deck.size = 2                         | Two cards are swapped                                                        |           |
 | Test Case 5 | effect() with deck.size > 3 and even                | Top half and bottom half of deck are swapped                                 |           |

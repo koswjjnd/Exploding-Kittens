@@ -24,5 +24,11 @@ public class SwitchDeckByHalfCardTest {
         }, "Should throw IllegalArgumentException for null deck");
     }
 
+    @Test
+    public void testEffect_emptyDeck() {
+        switchDeckByHalfCard.effect(new ArrayList<>(), deck);
+        assertTrue(deck.getCards().isEmpty(), "Empty deck should remain unchanged");
+    }
+
     
 }
