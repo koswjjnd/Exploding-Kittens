@@ -71,4 +71,59 @@ public interface GameView {
      */
     void displayPlayedCard(Player player, Card card);
 
+    /**
+     * Prompts the player to select a card to play.
+     * @param player The current player
+     * @param hand The player's hand
+     * @return The selected card, or null if player chooses to end turn
+     */
+    Card selectCardToPlay(Player player, List<Card> hand);
+
+    /**
+     * Shows an error message to the player.
+     * @param message The error message
+     */
+    void showError(String message);
+
+    /**
+     * Shows that a card has been played.
+     * @param player The player who played the card
+     * @param card The card that was played
+     */
+    void showCardPlayed(Player player, Card card);
+
+    /**
+     * Checks if any player wants to play a Nope card.
+     * @param player The player who played the card
+     * @param card The card that was played
+     * @return true if a Nope card was played, false otherwise
+     */
+    boolean checkForNope(Player player, Card card);
+
+    /**
+     * Shows that a card was noped.
+     * @param player The player whose card was noped
+     * @param card The card that was noped
+     */
+    void showCardNoped(Player player, Card card);
+
+    /**
+     * Shows that a card was drawn.
+     * @param player The player who drew the card
+     * @param card The card that was drawn
+     */
+    void showCardDrawn(Player player, Card card);
+
+    /**
+     * Confirms if the player wants to use their defuse card.
+     * @param player The player who drew the exploding kitten
+     * @return true if player wants to use defuse, false otherwise
+     */
+    boolean confirmDefuse(Player player);
+
+    /**
+     * Prompts the player to select a position to insert the exploding kitten.
+     * @return The selected position (0-based)
+     */
+    int selectExplodingKittenPosition();
 } 

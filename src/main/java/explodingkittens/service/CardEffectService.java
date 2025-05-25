@@ -35,4 +35,17 @@ public class CardEffectService {
 
         card.effect(turnOrder, gameDeck);
     }
+
+    /**
+     * Handles the effect of a card when it is played.
+     *
+     * @param card The card to handle the effect for
+     * @param player The player who played the card
+     * @param ctx The game context class
+     * @throws IllegalArgumentException if either card or ctx is null
+     * @throws IllegalStateException if the game context is not properly initialized
+     */
+    public void executeCardEffect(Card card, Player player, GameContext ctx) {
+       
+    }
 }

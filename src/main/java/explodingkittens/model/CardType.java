@@ -14,5 +14,6 @@ public enum CardType {
     CAT_CARD,
     EXPLODING_KITTEN,
     SWITCH_DECK_BY_HALF,
+    DRAW_FROM_BOTTOM,
     SNATCH
 }

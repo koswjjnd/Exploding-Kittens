@@ -1,4 +1,4 @@
-package explodingkittens.model.card;
+package explodingkittens.model;
 
 import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
