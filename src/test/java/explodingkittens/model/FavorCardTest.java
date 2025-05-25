@@ -42,6 +42,9 @@ class FavorCardTest {
     @Mock
     private Card mockCard4;
     
+    @Mock
+    private Card mockCard5;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -54,6 +57,7 @@ class FavorCardTest {
         when(mockCard2.getType()).thenReturn(CardType.CAT_CARD);
         when(mockCard3.getType()).thenReturn(CardType.CAT_CARD);
         when(mockCard4.getType()).thenReturn(CardType.CAT_CARD);
+        when(mockCard5.getType()).thenReturn(CardType.CAT_CARD);
     }
     
     /**
@@ -246,6 +250,38 @@ class FavorCardTest {
         // Assert
         verify(mockTargetPlayer1).getHand();
         verify(mockCurrentPlayer).receiveCard(mockCard4);
+        verify(mockView).promptTargetPlayer(anyList());
+        verify(mockView).promptCardSelection(anyList());
+    }
+
+    /**
+     * Test Case 8: turnOrder = 3 players, targetPlayer has 5 cards
+     * Expected: Card transferred to current player
+     * 
+     * This test verifies that when there are three players and the target player has five cards,
+     * the selected card is successfully transferred to the current player.
+     */
+    @Test
+    void testEffectWithThreePlayersAndFiveCards() {
+        // Arrange
+        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
+        List<Card> targetHand = new ArrayList<>();
+        targetHand.add(mockCard1);
+        targetHand.add(mockCard2);
+        targetHand.add(mockCard3);
+        targetHand.add(mockCard4);
+        targetHand.add(mockCard5);
+        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
+        when(mockView.promptCardSelection(anyList())).thenReturn(4); // Select fifth card
+        
+        // Act
+        favorCard.effect(turnOrder, mockDeck);
+        
+        // Assert
+        verify(mockTargetPlayer1).getHand();
+        verify(mockCurrentPlayer).receiveCard(mockCard5);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
     }
