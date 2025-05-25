@@ -53,6 +53,15 @@ public class ShuffleCardTest {
         assertEquals(0, deck.getCardCounts().size(), "Empty deck remains empty after shuffle");
     }
 
-    
+    @Test
+    void testEffectOnSingleCardDeck() {
+        deck.addCard(new DefuseCard());
+        List<Card> originalOrder = new ArrayList<>(deck.getCards());
+
+        shuffleCard.effect(dummyPlayers, deck);
+
+        // 单张牌顺序保持一致
+        assertEquals(originalOrder, deck.getCards(), "Single card deck should remain the same after shuffle");
+    }
     
 }
