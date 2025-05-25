@@ -83,7 +83,8 @@ class GameSetupControllerTest {
     }
 
     @Test
-    void testSetupGameWithInvalidNickname() throws InvalidNicknameException, InvalidDeckException, InvalidPlayerCountException {
+    void testSetupGameWithInvalidNickname() 
+            throws InvalidNicknameException, InvalidDeckException, InvalidPlayerCountException {
         // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("Player1");
@@ -117,7 +118,8 @@ class GameSetupControllerTest {
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
         Player mockPlayer = mock(Player.class);
         when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
-        doThrow(new InvalidDeckException()).when(dealService).dealDefuses(any(Deck.class), anyList());
+        doThrow(new InvalidDeckException())
+            .when(dealService).dealDefuses(any(Deck.class), anyList());
         
         // Execute and verify
         assertThrows(InvalidDeckException.class, () -> controller.setupGame());
