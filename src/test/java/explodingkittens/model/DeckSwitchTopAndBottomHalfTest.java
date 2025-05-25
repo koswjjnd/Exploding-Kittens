@@ -20,5 +20,15 @@ public class DeckSwitchTopAndBottomHalfTest {
         assertTrue(deck.getCards().isEmpty(), "Empty deck remains empty after switch");
     }
 
+    @Test
+    public void testSwitchTopAndBottomHalf_oneCard() {
+        Card card = new AttackCard();
+        deck.addCard(card);
+
+        deck.switchTopAndBottomHalf();
+
+        assertEquals(List.of(card), deck.getCards(), "One card deck should remain unchanged");
+    }
+
     
 }
