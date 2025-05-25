@@ -102,7 +102,19 @@ public class SeeTheFutureCardTest {
         assertTrue(output.contains("No view available to display future cards!"), "Should print fallback message");
     }
 
+    @Test
+    public void testEffectWithView_emptyDeck() {
+        FakeSeeTheFutureView fakeView = new FakeSeeTheFutureView();
+        seeTheFutureCard.setView(fakeView);
+
+        seeTheFutureCard.effect(List.of(), deck);
+
+        assertTrue(fakeView.wasCalled, "View's display() should be called");
+        assertEquals(0, fakeView.cardsShown.size(), "Should show empty list");
+    }
+
     
+
 
     // ========== Helper Fake View ==========
     private static class FakeSeeTheFutureView extends SeeTheFutureView {
