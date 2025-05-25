@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 /**
  * View class for handling Favor card interactions.
  * Responsible for displaying available players and getting user input.
+ * When a Favor card is played, the current player selects a target player,
+ * and the target player must choose a card from their hand to give to the current player.
  */
 public class FavorCardView {
     private final Scanner scanner;
@@ -31,7 +33,8 @@ public class FavorCardView {
     }
     
     /**
-     * Prompts the user to select a target player from the available players.
+     * Prompts the current player to select a target player from the available players.
+     * The target player will be asked to give a card to the current player.
      * 
      * @param availablePlayers The list of players that can be selected
      * @return The index of the selected player in the availablePlayers list
@@ -44,11 +47,11 @@ public class FavorCardView {
         }
         
         // Display all available players
-        System.out.println("\nAvailable players:");
+        System.out.println("\nAvailable players to ask for a favor:");
         for (int i = 0; i < availablePlayers.size(); i++) {
             System.out.printf("%d: %s%n", i, availablePlayers.get(i).getName());
         }
-        System.out.print("Please select a player (enter number): ");
+        System.out.print("Please select a player to ask for a favor (enter number): ");
         
         String input = userInput != null ? userInput : scanner.nextLine();
         try {
@@ -66,7 +69,7 @@ public class FavorCardView {
     }
 
     /**
-     * Prompts the user to select a card from the target player's hand.
+     * Prompts the target player to choose a card from their hand to give to the current player.
      * 
      * @param cards The list of cards in the target player's hand
      * @return The index of the selected card in the cards list
@@ -79,11 +82,11 @@ public class FavorCardView {
         }
         
         // Display all available cards
-        System.out.println("\nAvailable cards:");
+        System.out.println("\nChoose a card to give to the current player:");
         for (int i = 0; i < cards.size(); i++) {
             System.out.printf("%d: %s%n", i, cards.get(i).getType());
         }
-        System.out.print("Please select a card (enter number): ");
+        System.out.print("Please select a card to give (enter number): ");
         
         String input = userInput != null ? userInput : scanner.nextLine();
         try {

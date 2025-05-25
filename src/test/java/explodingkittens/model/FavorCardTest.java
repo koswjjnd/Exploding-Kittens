@@ -76,7 +76,7 @@ class FavorCardTest {
      * Expected: IllegalStateException
      * 
      * This test verifies that when the target player has an empty hand,
-     * an IllegalStateException is thrown.
+     * they cannot give any cards, and an IllegalStateException is thrown.
      */
     @Test
     void testEffectWithEmptyHand() {
@@ -96,7 +96,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when the target player has one card,
-     * the card is successfully transferred to the current player.
+     * they can give that card to the current player.
      */
     @Test
     void testEffectWithOneCard() {
@@ -122,7 +122,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when the target player has two cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithTwoCards() {
@@ -149,7 +149,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has one card,
-     * the card is successfully transferred to the current player.
+     * they can give that card to the current player.
      */
     @Test
     void testEffectWithThreePlayers() {
@@ -176,7 +176,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has two cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndTwoCards() {
@@ -204,7 +204,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has three cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndThreeCards() {
@@ -233,7 +233,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has four cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndFourCards() {
@@ -263,7 +263,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has five cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndFiveCards() {
@@ -294,7 +294,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has six cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndSixCards() {
@@ -326,7 +326,7 @@ class FavorCardTest {
      * Expected: Card transferred to current player
      * 
      * This test verifies that when there are three players and the target player has seven cards,
-     * the selected card is successfully transferred to the current player.
+     * they can choose one to give to the current player.
      */
     @Test
     void testEffectWithThreePlayersAndSevenCards() {
