@@ -113,6 +113,18 @@ public class SeeTheFutureCardTest {
         assertEquals(0, fakeView.cardsShown.size(), "Should show empty list");
     }
 
+    @Test
+    public void testEffectWithView_oneCard() {
+        FakeSeeTheFutureView fakeView = new FakeSeeTheFutureView();
+        seeTheFutureCard.setView(fakeView);
+
+        deck.addCard(new AttackCard());
+        seeTheFutureCard.effect(List.of(), deck);
+
+        assertTrue(fakeView.wasCalled);
+        assertEquals(1, fakeView.cardsShown.size(), "Should show 1 card");
+    }
+
     
 
 
