@@ -31,7 +31,6 @@ public class GameSetupController {
     private final DealService dealService;
     private static final int MIN_PLAYERS = 2;
     private static final int MAX_PLAYERS = 4;
-    private Deck gameDeck;
 
     /**
      * Constructs a GameSetupController with the given view and player service.
@@ -50,12 +49,52 @@ public class GameSetupController {
     }
 
     /**
+     * Sets up the game by initializing players, deck, and turn order.
+     * @throws InvalidPlayerCountException when the player count is invalid
+     * @throws InvalidDeckException when the deck setup fails
+     */
+    public void setupGame() throws InvalidPlayerCountException, InvalidDeckException {
+        // Get player count
+        int playerCount = view.promptPlayerCount();
+        if (playerCount < MIN_PLAYERS || playerCount > MAX_PLAYERS) {
+            throw new InvalidPlayerCountException(
+                "Number of players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS);
+        }
+
+        // Create players
+        List<Player> players = createPlayers(playerCount);
+
+        // Initialize deck
+        Deck gameDeck = new Deck();
+        gameDeck.initializeBaseDeck(playerCount);
+        
+        // Deal defuse cards to players
+        dealService.dealDefuses(gameDeck, players);
+        
+        // Shuffle the deck
+        gameDeck.shuffle(new Random());
+        
+        // Deal initial hands
+        dealService.dealInitialHands(gameDeck, players, 5);
+        
+        // Add exploding kittens (number of players - 1)
+        gameDeck.addExplodingKittens(playerCount - 1);
+        
+        // Final shuffle
+        gameDeck.shuffle(new Random());
+
+        // Initialize GameContext with game state
+        GameContext.setGameDeck(gameDeck);
+        GameContext.setTurnOrder(players);
+        GameContext.setGameOver(false);
+    }
+
+    /**
      * Creates a list of players by prompting for nicknames and validating them.
-     * Retries if the nickname is invalid.
      * @param count the number of players to create
      * @return a list of created Player objects
      */
-    public List<Player> createPlayers(int count) {
+    private List<Player> createPlayers(int count) {
         List<Player> players = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             boolean playerCreated = false;
@@ -72,87 +111,5 @@ public class GameSetupController {
             }
         }
         return players;
-    }
-
-	/**
-	 * Initializes the turn order for the game by randomly shuffling the player
-	 * list.
-	 * The shuffled order is stored in the global game context for use during
-	 * gameplay.
-	 * 
-	 * @param players The list of players participating in the game. Must not be
-	 *                null or empty.
-	 * @throws IllegalArgumentException if the players list is null or empty
-	 */
-	public void initializeTurnOrder(List<Player> players) {
-		if (players == null || players.isEmpty()) {
-			throw new IllegalArgumentException("Player list cannot be null or empty.");
-		}
-
-		List<Player> turnOrder = new ArrayList<>(players);
-		Collections.shuffle(turnOrder);
-
-		GameContext.setTurnOrder(turnOrder);
-	}
-
-    /**
-     * Prepares the game deck based on the number of players
-     * @param count the number of players
-     * @param players the list of players to deal cards to
-     * @throws InvalidPlayerCountException when the player count is invalid
-     */
-    public void prepareDeck(int count, List<Player> players) throws InvalidPlayerCountException {
-        if (count < MIN_PLAYERS || count > MAX_PLAYERS) {
-            throw new InvalidPlayerCountException(
-                "Number of players must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS);
-        }
-
-        gameDeck = new Deck();  // Use public deck variable
-        gameDeck.initializeBaseDeck(count);
-        
-        // Deal defuse cards to players
-        dealService.dealDefuses(gameDeck, players);
-        
-        // Shuffle the deck
-        gameDeck.shuffle(new Random());
-        
-        // Deal initial hands
-        dealService.dealInitialHands(gameDeck, players, 5);
-        
-        // Add exploding kittens (number of players - 1)
-        gameDeck.addExplodingKittens(count - 1);
-        
-        // Final shuffle
-        gameDeck.shuffle(new Random());
-    }
-
-    /**
-     * Sets up the game by prompting for player count, creating players,
-     * preparing the deck, and initializing turn order.
-     * @throws InvalidPlayerCountException if the player count is invalid
-     * @throws InvalidNicknameException if any player nickname is invalid
-     * @throws InvalidDeckException if deck preparation fails
-     */
-    public void setupGame() throws InvalidPlayerCountException, InvalidNicknameException, 
-            InvalidDeckException {
-        int count = view.promptPlayerCount();
-        playerService.validateCount(count);
-        
-        List<Player> players = createPlayers(count);
-        
-        prepareDeck(count, players);
-        GameContext.setGameDeck(gameDeck);
-        initializeTurnOrder(players);
-    }
-
-    /**
-     * Gets the current game deck.
-     * @return a copy of the current game deck
-     */
-    public Deck getGameDeck() {
-        if (gameDeck == null) {
-            return null;
-        }
-        return new Deck(gameDeck);
     }
 }

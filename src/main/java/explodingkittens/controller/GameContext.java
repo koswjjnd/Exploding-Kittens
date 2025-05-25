@@ -8,10 +8,8 @@ import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
 
 /**
- * GameContext is a singleton class that manages the global state of the game,
- * particularly the turn order of players. It provides methods to set and
- * retrieve the current turn order, ensuring proper game flow and player
- * sequencing.
+ * GameContext is a singleton class that manages the global state of the game.
+ * It provides methods to access and modify game state in a controlled manner.
  * 
  * @author Your Name
  * @version 1.0
@@ -90,7 +88,10 @@ public class GameContext {
 	 * @return true if the game is over, false otherwise
 	 */
 	public static boolean isGameOver() {
-		return gameOver || turnOrder == null || turnOrder.size() <= 1;
+		if (turnOrder == null) {
+			return false;
+		}
+		return gameOver || turnOrder.size() <= 1;
 	}
 
 	/**
@@ -156,5 +157,16 @@ public class GameContext {
 	 */
 	public static void setGameOver(boolean over) {
 		gameOver = over;
+	}
+
+	/**
+	 * Resets the game context to its initial state.
+	 * This should be called when starting a new game.
+	 */
+	public static void reset() {
+		turnOrder = null;
+		gameDeck = null;
+		currentPlayerIndex = 0;
+		gameOver = false;
 	}
 }

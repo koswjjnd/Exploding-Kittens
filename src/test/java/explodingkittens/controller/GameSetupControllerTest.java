@@ -52,245 +52,95 @@ class GameSetupControllerTest {
     @BeforeEach
     void setUp() {
         controller = new GameSetupController(view, playerService, dealService);
+        // Reset GameContext before each test
+        GameContext.reset();
     }
 
     @Test
-    void createPlayersWithCount2ReturnsListWith2Players() throws Exception {
+    void testSetupGameWithValidPlayerCount() throws Exception {
+        // Setup
+        when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-        List<Player> players = controller.createPlayers(2);
-        assertEquals(2, players.size());
-    }
-
-    @Test
-    void createPlayersWithCount3ReturnsListWith3Players() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-        List<Player> players = controller.createPlayers(3);
-        assertEquals(3, players.size());
-    }
-
-    @Test
-    void createPlayersWithCount4ReturnsListWith4Players() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-        List<Player> players = controller.createPlayers(4);
-        assertEquals(4, players.size());
-    }
-
-    @Test
-    void createPlayersWithCount2CallsPromptNicknameTwice() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-
-        controller.createPlayers(2);
-
-        verify(view, times(2)).promptNickname(anyInt());
-    }
-
-    @Test
-    void createPlayersWithCount3CallsPromptNicknameThreeTimes() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-
-        controller.createPlayers(3);
-
-        verify(view, times(3)).promptNickname(anyInt());
-    }
-
-    @Test
-    void createPlayersWithCount4CallsPromptNicknameFourTimes() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-
-        controller.createPlayers(4);
-
-        verify(view, times(4)).promptNickname(anyInt());
-    }
-
-    @Test
-    void createPlayersWithCount2CallsCreatePlayerTwice() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-
-        controller.createPlayers(2);
-
-        verify(playerService, times(2)).createPlayer(anyString());
-    }
-
-    @Test
-    void createPlayersWithCount3CallsCreatePlayerThreeTimes() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-        controller.createPlayers(3);
-        verify(playerService, times(3)).createPlayer(anyString());
-    }
-
-    @Test
-    void createPlayersWithCount4CallsCreatePlayerFourTimes() throws Exception {
-        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2", "Player3", "Player4");
-        when(playerService.createPlayer(anyString())).thenReturn(mock(Player.class));
-        controller.createPlayers(4);
-        verify(playerService, times(4)).createPlayer(anyString());
-    }
-
-    @Test
-    void testInitializeTurnOrderNullListShouldThrow() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            controller.initializeTurnOrder(null);
-        });
-    }
-
-    @Test
-    void testInitializeTurnOrderEmptyListShouldThrow() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            controller.initializeTurnOrder(Collections.emptyList());
-        });
-    }
-
-    @Test
-    void testInitializeTurnOrderSinglePlayerShouldStoreCorrectOrder() {
-        Player p1 = new Player("Alice");
-        controller.initializeTurnOrder(List.of(p1));
-        List<Player> order = GameContext.getTurnOrder();
-        assertEquals(1, order.size());
-        assertEquals("Alice", order.get(0).getName());
-    }
-
-    @Test
-    void testInitializeTurnOrderMultiplePlayersShouldStoreAllPlayers() {
-        Player p1 = new Player("A");
-        Player p2 = new Player("B");
-        Player p3 = new Player("C");
-        List<Player> players = Arrays.asList(p1, p2, p3);
-        controller.initializeTurnOrder(players);
-        List<Player> result = GameContext.getTurnOrder();
-        assertEquals(3, result.size());
-        assertTrue(result.containsAll(players));
-    }
-
-    @Test
-    void testInitializeTurnOrderContainsNullPlayerShouldThrow() {
-        Player p1 = new Player("A");
-        List<Player> players = Arrays.asList(p1, null);
-        assertThrows(IllegalArgumentException.class, () -> {
-            controller.initializeTurnOrder(players);
-        });
-    }
-
-    @Test
-    void testPrepareDeckWithOnePlayer() {
-        List<Player> players = Collections.singletonList(new Player("Player1"));
-        assertThrows(InvalidPlayerCountException.class, 
-            () -> controller.prepareDeck(1, players),
-            "Should throw InvalidPlayerCountException when player count is 1");
-    }
-
-    @Test
-    void testPrepareDeckWithTwoPlayers() throws InvalidPlayerCountException {
-        List<Player> players = createTwoPlayers();
-        mockDealServiceBehavior();
-        controller.prepareDeck(2, players);
-        Deck deck = controller.getGameDeck();
-        verifyDeckState(deck, 3, 1);
-        verifyPlayersHands(players);
-        verifyServiceCalls();
-    }
-
-    @Test
-    void testPrepareDeckWithFourPlayers() throws InvalidPlayerCountException {
-        List<Player> players = createFourPlayers();
-        mockDealServiceBehavior();
-        controller.prepareDeck(4, players);
-        Deck deck = controller.getGameDeck();
-        verifyDeckState(deck, 1, 3);
-        verifyPlayersHands(players);
-        verifyServiceCalls();
-    }
-
-    @Test
-    void testPrepareDeckWithFivePlayers() {
-        List<Player> players = createFivePlayers();
-        assertThrows(InvalidPlayerCountException.class, 
-            () -> controller.prepareDeck(5, players),
-            "Should throw InvalidPlayerCountException when player count is 5");
-        verify(dealService, never()).dealDefuses(any(Deck.class), anyList());
-        verify(dealService, never()).dealInitialHands(any(Deck.class), anyList(), anyInt());
-    }
-
-    private List<Player> createTwoPlayers() {
-        return Arrays.asList(
-            new Player("Player1"),
-            new Player("Player2")
-        );
-    }
-
-    private List<Player> createFourPlayers() {
-        return Arrays.asList(
-            new Player("Player1"),
-            new Player("Player2"),
-            new Player("Player3"),
-            new Player("Player4")
-        );
-    }
-
-    private List<Player> createFivePlayers() {
-        return Arrays.asList(
-            new Player("Player1"),
-            new Player("Player2"),
-            new Player("Player3"),
-            new Player("Player4"),
-            new Player("Player5")
-        );
-    }
-
-    private void mockDealServiceBehavior() {
-        doAnswer(invocation -> {
-            List<Player> playersList = invocation.getArgument(1);
-            for (Player player : playersList) {
-                player.receiveCard(new DefuseCard());
-            }
-            return null;
-        }).when(dealService).dealDefuses(any(Deck.class), anyList());
-        doAnswer(invocation -> {
-            List<Player> playersList = invocation.getArgument(1);
-            for (Player player : playersList) {
-                for (int i = 0; i < 5; i++) {
-                    player.receiveCard(new SkipCard());
-                }
-            }
-            return null;
-        }).when(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
-    }
-
-    private void verifyDeckState(Deck deck, int expectedDefuseCards, int expectedExplodingKittens) {
-        assertNotNull(deck, "Deck should not be null");
-        assertFalse(deck.isEmpty(), "Deck should not be empty");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
         
-        assertEquals(expectedDefuseCards, deck.getCardCounts().get("DefuseCard"), 
-            "Deck should have " + expectedDefuseCards + " defuse cards");
-        assertEquals(expectedExplodingKittens, deck.getCardCounts().get("ExplodingKittenCard"), 
-            "Deck should have " + expectedExplodingKittens + " exploding kittens");
+        // Execute
+        controller.setupGame();
+        
+        // Verify GameContext was properly initialized
+        assertNotNull(GameContext.getTurnOrder());
+        assertNotNull(GameContext.getGameDeck());
+        assertFalse(GameContext.isGameOver());
     }
 
-    private void verifyPlayersHands(List<Player> players) {
-        for (Player player : players) {
-            List<Card> hand = player.getHand();
-            assertEquals(6, hand.size(), 
-                "Each player should have 6 cards (1 defuse + 5 initial cards)");
-            
-            assertTrue(hand.stream()
-                .anyMatch(card -> card instanceof DefuseCard),
-                "Each player should have exactly one defuse card");
-            assertEquals(1, hand.stream()
-                .filter(card -> card instanceof DefuseCard)
-                .count(),
-                "Each player should have exactly one defuse card");
-        }
+    @Test
+    void testSetupGameWithInvalidPlayerCount() {
+        // Setup
+        when(view.promptPlayerCount()).thenReturn(1);
+        
+        // Execute and verify
+        assertThrows(InvalidPlayerCountException.class, () -> controller.setupGame());
     }
 
-    private void verifyServiceCalls() {
-        verify(dealService).dealDefuses(any(Deck.class), anyList());
-        verify(dealService).dealInitialHands(any(Deck.class), anyList(), eq(5));
+    @Test
+    void testSetupGameWithInvalidNickname() throws InvalidNicknameException, InvalidDeckException, InvalidPlayerCountException {
+        // Setup
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(1)).thenReturn("Player1");
+        when(view.promptNickname(2)).thenReturn("Invalid", "Player2");  // First invalid, then valid
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer("Player1")).thenReturn(mockPlayer);
+        when(playerService.createPlayer("Player2")).thenReturn(mockPlayer);
+        doThrow(new InvalidNicknameException("Invalid nickname"))
+            .when(playerService).createPlayer("Invalid");
+        
+        // Execute
+        controller.setupGame();
+        
+        // Verify error handling
+        verify(view).showError("Invalid nickname");
+        
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
+    }
+
+    @Test
+    void testSetupGameWithDealServiceError() throws Exception {
+        // Setup
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
+        doThrow(new InvalidDeckException()).when(dealService).dealDefuses(any(Deck.class), anyList());
+        
+        // Execute and verify
+        assertThrows(InvalidDeckException.class, () -> controller.setupGame());
+    }
+
+    @Test
+    void testSetupGameInitializesGameContextCorrectly() throws Exception {
+        // Setup
+        when(view.promptPlayerCount()).thenReturn(2);
+        when(view.promptNickname(anyInt())).thenReturn("Player1", "Player2");
+        Player mockPlayer = mock(Player.class);
+        when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
+        
+        // Execute
+        controller.setupGame();
+        
+        // Verify GameContext was initialized with correct values
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
     }
 }

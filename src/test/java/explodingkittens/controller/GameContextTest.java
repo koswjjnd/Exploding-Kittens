@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
@@ -28,6 +29,9 @@ class GameContextTest {
 		// Create test deck
 		deck = new Deck();
 		deck.initializeBaseDeck(3);
+		
+		// Reset GameContext before each test
+		GameContext.reset();
 	}
 
 	@Test
@@ -132,5 +136,37 @@ class GameContextTest {
 	@Test
 	void testInvalidGameDeck() {
 		assertThrows(IllegalArgumentException.class, () -> GameContext.setGameDeck(null));
+	}
+
+	@Test
+	void testReset() {
+		// Setup initial state
+		GameContext.setTurnOrder(players);
+		GameContext.setGameDeck(deck);
+		GameContext.setGameOver(true);
+		
+		// Reset
+		GameContext.reset();
+		
+		// Verify state is reset
+		assertNull(GameContext.getTurnOrder());
+		assertNull(GameContext.getGameDeck());
+		assertFalse(GameContext.isGameOver());
+	}
+
+	@Test
+	void testResetAfterGameOver() {
+		// Setup initial state
+		GameContext.setTurnOrder(players);
+		GameContext.setGameDeck(deck);
+		GameContext.setGameOver(true);
+		
+		// Reset
+		GameContext.reset();
+		
+		// Verify game is ready for new game
+		assertFalse(GameContext.isGameOver());
+		assertNull(GameContext.getTurnOrder());
+		assertNull(GameContext.getGameDeck());
 	}
 }
