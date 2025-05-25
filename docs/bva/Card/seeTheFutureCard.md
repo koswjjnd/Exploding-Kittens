@@ -18,5 +18,5 @@
 | Test Case 2 | peekTopTwoCards(deck) when deck size = 1         | returns list of 1 card                       |      yes        |
 | Test Case 3 | peekTopTwoCards(deck) when deck size = 2         | returns list of 2 cards                      |     yes         |
 | Test Case 4 | peekTopTwoCards(deck) when deck size > 2         | returns top 2 cards                          |     yes         |
-| Test Case 5 | peekTopTwoCards(null)                            | throws IllegalArgumentException              |              |
+| Test Case 5 | peekTopTwoCards(null)                            | throws IllegalArgumentException              |     yes         |
 
