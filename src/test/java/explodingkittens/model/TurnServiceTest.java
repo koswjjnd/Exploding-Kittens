@@ -208,7 +208,7 @@ class TurnServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.drawCard(player, null));
     }
-    
+
     @Test
     void drawCard_NormalCard_AddsToHand() throws EmptyDeckException {
         when(deck.drawOne()).thenReturn(card);
@@ -217,5 +217,13 @@ class TurnServiceTest {
         
         verify(view).showCardDrawn(player, card);
         verify(player).receiveCard(card);
+    }
+
+    @Test
+    void drawCard_EmptyDeck_ThrowsException() throws EmptyDeckException {
+        when(deck.drawOne()).thenThrow(new EmptyDeckException());
+        
+        assertThrows(EmptyDeckException.class, () ->
+            turnService.drawCard(player, gameContext));
     }
 } 
