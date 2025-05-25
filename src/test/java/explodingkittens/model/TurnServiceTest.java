@@ -5,6 +5,7 @@ import explodingkittens.exceptions.EmptyDeckException;
 import explodingkittens.exceptions.InvalidCardException;
 import explodingkittens.service.CardEffectService;
 import explodingkittens.view.GameView;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -46,6 +47,11 @@ class TurnServiceTest {
         turnService = new TurnService(view, cardEffectService);
         mockedGameContext = mockStatic(GameContext.class);
         mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedGameContext.close();
     }
 
     @Test
@@ -190,4 +196,11 @@ class TurnServiceTest {
             turnService.playCard(player, card, gameContext));
     }
 
+    // Tests for drawCard method
+    @Test
+    void drawCard_NullPlayer_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            turnService.drawCard(null, gameContext));
+    }
+    
 } 

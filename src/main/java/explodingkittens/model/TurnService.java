@@ -65,7 +65,6 @@ public class TurnService {
      * @param card The card to play
      * @param ctx The game context
      * @throws InvalidCardException if the card cannot be played
-     * @throws IllegalArgumentException if player, card, or ctx is null
      */
     public void playCard(Player player, Card card, GameContext ctx) throws InvalidCardException {
         if (player == null) {
@@ -77,21 +76,22 @@ public class TurnService {
         if (ctx == null) {
             throw new IllegalArgumentException("GameContext cannot be null");
         }
-        
+
         // Show the card being played
         view.showCardPlayed(player, card);
-        
-        // Remove card from hand first
-        player.getHand().remove(card);
         
         // Check for Nope cards
         if (view.checkForNope(player, card)) {
             view.showCardNoped(player, card);
+            player.getHand().remove(card);
             return;
         }
         
         // Execute card effect
         cardEffectService.executeCardEffect(card, player, ctx);
+        
+        // Remove card from hand
+        player.getHand().remove(card);
     }
 
     /**
@@ -101,9 +101,16 @@ public class TurnService {
      * @param ctx The game context
      * @throws EmptyDeckException if the deck is empty
      */
-    public void drawCard(Player player, GameContext ctx) {
+    public void drawCard(Player player, GameContext ctx) throws EmptyDeckException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (ctx == null) {
+            throw new IllegalArgumentException("GameContext cannot be null");
+        }
+
         try {
-            Card drawnCard = GameContext.getGameDeck().drawOne();
+            Card drawnCard = ctx.getGameDeck().drawOne();
             view.showCardDrawn(player, drawnCard);
             
             if (drawnCard instanceof ExplodingKittenCard) {
