@@ -7,6 +7,7 @@ import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 /**
@@ -16,6 +17,7 @@ import java.util.List;
 public class GameController {
     private final GameView view;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     private final GameSetupController setupController;
 
     /**
