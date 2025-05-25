@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 class FavorCardViewTest {
@@ -32,11 +33,29 @@ class FavorCardViewTest {
     void testPromptTargetPlayerWithOnePlayer() {
         // Arrange
         List<Player> availablePlayers = Collections.singletonList(mockPlayer);
+        view.setUserInput("0");
         
         // Act
         int result = view.promptTargetPlayer(availablePlayers);
         
         // Assert
         assertEquals(0, result, "Should return 0 when there is only one player");
+    }
+
+    /**
+     * Test Case 2: availablePlayers = 1 player, input = 1
+     * Expected: Throws IllegalArgumentException
+     */
+    @Test
+    void testPromptTargetPlayerWithOnePlayerInvalidInput() {
+        // Arrange
+        List<Player> availablePlayers = Collections.singletonList(mockPlayer);
+        view.setUserInput("1");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptTargetPlayer(availablePlayers),
+            "Should throw IllegalArgumentException for invalid input"
+        );
     }
 } 
