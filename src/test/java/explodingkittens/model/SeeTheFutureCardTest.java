@@ -43,5 +43,19 @@ public class SeeTheFutureCardTest {
         assertEquals(card2, topCards.get(1));
     }
 
+    @Test
+    public void testPeekTopTwoCards_moreThanTwoCards() {
+        Card card1 = new AttackCard();
+        Card card2 = new SkipCard();
+        Card card3 = new DefuseCard();
+        deck.addCard(card1);
+        deck.addCard(card2);
+        deck.addCard(card3);
+        List<Card> topCards = seeTheFutureCard.peekTopTwoCards(deck);
+        assertEquals(2, topCards.size(), "Should return top 2 cards");
+        assertEquals(card1, topCards.get(0));
+        assertEquals(card2, topCards.get(1));
+    }
+
     
 }
