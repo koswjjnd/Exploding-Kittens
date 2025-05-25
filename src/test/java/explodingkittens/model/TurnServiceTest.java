@@ -113,6 +113,20 @@ class TurnServiceTest {
         assertThrows(EmptyDeckException.class, () -> 
             turnService.takeTurn(player, gameContext));
     }
+    
+    @Test
+    void takeTurn_PlayerEndsTurn_NoMoreCardsPlayed() throws EmptyDeckException {
+        List<Card> hand = new ArrayList<>();
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand)).thenReturn(null);
+        when(deck.drawOne()).thenReturn(card);
+        
+        turnService.takeTurn(player, gameContext);
+        
+        verify(cardEffectService, never()).executeCardEffect(any(), any(), any());
+        verify(player).receiveCard(card);
+    }
 
    
 } 
