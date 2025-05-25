@@ -29,7 +29,9 @@ public class DrawFromBottomCard extends Card {
             throw new IllegalArgumentException("Deck cannot be null");
         }
         if (deck.getCards().isEmpty()) {
-            throw new IllegalStateException("Cannot draw from an empty deck");
+            throw new IllegalStateException(
+                "Cannot draw from an empty deck"
+            );
         }
         Player currentPlayer = turnOrder.get(0);
         // Remove and get the bottom card
@@ -37,9 +39,4 @@ public class DrawFromBottomCard extends Card {
         Card bottomCard = deck.getCards().remove(lastIndex);
         currentPlayer.receiveCard(bottomCard);
     }
-
-    /**
-     * Used as a defense to Attack: each call ends 1 attack turn.
-     * This can be handled by the TurnService or game logic by calling effect() for each card played.
-     */
 }
