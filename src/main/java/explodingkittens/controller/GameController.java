@@ -7,8 +7,6 @@ import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 
 /**
  * GameController manages the main game loop and game state for Exploding Kittens.
@@ -16,29 +14,20 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class GameController {
     private final GameView view;
-
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
-    private final GameSetupController setupController;
-
     /**
-     * Constructs a GameController with the given view and setup controller.
+     * Constructs a GameController with the given view.
      * @param view the view to interact with the user
-     * @param setupController the controller for game setup
      */
-    public GameController(GameView view, GameSetupController setupController) {
+    public GameController(GameView view) {
         this.view = view;
-        this.setupController = setupController;
     }
 
     /**
-     * Starts the game by initializing setup and running the main game loop.
+     * Starts the game by running the main game loop.
      * @throws GameOverException if the game ends unexpectedly
      */
     public void start() throws GameOverException {
         try {
-            // Initialize game setup
-            setupController.setupGame();
-            
             // Main game loop
             while (!GameContext.isGameOver()) {
                 Player currentPlayer = GameContext.getCurrentPlayer();
@@ -78,7 +67,6 @@ public class GameController {
             if (!player.isAlive()) {
                 GameContext.removePlayer(player);
                 view.displayPlayerEliminated(player);
-                break;
             }
             
             // Decrement remaining turns

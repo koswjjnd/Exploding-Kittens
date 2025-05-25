@@ -7,8 +7,6 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,8 +19,6 @@ import explodingkittens.model.CatCard;
 import explodingkittens.model.CatType;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
-import explodingkittens.exceptions.InvalidPlayerCountException;
-import explodingkittens.exceptions.InvalidNicknameException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +26,13 @@ class GameControllerTest {
     @Mock
     private GameView mockView;
     
-    @Mock
-    private GameSetupController mockSetupController;
-    
     private GameController gameController;
     private List<Player> testPlayers;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        gameController = new GameController(mockView, mockSetupController);
+        gameController = new GameController(mockView);
         
         // Create test players
         testPlayers = new ArrayList<>();
@@ -72,10 +65,8 @@ class GameControllerTest {
     }
 
     @Test
-    void testStartGame() throws GameOverException, 
-            InvalidPlayerCountException, InvalidNicknameException {
+    void testStartGame() throws GameOverException {
         // Setup
-        doNothing().when(mockSetupController).setupGame();
         when(mockView.promptPlayerAction(any())).thenReturn("draw");
         
         // Set up game context
@@ -93,14 +84,14 @@ class GameControllerTest {
         gameController.start();
         
         // Verify
-        verify(mockSetupController).setupGame();
         verify(mockView, atLeastOnce()).displayCurrentPlayer(any());
     }
 
     @Test
-    void testStartGameWithException() throws InvalidPlayerCountException, InvalidNicknameException {
+    void testStartGameWithException() {
         // Setup
-        doThrow(new RuntimeException("Setup failed")).when(mockSetupController).setupGame();
+        setupGameContext(testPlayers, 10);
+        when(mockView.promptPlayerAction(any())).thenThrow(new RuntimeException("Test exception"));
         
         // Execute and verify
         assertThrows(GameOverException.class, () -> gameController.start());
@@ -138,6 +129,7 @@ class GameControllerTest {
         List<Player> singlePlayer = new ArrayList<>();
         singlePlayer.add(winner);
         setupGameContext(singlePlayer, 10);
+        when(mockView.promptPlayerAction(any())).thenReturn("draw");
         
         // Execute
         gameController.start();
