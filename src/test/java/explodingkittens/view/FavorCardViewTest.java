@@ -1,5 +1,7 @@
 package explodingkittens.view;
 
+import explodingkittens.model.Card;
+import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,9 @@ class FavorCardViewTest {
     @Mock
     private Player mockPlayer3;
     
+    @Mock
+    private Card mockCard1;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -31,6 +36,7 @@ class FavorCardViewTest {
         when(mockPlayer1.getName()).thenReturn("TestPlayer1");
         when(mockPlayer2.getName()).thenReturn("TestPlayer2");
         when(mockPlayer3.getName()).thenReturn("TestPlayer3");
+        when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
     }
     
     /**
@@ -151,5 +157,25 @@ class FavorCardViewTest {
             view.promptTargetPlayer(availablePlayers),
             "Should throw IllegalArgumentException when entering non-numeric input"
         );
+    }
+
+    /**
+     * Test Case 1: cards = 1 card, input = 0
+     * Expected: Returns 0
+     * 
+     * This test verifies that when there is only one card,
+     * selecting index 0 returns the correct card index.
+     */
+    @Test
+    void testPromptCardSelectionWithOneCard() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1);
+        view.setUserInput("0");
+        
+        // Act
+        int result = view.promptCardSelection(cards);
+        
+        // Assert
+        assertEquals(0, result, "Should return 0 when there is only one card");
     }
 } 
