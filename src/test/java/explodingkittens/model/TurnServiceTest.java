@@ -135,4 +135,10 @@ class TurnServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.playCard(null, card, gameContext));
     }
+
+    @Test
+    void playCard_NullCard_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            turnService.playCard(player, null, gameContext));
+    }
 } 
