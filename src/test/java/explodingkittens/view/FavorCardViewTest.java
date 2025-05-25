@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 class FavorCardViewTest {
@@ -90,5 +91,25 @@ class FavorCardViewTest {
         
         // Assert
         assertEquals(2, result, "Should return 2 when selecting the last player");
+    }
+
+    /**
+     * Test Case 4: availablePlayers = 2 players, input = 2
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two available players,
+     * selecting an index beyond the list size throws an exception.
+     */
+    @Test
+    void testPromptTargetPlayerWithInvalidIndex() {
+        // Arrange
+        List<Player> availablePlayers = Arrays.asList(mockPlayer1, mockPlayer2);
+        view.setUserInput("2");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptTargetPlayer(availablePlayers),
+            "Should throw IllegalArgumentException when selecting index beyond list size"
+        );
     }
 } 
