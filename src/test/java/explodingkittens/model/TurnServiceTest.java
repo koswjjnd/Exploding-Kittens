@@ -176,4 +176,17 @@ class TurnServiceTest {
         verify(cardEffectService, never()).executeCardEffect(any(), any(), any());
         verify(hand).remove(card);
     }
+
+    @Test
+    void playCard_InvalidCard_ThrowsException() {
+        List<Card> hand = spy(new ArrayList<>());
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(view.checkForNope(player, card)).thenReturn(false);
+        doThrow(new RuntimeException("Invalid card")).when(cardEffectService)
+            .executeCardEffect(card, player, gameContext);
+
+        assertThrows(RuntimeException.class, () ->
+            turnService.playCard(player, card, gameContext));
+    }
 } 
