@@ -226,4 +226,24 @@ class FavorCardViewTest {
         // Assert
         assertEquals(2, result, "Should return 2 when selecting the last card");
     }
+
+    /**
+     * Test Case 4: cards = 2 cards, input = 2
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two cards,
+     * selecting an index beyond the list size throws an exception.
+     */
+    @Test
+    void testPromptCardSelectionWithInvalidIndex() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1, mockCard2);
+        view.setUserInput("2");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptCardSelection(cards),
+            "Should throw IllegalArgumentException when selecting index beyond list size"
+        );
+    }
 } 
