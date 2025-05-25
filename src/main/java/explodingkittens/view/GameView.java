@@ -70,4 +70,5 @@ public interface GameView {
      * @param card the card that was played
      */
     void displayPlayedCard(Player player, Card card);
+
 } 
