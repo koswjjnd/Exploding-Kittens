@@ -11,12 +11,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class TurnServiceTest {
 
@@ -55,13 +61,13 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_NullPlayer_ThrowsException() {
+    void testTakeTurnWithNullPlayer() {
         assertThrows(IllegalArgumentException.class, () -> 
             turnService.takeTurn(null, gameContext));
     }
 
     @Test
-    void takeTurn_EmptyHand_OnlyDrawsCard() throws EmptyDeckException {
+    void testTakeTurnWithEmptyHand() throws EmptyDeckException {
         when(player.getHand()).thenReturn(new ArrayList<>());
         when(deck.drawOne()).thenReturn(card);
         
@@ -72,11 +78,11 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_WithCards_PlaysAndDraws() throws EmptyDeckException, InvalidCardException {
+    void testTakeTurnWithCards() throws EmptyDeckException, InvalidCardException {
         List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
-        when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        when(view.selectCardToPlay(player, hand)).thenReturn(card, (Card) null);
         when(deck.drawOne()).thenReturn(card);
         
         turnService.takeTurn(player, gameContext);
@@ -86,7 +92,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_DrawsExplodingKitten_HandlesExplosion() throws EmptyDeckException {
+    void testTakeTurnDrawsExplodingKitten() throws EmptyDeckException {
         ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
         when(deck.drawOne()).thenReturn(explodingKitten);
         when(player.hasDefuse()).thenReturn(true);
@@ -100,11 +106,11 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_CardNoped_EffectNotExecuted() throws EmptyDeckException, InvalidCardException {
+    void testTakeTurnCardNoped() throws EmptyDeckException, InvalidCardException {
         List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
-        when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        when(view.selectCardToPlay(player, hand)).thenReturn(card, (Card) null);
         when(view.checkForNope(player, card)).thenReturn(true);
         
         turnService.takeTurn(player, gameContext);
@@ -114,7 +120,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_EmptyDeck_ThrowsException() throws EmptyDeckException {
+    void testTakeTurnEmptyDeck() throws EmptyDeckException {
         when(deck.drawOne()).thenThrow(new EmptyDeckException());
         
         assertThrows(EmptyDeckException.class, () -> 
@@ -122,7 +128,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void takeTurn_PlayerEndsTurn_NoMoreCardsPlayed() throws EmptyDeckException {
+    void testTakeTurnPlayerEndsTurn() throws EmptyDeckException {
         List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
@@ -135,27 +141,26 @@ class TurnServiceTest {
         verify(player).receiveCard(card);
     }
 
-    // Tests for playCard method
     @Test
-    void playCard_NullPlayer_ThrowsException() {
+    void testPlayCardWithNullPlayer() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.playCard(null, card, gameContext));
     }
 
     @Test
-    void playCard_NullCard_ThrowsException() {
+    void testPlayCardWithNullCard() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.playCard(player, null, gameContext));
     }
 
     @Test
-    void playCard_NullContext_ThrowsException() {
+    void testPlayCardWithNullContext() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.playCard(player, card, null));
     }
 
     @Test
-    void playCard_ValidCard_ExecutesEffect() throws InvalidCardException {
+    void testPlayCardWithValidCard() throws InvalidCardException {
         List<Card> hand = spy(new ArrayList<>());
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
@@ -169,7 +174,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void playCard_CardNoped_EffectNotExecuted() throws InvalidCardException {
+    void testPlayCardWithNopedCard() throws InvalidCardException {
         List<Card> hand = spy(new ArrayList<>());
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
@@ -184,7 +189,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void playCard_InvalidCard_ThrowsException() {
+    void testPlayCardWithInvalidCard() {
         List<Card> hand = spy(new ArrayList<>());
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
@@ -196,21 +201,20 @@ class TurnServiceTest {
             turnService.playCard(player, card, gameContext));
     }
 
-    // Tests for drawCard method
     @Test
-    void drawCard_NullPlayer_ThrowsException() {
+    void testDrawCardWithNullPlayer() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.drawCard(null, gameContext));
     }
 
     @Test
-    void drawCard_NullContext_ThrowsException() {
+    void testDrawCardWithNullContext() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.drawCard(player, null));
     }
 
     @Test
-    void drawCard_NormalCard_AddsToHand() throws EmptyDeckException {
+    void testDrawCardWithNormalCard() throws EmptyDeckException {
         when(deck.drawOne()).thenReturn(card);
         
         turnService.drawCard(player, gameContext);
@@ -220,7 +224,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void drawCard_EmptyDeck_ThrowsException() throws EmptyDeckException {
+    void testDrawCardWithEmptyDeck() throws EmptyDeckException {
         when(deck.drawOne()).thenThrow(new EmptyDeckException());
         
         assertThrows(EmptyDeckException.class, () ->
@@ -228,7 +232,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void drawCard_ExplodingKittenWithDefuse_Defuses() throws EmptyDeckException {
+    void testDrawCardWithExplodingKittenAndDefuse() throws EmptyDeckException {
         ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
         when(deck.drawOne()).thenReturn(explodingKitten);
         when(player.hasDefuse()).thenReturn(true);
@@ -243,7 +247,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void drawCard_ExplodingKittenWithoutDefuse_Dies() throws EmptyDeckException {
+    void testDrawCardWithExplodingKittenWithoutDefuse() throws EmptyDeckException {
         ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
         when(deck.drawOne()).thenReturn(explodingKitten);
         when(player.hasDefuse()).thenReturn(false);
@@ -255,7 +259,7 @@ class TurnServiceTest {
     }
 
     @Test
-    void drawCard_ExplodingKittenWithDefuseButRefuses_Dies() throws EmptyDeckException {
+    void testDrawCardWithExplodingKittenAndDefuseButRefuses() throws EmptyDeckException {
         ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
         when(deck.drawOne()).thenReturn(explodingKitten);
         when(player.hasDefuse()).thenReturn(true);

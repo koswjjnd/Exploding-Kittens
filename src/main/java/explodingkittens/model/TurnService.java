@@ -32,30 +32,34 @@ public class TurnService {
             throw new IllegalArgumentException("GameContext cannot be null");
         }
 
-        // Process cards in hand
+        processHand(player, ctx);
+        drawCard(player, ctx);
+        player.decrementLeftTurns();
+    }
+
+    /**
+     * Processes the cards in player's hand.
+     * 
+     * @param player The player whose hand to process
+     * @param ctx The game context
+     */
+    private void processHand(Player player, GameContext ctx) {
         List<Card> hand = player.getHand();
         if (!hand.isEmpty()) {
             while (true) {
-                // Get player's choice from view
                 Card selectedCard = view.selectCardToPlay(player, hand);
                 if (selectedCard == null) {
                     break; // Player chooses to end their turn
                 }
-                
                 try {
                     playCard(player, selectedCard, ctx);
-                } catch (InvalidCardException e) {
+                } 
+                catch (InvalidCardException e) {
                     view.showError(e.getMessage());
                     continue;
                 }
             }
         }
-
-        // Draw phase
-        drawCard(player, ctx);
-        
-        // Update turns
-        player.decrementLeftTurns();
     }
 
     /**
@@ -64,6 +68,7 @@ public class TurnService {
      * @param player The player playing the card
      * @param card The card to play
      * @param ctx The game context
+     * @throws IllegalArgumentException if player, card, or ctx is null
      * @throws InvalidCardException if the card cannot be played
      */
     public void playCard(Player player, Card card, GameContext ctx) throws InvalidCardException {
@@ -99,6 +104,7 @@ public class TurnService {
      * 
      * @param player The player drawing the card
      * @param ctx The game context
+     * @throws IllegalArgumentException if player or ctx is null
      * @throws EmptyDeckException if the deck is empty
      */
     public void drawCard(Player player, GameContext ctx) throws EmptyDeckException {
@@ -110,32 +116,51 @@ public class TurnService {
         }
 
         try {
-            Card drawnCard = ctx.getGameDeck().drawOne();
+            Card drawnCard = GameContext.getGameDeck().drawOne();
             view.showCardDrawn(player, drawnCard);
             
             if (drawnCard instanceof ExplodingKittenCard) {
                 handleExplodingKitten(player, (ExplodingKittenCard) drawnCard, ctx);
-            } else {
+            } 
+            else {
                 player.receiveCard(drawnCard);
             }
-        } catch (EmptyDeckException e) {
+        } 
+        catch (EmptyDeckException e) {
             throw new EmptyDeckException("Cannot draw card from empty deck");
         }
     }
 
     /**
      * Handles the case when a player draws an Exploding Kitten.
+     * 
+     * @param player The player who drew the Exploding Kitten
+     * @param card The Exploding Kitten card
+     * @param ctx The game context
+     * @throws IllegalArgumentException if player, card, or ctx is null
      */
-    private void handleExplodingKitten(Player player, ExplodingKittenCard card, GameContext ctx) {
+    void handleExplodingKitten(Player player, ExplodingKittenCard card, GameContext ctx) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (ctx == null) {
+            throw new IllegalArgumentException("GameContext cannot be null");
+        }
+
         if (player.hasDefuse()) {
             if (view.confirmDefuse(player)) {
                 player.useDefuse();
                 int position = view.selectExplodingKittenPosition();
-                GameContext.getGameDeck().insertAt(card, position);
-            } else {
+                ctx.getGameDeck().insertAt(card, position);
+            } 
+            else {
                 player.setAlive(false);
             }
-        } else {
+        } 
+        else {
             player.setAlive(false);
         }
     }

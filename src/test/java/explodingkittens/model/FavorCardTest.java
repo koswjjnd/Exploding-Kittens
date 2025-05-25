@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 class FavorCardTest {
     
-    private explodingkittens.model.card.FavorCard favorCard;
+    private explodingkittens.model.FavorCard favorCard;
     private List<Player> turnOrder;
     private Deck mockDeck;
     
@@ -59,7 +59,7 @@ class FavorCardTest {
         turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         
         // Create a new FavorCard instance and inject mockView
-        favorCard = new explodingkittens.model.card.FavorCard();
+        favorCard = new explodingkittens.model.FavorCard();
         // Use reflection to set the view field
         try {
             java.lang.reflect.Field viewField = favorCard.getClass().getDeclaredField("view");
