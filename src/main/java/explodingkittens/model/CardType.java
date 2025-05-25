@@ -13,4 +13,5 @@ public enum CardType {
     NOPE,
     CAT_CARD,
     EXPLODING_KITTEN,
+    SNATCH
 } 
