@@ -21,7 +21,7 @@ public class CardEffectService {
      * @throws IllegalArgumentException if either card or ctx is null
      * @throws IllegalStateException if the game context is not properly initialized
      */
-    public void handleCardEffect(Card card, Class<GameContext> ctx) {
+    public void handleCardEffect(Card card, GameContext ctx) {
         if (card == null || ctx == null) {
             throw new IllegalArgumentException("Card and GameContext cannot be null");
         }
