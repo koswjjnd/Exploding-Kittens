@@ -53,6 +53,16 @@ class TurnServiceTest {
         assertThrows(IllegalArgumentException.class, () -> 
             turnService.takeTurn(null, gameContext));
     }
+    @Test
+    void takeTurn_EmptyHand_OnlyDrawsCard() throws EmptyDeckException {
+        when(player.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        
+        turnService.takeTurn(player, gameContext);
+        
+        verify(player).receiveCard(card);
+        verify(view, never()).selectCardToPlay(any(), any());
+    }
 
    
 } 
