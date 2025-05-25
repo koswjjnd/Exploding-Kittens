@@ -65,4 +65,9 @@ class DrawFromBottomCardTest {
     void testEmptyTurnOrderThrows() {
         assertThrows(IllegalArgumentException.class, () -> card.effect(new ArrayList<>(), deck));
     }
+
+    @Test
+    void testNullDeckThrows() {
+        assertThrows(IllegalArgumentException.class, () -> card.effect(turnOrder, null));
+    }
 } 
