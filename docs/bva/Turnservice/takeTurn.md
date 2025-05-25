@@ -42,8 +42,8 @@ void takeTurn(Player player, GameContext ctx)
 ### TC4: Valid Turn with Cards
 
 - Input: player with cards in hand, valid GameContext
-- Expected: Player can play cards, then draw
-- Description: Normal turn flow with card playing and drawing
+- Expected: Player can play cards until choosing to end turn
+- Description: Normal turn flow with optional card playing and drawing
 
 ### TC5: Turn with Exploding Kitten
 
@@ -51,32 +51,32 @@ void takeTurn(Player player, GameContext ctx)
 - Expected: ExplodingKitten handling logic is triggered
 - Description: Special case when drawn card is ExplodingKitten
 
-### TC6: Turn with Attack Card Effect
+### TC6: Turn with Nope Card
 
-- Input: player plays Attack card
-- Expected: leftTurns is increased by 2
-- Description: Verify Attack card effect on turn count
+- Input: Another player plays Nope card
+- Expected: Card effect is cancelled
+- Description: Verify Nope card interaction
 
-### TC7: Turn with Skip Card Effect
-
-- Input: player plays Skip card
-- Expected: Turn ends immediately
-- Description: Verify Skip card effect on turn flow
-
-### TC8: Turn with Multiple Cards
-
-- Input: player plays multiple cards in sequence
-- Expected: All cards are processed correctly
-- Description: Verify multiple card playing in one turn
-
-### TC9: Turn with Invalid Card Play
+### TC7: Turn with Invalid Card Play
 
 - Input: player attempts to play invalid card
-- Expected: Card play is rejected
-- Description: Verify invalid card play handling
+- Expected: Card play is rejected, error message shown
+- Description: Verify invalid card play handling with error feedback
 
-### TC10: Turn with Empty Deck
+### TC8: Turn with Empty Deck
 
 - Input: player attempts to draw from empty deck
-- Expected: Appropriate exception is thrown
+- Expected: EmptyDeckException is thrown
 - Description: Verify empty deck handling
+
+### TC9: Turn with Defuse Card
+
+- Input: player draws ExplodingKitten and has Defuse card
+- Expected: Player can choose to use Defuse card
+- Description: Verify Defuse card interaction with ExplodingKitten
+
+### TC10: Turn with Multiple Card Plays
+
+- Input: player plays multiple cards in sequence
+- Expected: Each card is processed with Nope check
+- Description: Verify multiple card playing with Nope interaction
