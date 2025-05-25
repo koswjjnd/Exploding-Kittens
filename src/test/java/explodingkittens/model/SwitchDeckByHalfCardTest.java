@@ -54,5 +54,24 @@ public class SwitchDeckByHalfCardTest {
         assertEquals(card1, cards.get(1));
     }
 
+    @Test
+    public void testEffect_evenSizeDeck() {
+        // Deck: [A, B, C, D]
+        Card card1 = new AttackCard();
+        Card card2 = new SkipCard();
+        Card card3 = new DefuseCard();
+        Card card4 = new ShuffleCard();
+        deck.addCard(card1);
+        deck.addCard(card2);
+        deck.addCard(card3);
+        deck.addCard(card4);
+
+        switchDeckByHalfCard.effect(new ArrayList<>(), deck);
+
+        // Expect: [C, D, A, B]
+        List<Card> cards = deck.getCards();
+        assertEquals(List.of(card3, card4, card1, card2), cards, "Even size deck should swap top/bottom half");
+    }
+
     
 }
