@@ -297,4 +297,40 @@ public class Deck {
             this.cards.add(new ExplodingKittenCard());
         }
     }
+
+    /**
+     * Switches the top and bottom halves of the deck.
+     * For even-sized decks, swaps the two halves.
+     * For odd-sized decks, the middle card stays in place.
+     */
+    public void switchTopAndBottomHalf() {
+        int size = cards.size();
+        if (size < 2) {
+            return; // No change for empty deck or single card
+        }
+
+        int mid = size / 2;
+        List<Card> topHalf;
+        List<Card> bottomHalf;
+
+        if (size % 2 == 0) {
+            // Even number of cards
+            topHalf = new ArrayList<>(cards.subList(0, mid));
+            bottomHalf = new ArrayList<>(cards.subList(mid, size));
+            cards.clear();
+            cards.addAll(bottomHalf);
+            cards.addAll(topHalf);
+        } 
+        else {
+            // Odd number of cards - middle card stays in place
+            topHalf = new ArrayList<>(cards.subList(0, mid));
+            Card middle = cards.get(mid);
+            bottomHalf = new ArrayList<>(cards.subList(mid + 1, size));
+
+            cards.clear();
+            cards.addAll(bottomHalf);
+            cards.add(middle);
+            cards.addAll(topHalf);
+        }
+    }
 }

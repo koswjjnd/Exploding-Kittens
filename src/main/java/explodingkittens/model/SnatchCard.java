@@ -6,6 +6,7 @@ import explodingkittens.view.FavorCardView;
 
 public class SnatchCard extends Card {
     
+    private static final Random RANDOM = new Random();
     private final FavorCardView favorCardView;
     
     /**
@@ -14,15 +15,6 @@ public class SnatchCard extends Card {
     public SnatchCard() {
         super(CardType.SNATCH);
         this.favorCardView = new FavorCardView();
-    }
-    
-    /**
-     * Constructor for testing purposes
-     * @param favorCardView The FavorCardView to use for player selection
-     */
-    public SnatchCard(FavorCardView favorCardView) {
-        super(CardType.SNATCH);
-        this.favorCardView = favorCardView;
     }
     
     /**
@@ -49,8 +41,7 @@ public class SnatchCard extends Card {
             throw new IllegalStateException("Target player has no cards to snatch");
         }
         
-        Random random = new Random();
-        int randomIndex = random.nextInt(targetHand.size());
+        int randomIndex = RANDOM.nextInt(targetHand.size());
         Card snatchedCard = targetHand.remove(randomIndex);
         currentPlayer.receiveCard(snatchedCard);
     }
