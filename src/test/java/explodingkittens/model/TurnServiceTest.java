@@ -161,4 +161,19 @@ class TurnServiceTest {
         verify(cardEffectService).executeCardEffect(card, player, gameContext);
         verify(hand).remove(card);
     }
+
+    @Test
+    void playCard_CardNoped_EffectNotExecuted() throws InvalidCardException {
+        List<Card> hand = spy(new ArrayList<>());
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(view.checkForNope(player, card)).thenReturn(true);
+
+        turnService.playCard(player, card, gameContext);
+
+        verify(view).showCardPlayed(player, card);
+        verify(view).showCardNoped(player, card);
+        verify(cardEffectService, never()).executeCardEffect(any(), any(), any());
+        verify(hand).remove(card);
+    }
 } 
