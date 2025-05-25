@@ -40,5 +40,19 @@ public class SwitchDeckByHalfCardTest {
         assertEquals(List.of(card), deck.getCards(), "One card deck should remain unchanged");
     }
 
+    @Test
+    public void testEffect_twoCards() {
+        Card card1 = new AttackCard();
+        Card card2 = new SkipCard();
+        deck.addCard(card1);
+        deck.addCard(card2);
+
+        switchDeckByHalfCard.effect(new ArrayList<>(), deck);
+
+        List<Card> cards = deck.getCards();
+        assertEquals(card2, cards.get(0));
+        assertEquals(card1, cards.get(1));
+    }
+
     
 }
