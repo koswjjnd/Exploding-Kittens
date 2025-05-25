@@ -17,6 +17,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class GameController {
     private final GameView view;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     private final GameSetupController setupController;
 
     /**
