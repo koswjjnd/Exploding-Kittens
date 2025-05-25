@@ -22,5 +22,14 @@ public class SeeTheFutureCardTest {
         assertTrue(topCards.isEmpty(), "Empty deck should return empty list");
     }
 
+    @Test
+    public void testPeekTopTwoCards_oneCard() {
+        Card card = new DefuseCard();
+        deck.addCard(card);
+        List<Card> topCards = seeTheFutureCard.peekTopTwoCards(deck);
+        assertEquals(1, topCards.size(), "Should return 1 card");
+        assertEquals(card, topCards.get(0));
+    }
+
     
 }
