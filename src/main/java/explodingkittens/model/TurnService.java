@@ -81,6 +81,9 @@ public class TurnService {
         // Show the card being played
         view.showCardPlayed(player, card);
         
+        // Remove card from hand first
+        player.getHand().remove(card);
+        
         // Check for Nope cards
         if (view.checkForNope(player, card)) {
             view.showCardNoped(player, card);
@@ -89,9 +92,6 @@ public class TurnService {
         
         // Execute card effect
         cardEffectService.executeCardEffect(card, player, ctx);
-        
-        // Remove card from hand
-        player.getHand().remove(card);
     }
 
     /**
