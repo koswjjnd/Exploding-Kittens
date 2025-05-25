@@ -125,8 +125,18 @@ public class SeeTheFutureCardTest {
         assertEquals(1, fakeView.cardsShown.size(), "Should show 1 card");
     }
 
-    
+    @Test
+    public void testEffectWithView_twoCards() {
+        FakeSeeTheFutureView fakeView = new FakeSeeTheFutureView();
+        seeTheFutureCard.setView(fakeView);
 
+        deck.addCard(new AttackCard());
+        deck.addCard(new SkipCard());
+        seeTheFutureCard.effect(List.of(), deck);
+
+        assertTrue(fakeView.wasCalled);
+        assertEquals(2, fakeView.cardsShown.size(), "Should show 2 cards");
+    }
 
     // ========== Helper Fake View ==========
     private static class FakeSeeTheFutureView extends SeeTheFutureView {
