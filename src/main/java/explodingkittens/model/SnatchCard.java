@@ -2,15 +2,32 @@ package explodingkittens.model;
 
 import java.util.List;
 import java.util.Random;
+import explodingkittens.view.FavorCardView;
 
 public class SnatchCard extends Card {
     
+    private final FavorCardView favorCardView;
+    
+    /**
+     * Creates a new Snatch card.
+     */
     public SnatchCard() {
         super(CardType.SNATCH);
+        this.favorCardView = new FavorCardView();
+    }
+    
+    /**
+     * Constructor for testing purposes
+     * @param favorCardView The FavorCardView to use for player selection
+     */
+    public SnatchCard(FavorCardView favorCardView) {
+        super(CardType.SNATCH);
+        this.favorCardView = favorCardView;
     }
     
     /**
      * Effect of the Snatch card: Randomly takes a card from the target player's hand.
+     * Uses FavorCardView's promptTargetPlayer method to select the target player.
      * 
      * @param turnOrder List of players in turn order
      * @param gameDeck The game deck (not used in this effect)
@@ -23,19 +40,18 @@ public class SnatchCard extends Card {
         }
         
         Player currentPlayer = turnOrder.get(0);
-        Player targetPlayer = turnOrder.get(1);
+        List<Player> availablePlayers = turnOrder.subList(1, turnOrder.size());
+        int targetIndex = favorCardView.promptTargetPlayer(availablePlayers);
+        Player targetPlayer = availablePlayers.get(targetIndex);
         
         List<Card> targetHand = targetPlayer.getHand();
         if (targetHand.isEmpty()) {
             throw new IllegalStateException("Target player has no cards to snatch");
         }
         
-        // Randomly select a card from target's hand
         Random random = new Random();
         int randomIndex = random.nextInt(targetHand.size());
         Card snatchedCard = targetHand.remove(randomIndex);
-        
-        // Add the card to current player's hand
         currentPlayer.receiveCard(snatchedCard);
     }
 } 
