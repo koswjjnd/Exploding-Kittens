@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -18,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class ShuffleCardTest {
 
     private Deck deck;
-    private Random fixedRandom;
     private ShuffleCard shuffleCard;
     // 因为effect需要List<Player>，我们传一个空list
     private List<Player> dummyPlayers;
@@ -30,7 +28,6 @@ public class ShuffleCardTest {
     void setUp() {
         deck = new Deck();
         shuffleCard = new ShuffleCard();
-        fixedRandom = new Random(42);
         // 只是为了满足参数要求
         dummyPlayers = new ArrayList<>();
     }

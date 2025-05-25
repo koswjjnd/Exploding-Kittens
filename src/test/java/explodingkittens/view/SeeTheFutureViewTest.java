@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +26,7 @@ public class SeeTheFutureViewTest {
     @BeforeEach
     public void setUp() {
         view = new SeeTheFutureView();
-        System.setOut(new PrintStream(outContent)); // 拦截 System.out
+        System.setOut(new PrintStream(outContent, true, StandardCharsets.UTF_8));
     }
 
     /**
@@ -34,7 +35,7 @@ public class SeeTheFutureViewTest {
     @Test
     public void testDisplayEmptyList() {
         view.display(List.of());
-        String output = outContent.toString();
+        String output = outContent.toString(StandardCharsets.UTF_8);
 
         // 检查有标题
         assertTrue(output.contains("You see the future cards"));
@@ -50,7 +51,7 @@ public class SeeTheFutureViewTest {
         List<Card> cards = List.of(new AttackCard());
         view.display(cards);
 
-        String output = outContent.toString();
+        String output = outContent.toString(StandardCharsets.UTF_8);
 
         assertTrue(output.contains("You see the future cards"));
         assertTrue(output.contains("ATTACK"));
@@ -64,7 +65,7 @@ public class SeeTheFutureViewTest {
         List<Card> cards = List.of(new AttackCard(), new SkipCard());
         view.display(cards);
 
-        String output = outContent.toString();
+        String output = outContent.toString(StandardCharsets.UTF_8);
 
         assertTrue(output.contains("You see the future cards"));
         assertTrue(output.contains("ATTACK"));

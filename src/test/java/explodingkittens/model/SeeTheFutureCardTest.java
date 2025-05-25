@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +29,7 @@ public class SeeTheFutureCardTest {
     public void setUp() {
         deck = new Deck();
         seeTheFutureCard = new SeeTheFutureCard();
-        System.setOut(new PrintStream(outContent)); // 拦截 System.out
+        System.setOut(new PrintStream(outContent, true, StandardCharsets.UTF_8));
     }
 
     /**
@@ -125,7 +126,7 @@ public class SeeTheFutureCardTest {
 
         seeTheFutureCard.effect(List.of(), deck);
 
-        String output = outContent.toString();
+        String output = outContent.toString(StandardCharsets.UTF_8);
         assertTrue(output.contains("No view available to display future cards!"), 
             "Should print fallback message");
     }
