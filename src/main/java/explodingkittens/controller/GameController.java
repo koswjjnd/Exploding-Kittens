@@ -7,7 +7,6 @@ import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 /**
