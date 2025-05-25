@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class GameController {
     private final GameView view;
-
     /**
      * Constructs a GameController with the given view.
      * @param view the view to interact with the user
