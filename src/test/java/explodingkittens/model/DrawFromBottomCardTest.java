@@ -40,4 +40,19 @@ class DrawFromBottomCardTest {
         assertEquals(0, cards.size());
         verify(player).receiveCard(bottom);
     }
+
+    @Test
+    void testDrawFromDeckWithMultipleCards() {
+        Card c1 = mock(Card.class);
+        Card c2 = mock(Card.class);
+        Card c3 = mock(Card.class);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(c1); cards.add(c2); cards.add(c3);
+        when(deck.getCards()).thenReturn(cards);
+        doNothing().when(player).receiveCard(c3);
+        card.effect(turnOrder, deck);
+        assertEquals(2, cards.size());
+        assertFalse(cards.contains(c3));
+        verify(player).receiveCard(c3);
+    }
 } 
