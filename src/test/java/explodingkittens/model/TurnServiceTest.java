@@ -64,6 +64,7 @@ class TurnServiceTest {
         verify(player).receiveCard(card);
         verify(view, never()).selectCardToPlay(any(), any());
     }
+
     @Test
     void takeTurn_WithCards_PlaysAndDraws() throws EmptyDeckException, InvalidCardException {
         List<Card> hand = new ArrayList<>();
@@ -113,7 +114,7 @@ class TurnServiceTest {
         assertThrows(EmptyDeckException.class, () -> 
             turnService.takeTurn(player, gameContext));
     }
-    
+
     @Test
     void takeTurn_PlayerEndsTurn_NoMoreCardsPlayed() throws EmptyDeckException {
         List<Card> hand = new ArrayList<>();
@@ -128,5 +129,10 @@ class TurnServiceTest {
         verify(player).receiveCard(card);
     }
 
-   
+    // Tests for playCard method
+    @Test
+    void playCard_NullPlayer_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            turnService.playCard(null, card, gameContext));
+    }
 } 

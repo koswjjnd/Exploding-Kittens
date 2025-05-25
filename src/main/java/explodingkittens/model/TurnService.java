@@ -65,8 +65,19 @@ public class TurnService {
      * @param card The card to play
      * @param ctx The game context
      * @throws InvalidCardException if the card cannot be played
+     * @throws IllegalArgumentException if player, card, or ctx is null
      */
     public void playCard(Player player, Card card, GameContext ctx) throws InvalidCardException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (ctx == null) {
+            throw new IllegalArgumentException("GameContext cannot be null");
+        }
+        
         // Show the card being played
         view.showCardPlayed(player, card);
         
