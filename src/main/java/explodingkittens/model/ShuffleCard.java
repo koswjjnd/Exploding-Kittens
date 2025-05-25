@@ -1,21 +1,33 @@
 package explodingkittens.model;
 import java.util.List;
 
+/**
+ * Represents a Shuffle card in the game.
+ * When played, the deck is shuffled.
+ */
 public class ShuffleCard extends Card {
 
+    /**
+     * Creates a new Shuffle card.
+     */
     public ShuffleCard() {
         super(CardType.SHUFFLE);
     }
 
     /**
-     * Play this card: triggers deck shuffle.
-     * @param deck the deck to shuffle
+     * Executes the effect of the Shuffle card.
+     * The deck is shuffled.
+     *
+     * @param players The list of players in turn order (not used in this effect)
+     * @param gameDeck The game deck to be shuffled
+     * @throws IllegalArgumentException if the game deck is null
      */
-    public void effect(List<Player> players, Deck deck) {
-        if (deck == null) {
-            throw new IllegalArgumentException("Deck cannot be null when playing ShuffleCard.");
+    @Override
+    public void effect(List<Player> players, Deck gameDeck) {
+        if (gameDeck == null) {
+            throw new IllegalArgumentException("Game deck cannot be null");
         }
-        deck.shuffle();
+        gameDeck.shuffle();
         System.out.println("ShuffleCard played: deck has been shuffled!");
     }
 }

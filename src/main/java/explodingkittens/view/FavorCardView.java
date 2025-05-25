@@ -4,6 +4,8 @@ import explodingkittens.model.Card;
 import explodingkittens.model.Player;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import javax.swing.JOptionPane;
 
 /**
  * View class for handling Favor card interactions.
@@ -17,7 +19,7 @@ public class FavorCardView {
      * Creates a new FavorCardView with a Scanner for user input.
      */
     public FavorCardView() {
-        this.scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
     }
     
     /**
@@ -54,8 +56,11 @@ public class FavorCardView {
             if (selection >= 0 && selection < availablePlayers.size()) {
                 return selection;
             }
-            throw new IllegalArgumentException("Invalid selection. Please choose a player between 0 and " + (availablePlayers.size() - 1));
-        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                "Invalid selection. Please choose a player between 0 and "
+                + (availablePlayers.size() - 1));
+        } 
+        catch (NumberFormatException e) {
             throw new IllegalArgumentException("Please enter a valid number.");
         }
     }
@@ -86,8 +91,11 @@ public class FavorCardView {
             if (selection >= 0 && selection < cards.size()) {
                 return selection;
             }
-            throw new IllegalArgumentException("Invalid selection. Please choose a card between 0 and " + (cards.size() - 1));
-        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                "Invalid selection. Please choose a card between 0 and "
+                + (cards.size() - 1));
+        } 
+        catch (NumberFormatException e) {
             throw new IllegalArgumentException("Please enter a valid number.");
         }
     }

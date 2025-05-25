@@ -9,11 +9,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FavorCardTest {
     
     private explodingkittens.model.card.FavorCard favorCard;
+    private List<Player> turnOrder;
+    private Deck mockDeck;
     
     @Mock
     private Player mockCurrentPlayer;
@@ -23,12 +27,6 @@ class FavorCardTest {
     
     @Mock
     private Player mockTargetPlayer2;
-    
-    @Mock
-    private Deck mockDeck;
-    
-    @Mock
-    private FavorCardView mockView;
     
     @Mock
     private Card mockCard1;
@@ -51,21 +49,26 @@ class FavorCardTest {
     @Mock
     private Card mockCard7;
     
+    @Mock
+    private FavorCardView mockView;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockDeck = new Deck();
+        turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
+        
+        // Create a new FavorCard instance and inject mockView
         favorCard = new explodingkittens.model.card.FavorCard();
-        favorCard.setView(mockView);
-        when(mockCurrentPlayer.getName()).thenReturn("CurrentPlayer");
-        when(mockTargetPlayer1.getName()).thenReturn("TargetPlayer1");
-        when(mockTargetPlayer2.getName()).thenReturn("TargetPlayer2");
-        when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard2.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard3.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard4.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard5.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard6.getType()).thenReturn(CardType.CAT_CARD);
-        when(mockCard7.getType()).thenReturn(CardType.CAT_CARD);
+        // Use reflection to set the view field
+        try {
+            java.lang.reflect.Field viewField = favorCard.getClass().getDeclaredField("view");
+            viewField.setAccessible(true);
+            viewField.set(favorCard, mockView);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Failed to set mock view", e);
+        }
     }
     
     /**
@@ -78,8 +81,7 @@ class FavorCardTest {
     @Test
     void testEffectWithEmptyHand() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1);
-        when(mockTargetPlayer1.getHand()).thenReturn(List.of());
+        when(mockTargetPlayer1.getHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         
         // Act & Assert
@@ -99,7 +101,6 @@ class FavorCardTest {
     @Test
     void testEffectWithOneCard() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
@@ -126,7 +127,6 @@ class FavorCardTest {
     @Test
     void testEffectWithTwoCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
@@ -154,12 +154,11 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayers() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(0);
         
         // Act
@@ -182,14 +181,13 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndTwoCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(1); // Select second card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(1);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);
@@ -211,15 +209,14 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndThreeCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
         targetHand.add(mockCard3);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(2); // Select third card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(2);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);
@@ -241,7 +238,6 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndFourCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
@@ -249,8 +245,8 @@ class FavorCardTest {
         targetHand.add(mockCard4);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(3); // Select fourth card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(3);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);
@@ -272,7 +268,6 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndFiveCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
@@ -281,8 +276,8 @@ class FavorCardTest {
         targetHand.add(mockCard5);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(4); // Select fifth card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(4);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);
@@ -304,7 +299,6 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndSixCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
@@ -314,8 +308,8 @@ class FavorCardTest {
         targetHand.add(mockCard6);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(5); // Select sixth card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(5);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);
@@ -337,7 +331,6 @@ class FavorCardTest {
     @Test
     void testEffectWithThreePlayersAndSevenCards() {
         // Arrange
-        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
@@ -348,8 +341,8 @@ class FavorCardTest {
         targetHand.add(mockCard7);
         when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
         when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
-        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
-        when(mockView.promptCardSelection(anyList())).thenReturn(6); // Select seventh card
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(6);
         
         // Act
         favorCard.effect(turnOrder, mockDeck);

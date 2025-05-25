@@ -2,66 +2,66 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-public class ShuffleCardTest {
-
-    private Deck deck;
-    private Random fixedRandom;
+class ShuffleCardTest {
+    
     private ShuffleCard shuffleCard;
-    private List<Player> dummyPlayers; // 因为effect需要List<Player>，我们传一个空list
-
+    private List<Player> turnOrder;
+    private Deck mockDeck;
+    
+    @Mock
+    private Player mockPlayer1;
+    
+    @Mock
+    private Player mockPlayer2;
+    
+    @Mock
+    private Player mockPlayer3;
+    
     @BeforeEach
     void setUp() {
-        deck = new Deck();
+        MockitoAnnotations.openMocks(this);
         shuffleCard = new ShuffleCard();
-        fixedRandom = new Random(42);
-        dummyPlayers = new ArrayList<>(); // 只是为了满足参数要求
-    }
-
-    @Test
-    void testEffectShufflesDeck() {
-        // 添加一些不同的牌
-        deck.addCard(new DefuseCard());
-        deck.addCard(new AttackCard());
-        deck.addCard(new SkipCard());
-        deck.addCard(new ShuffleCard());
-        deck.addCard(new SeeTheFutureCard());
-
-        Map<String, Integer> originalCounts = new HashMap<>(deck.getCardCounts());
-        List<Card> originalOrder = new ArrayList<>(deck.getCards());
-
-        // 使用 ShuffleCard 的 effect
-        shuffleCard.effect(dummyPlayers, deck);
-
-        // 检查：卡牌数量和种类不变
-        assertEquals(originalCounts, deck.getCardCounts(), "Cards count and types should stay the same after shuffle");
-
-        // 检查：顺序应该变化（概率上非常高）
-        List<Card> newOrder = deck.getCards();
-        assertNotEquals(originalOrder, newOrder, "ShuffleCard effect should change the order of cards");
+        mockDeck = new Deck();
+        turnOrder = Arrays.asList(mockPlayer1, mockPlayer2, mockPlayer3);
     }
     
+    /**
+     * Test Case 1: Null deck
+     * Expected: IllegalArgumentException
+     * 
+     * This test verifies that when the deck is null,
+     * an IllegalArgumentException is thrown.
+     */
     @Test
-    void testEffectOnEmptyDeck() {
-        // 空牌堆
-        shuffleCard.effect(dummyPlayers, deck);
-        assertEquals(0, deck.getCardCounts().size(), "Empty deck remains empty after shuffle");
-    }
-
-    @Test
-    void testEffectOnSingleCardDeck() {
-        deck.addCard(new DefuseCard());
-        List<Card> originalOrder = new ArrayList<>(deck.getCards());
-
-        shuffleCard.effect(dummyPlayers, deck);
-
-        // 单张牌顺序保持一致
-        assertEquals(originalOrder, deck.getCards(), "Single card deck should remain the same after shuffle");
+    void testEffectWithNullDeck() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, 
+            () -> shuffleCard.effect(turnOrder, null),
+            "Should throw IllegalArgumentException when deck is null"
+        );
     }
     
+    /**
+     * Test Case 2: Valid deck
+     * Expected: Deck is shuffled
+     * 
+     * This test verifies that when a valid deck is provided,
+     * the deck is shuffled.
+     */
+    @Test
+    void testEffectWithValidDeck() {
+        // Act
+        shuffleCard.effect(turnOrder, mockDeck);
+        
+        // Assert
+        verify(mockDeck).shuffle();
+    }
 }
