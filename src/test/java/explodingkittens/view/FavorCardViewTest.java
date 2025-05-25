@@ -112,4 +112,44 @@ class FavorCardViewTest {
             "Should throw IllegalArgumentException when selecting index beyond list size"
         );
     }
+
+    /**
+     * Test Case 5: availablePlayers = 2 players, input = -1
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two available players,
+     * selecting a negative index throws an exception.
+     */
+    @Test
+    void testPromptTargetPlayerWithNegativeIndex() {
+        // Arrange
+        List<Player> availablePlayers = Arrays.asList(mockPlayer1, mockPlayer2);
+        view.setUserInput("-1");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptTargetPlayer(availablePlayers),
+            "Should throw IllegalArgumentException when selecting negative index"
+        );
+    }
+
+    /**
+     * Test Case 6: availablePlayers = 2 players, input = "abc"
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two available players,
+     * entering non-numeric input throws an exception.
+     */
+    @Test
+    void testPromptTargetPlayerWithNonNumericInput() {
+        // Arrange
+        List<Player> availablePlayers = Arrays.asList(mockPlayer1, mockPlayer2);
+        view.setUserInput("abc");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptTargetPlayer(availablePlayers),
+            "Should throw IllegalArgumentException when entering non-numeric input"
+        );
+    }
 } 
