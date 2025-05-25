@@ -147,4 +147,18 @@ class TurnServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.playCard(player, card, null));
     }
+
+    @Test
+    void playCard_ValidCard_ExecutesEffect() throws InvalidCardException {
+        List<Card> hand = spy(new ArrayList<>());
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(view.checkForNope(player, card)).thenReturn(false);
+
+        turnService.playCard(player, card, gameContext);
+
+        verify(view).showCardPlayed(player, card);
+        verify(cardEffectService).executeCardEffect(card, player, gameContext);
+        verify(hand).remove(card);
+    }
 } 
