@@ -29,6 +29,9 @@ class FavorCardViewTest {
     @Mock
     private Card mockCard1;
     
+    @Mock
+    private Card mockCard2;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -37,6 +40,7 @@ class FavorCardViewTest {
         when(mockPlayer2.getName()).thenReturn("TestPlayer2");
         when(mockPlayer3.getName()).thenReturn("TestPlayer3");
         when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
+        when(mockCard2.getType()).thenReturn(CardType.DEFUSE);
     }
     
     /**
@@ -177,5 +181,25 @@ class FavorCardViewTest {
         
         // Assert
         assertEquals(0, result, "Should return 0 when there is only one card");
+    }
+
+    /**
+     * Test Case 2: cards = 2 cards, input = 1
+     * Expected: Returns 1
+     * 
+     * This test verifies that when there are two cards,
+     * selecting index 1 returns the correct card index.
+     */
+    @Test
+    void testPromptCardSelectionWithTwoCards() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1, mockCard2);
+        view.setUserInput("1");
+        
+        // Act
+        int result = view.promptCardSelection(cards);
+        
+        // Assert
+        assertEquals(1, result, "Should return 1 when selecting the second card");
     }
 } 
