@@ -246,4 +246,24 @@ class FavorCardViewTest {
             "Should throw IllegalArgumentException when selecting index beyond list size"
         );
     }
+
+    /**
+     * Test Case 5: cards = 2 cards, input = -1
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two cards,
+     * selecting a negative index throws an exception.
+     */
+    @Test
+    void testPromptCardSelectionWithNegativeIndex() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1, mockCard2);
+        view.setUserInput("-1");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptCardSelection(cards),
+            "Should throw IllegalArgumentException when selecting negative index"
+        );
+    }
 } 
