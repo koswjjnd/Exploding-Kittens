@@ -28,4 +28,16 @@ class DrawFromBottomCardTest {
         when(deck.getCards()).thenReturn(new ArrayList<>());
         assertThrows(IllegalStateException.class, () -> card.effect(turnOrder, deck));
     }
+
+    @Test
+    void testDrawFromDeckWithOneCard() {
+        Card bottom = mock(Card.class);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(bottom);
+        when(deck.getCards()).thenReturn(cards);
+        doNothing().when(player).receiveCard(bottom);
+        card.effect(turnOrder, deck);
+        assertEquals(0, cards.size());
+        verify(player).receiveCard(bottom);
+    }
 } 
