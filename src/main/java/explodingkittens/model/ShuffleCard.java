@@ -9,7 +9,9 @@ public class ShuffleCard extends Card {
 
     /**
      * Play this card: triggers deck shuffle.
+     * @param players the list of players in the game
      * @param deck the deck to shuffle
+     * @throws IllegalArgumentException if the deck is null
      */
     public void effect(List<Player> players, Deck deck) {
         if (deck == null) {

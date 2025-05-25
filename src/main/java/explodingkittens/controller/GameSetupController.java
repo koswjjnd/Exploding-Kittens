@@ -64,7 +64,23 @@ public class GameSetupController {
         // Create players
         List<Player> players = createPlayers(playerCount);
 
-        // Initialize deck
+        // Initialize deck and deal cards
+        Deck gameDeck = initializeDeck(playerCount, players);
+
+        // Initialize GameContext with game state
+        GameContext.setGameDeck(gameDeck);
+        GameContext.setTurnOrder(players);
+        GameContext.setGameOver(false);
+    }
+
+    /**
+     * Initializes the game deck with cards and deals them to players.
+     * @param playerCount the number of players in the game
+     * @param players the list of players to deal cards to
+     * @return the initialized game deck
+     * @throws InvalidDeckException when the deck setup fails
+     */
+    private Deck initializeDeck(int playerCount, List<Player> players) throws InvalidDeckException {
         Deck gameDeck = new Deck();
         gameDeck.initializeBaseDeck(playerCount);
         
@@ -83,10 +99,7 @@ public class GameSetupController {
         // Final shuffle
         gameDeck.shuffle(new Random());
 
-        // Initialize GameContext with game state
-        GameContext.setGameDeck(gameDeck);
-        GameContext.setTurnOrder(players);
-        GameContext.setGameOver(false);
+        return gameDeck;
     }
 
     /**
