@@ -266,4 +266,24 @@ class FavorCardViewTest {
             "Should throw IllegalArgumentException when selecting negative index"
         );
     }
+
+    /**
+     * Test Case 6: cards = 2 cards, input = "abc"
+     * Expected: Throws IllegalArgumentException
+     * 
+     * This test verifies that when there are two cards,
+     * entering non-numeric input throws an exception.
+     */
+    @Test
+    void testPromptCardSelectionWithNonNumericInput() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1, mockCard2);
+        view.setUserInput("abc");
+        
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> 
+            view.promptCardSelection(cards),
+            "Should throw IllegalArgumentException when entering non-numeric input"
+        );
+    }
 } 
