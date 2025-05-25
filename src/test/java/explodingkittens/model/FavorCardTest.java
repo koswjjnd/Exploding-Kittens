@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -26,6 +27,9 @@ class FavorCardTest {
     @Mock
     private FavorCardView mockView;
     
+    @Mock
+    private Card mockCard;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -33,6 +37,7 @@ class FavorCardTest {
         favorCard.setView(mockView);
         when(mockCurrentPlayer.getName()).thenReturn("CurrentPlayer");
         when(mockTargetPlayer.getName()).thenReturn("TargetPlayer");
+        when(mockCard.getType()).thenReturn(CardType.CAT_CARD);
     }
     
     /**
@@ -54,5 +59,32 @@ class FavorCardTest {
             favorCard.effect(turnOrder, mockDeck),
             "Should throw IllegalStateException when target player has empty hand"
         );
+    }
+
+    /**
+     * Test Case 2: turnOrder = 2 players, targetPlayer has 1 card
+     * Expected: Card transferred to current player
+     * 
+     * This test verifies that when the target player has one card,
+     * the card is successfully transferred to the current player.
+     */
+    @Test
+    void testEffectWithOneCard() {
+        // Arrange
+        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer);
+        List<Card> targetHand = new ArrayList<>();
+        targetHand.add(mockCard);
+        when(mockTargetPlayer.getHand()).thenReturn(targetHand);
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(0);
+        
+        // Act
+        favorCard.effect(turnOrder, mockDeck);
+        
+        // Assert
+        verify(mockTargetPlayer).getHand();
+        verify(mockCurrentPlayer).receiveCard(mockCard);
+        verify(mockView).promptTargetPlayer(anyList());
+        verify(mockView).promptCardSelection(anyList());
     }
 } 
