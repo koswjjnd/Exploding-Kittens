@@ -19,4 +19,4 @@
 | Test Case 3 | effect() with deck.size = 1                         | No changes to deck                                                           |     yes      |
 | Test Case 4 | effect() with deck.size = 2                         | Two cards are swapped                                                        |    yes       |
 | Test Case 5 | effect() with deck.size > 3 and even                | Top half and bottom half of deck are swapped                                 |   yes        |
-| Test Case 6 | effect() with deck.size > 3 and odd                 | Middle card remains unchanged; top half and bottom half (excluding middle) are swapped |           |
+| Test Case 6 | effect() with deck.size > 3 and odd                 | Middle card remains unchanged; top half and bottom half (excluding middle) are swapped |     yes      |
