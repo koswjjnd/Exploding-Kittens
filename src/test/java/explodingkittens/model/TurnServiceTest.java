@@ -76,6 +76,19 @@ class TurnServiceTest {
         verify(cardEffectService).executeCardEffect(card, player, gameContext);
         verify(player).receiveCard(card);
     }
+    @Test
+    void takeTurn_DrawsExplodingKitten_HandlesExplosion() throws EmptyDeckException {
+        ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
+        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(player.hasDefuse()).thenReturn(true);
+        when(view.confirmDefuse(player)).thenReturn(true);
+        when(view.selectExplodingKittenPosition()).thenReturn(0);
+        
+        turnService.takeTurn(player, gameContext);
+        
+        verify(player).useDefuse();
+        verify(deck).insertAt(explodingKitten, 0);
+    }
 
    
 } 
