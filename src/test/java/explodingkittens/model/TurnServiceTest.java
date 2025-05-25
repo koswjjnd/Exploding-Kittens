@@ -91,7 +91,7 @@ class TurnServiceTest {
         verify(player).useDefuse();
         verify(deck).insertAt(explodingKitten, 0);
     }
-    
+
     @Test
     void takeTurn_CardNoped_EffectNotExecuted() throws EmptyDeckException, InvalidCardException {
         List<Card> hand = new ArrayList<>();
@@ -104,6 +104,14 @@ class TurnServiceTest {
         
         verify(cardEffectService, never()).executeCardEffect(any(), any(), any());
         verify(view).showCardNoped(player, card);
+    }
+
+    @Test
+    void takeTurn_EmptyDeck_ThrowsException() throws EmptyDeckException {
+        when(deck.drawOne()).thenThrow(new EmptyDeckException());
+        
+        assertThrows(EmptyDeckException.class, () -> 
+            turnService.takeTurn(player, gameContext));
     }
 
    
