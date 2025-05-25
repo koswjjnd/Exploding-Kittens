@@ -12,5 +12,5 @@ public enum CardType {
     SEE_THE_FUTURE,
     NOPE,
     CAT_CARD,
-    EXPLODING_KITTEN
+    EXPLODING_KITTEN,
 } 
