@@ -298,6 +298,11 @@ public class Deck {
         }
     }
 
+    /**
+     * Switches the top and bottom halves of the deck.
+     * For even-sized decks, swaps the two halves.
+     * For odd-sized decks, the middle card stays in place.
+     */
     public void switchTopAndBottomHalf() {
         int size = cards.size();
         if (size < 2) {
@@ -315,7 +320,8 @@ public class Deck {
             cards.clear();
             cards.addAll(bottomHalf);
             cards.addAll(topHalf);
-        } else {
+        } 
+        else {
             // Odd number of cards - middle card stays in place
             topHalf = new ArrayList<>(cards.subList(0, mid));
             Card middle = cards.get(mid);
