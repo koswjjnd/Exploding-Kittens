@@ -45,6 +45,14 @@ public class ShuffleCardTest {
         List<Card> newOrder = deck.getCards();
         assertNotEquals(originalOrder, newOrder, "ShuffleCard effect should change the order of cards");
     }
+    
+    @Test
+    void testEffectOnEmptyDeck() {
+        // 空牌堆
+        shuffleCard.effect(dummyPlayers, deck);
+        assertEquals(0, deck.getCardCounts().size(), "Empty deck remains empty after shuffle");
+    }
 
+    
     
 }
