@@ -226,4 +226,19 @@ class TurnServiceTest {
         assertThrows(EmptyDeckException.class, () ->
             turnService.drawCard(player, gameContext));
     }
+
+    @Test
+    void drawCard_ExplodingKittenWithDefuse_Defuses() throws EmptyDeckException {
+        ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
+        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(player.hasDefuse()).thenReturn(true);
+        when(view.confirmDefuse(player)).thenReturn(true);
+        when(view.selectExplodingKittenPosition()).thenReturn(0);
+        
+        turnService.drawCard(player, gameContext);
+        
+        verify(view).showCardDrawn(player, explodingKitten);
+        verify(player).useDefuse();
+        verify(deck).insertAt(explodingKitten, 0);
+    }
 } 
