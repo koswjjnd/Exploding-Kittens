@@ -90,6 +90,18 @@ public class SeeTheFutureCardTest {
         assertEquals(2, fakeView.cardsShown.size(), "Should show 2 cards");
     }
 
+    @Test
+    public void testEffectWithoutView() {
+        // 添加几张牌
+        deck.addCard(new AttackCard());
+        deck.addCard(new SkipCard());
+
+        seeTheFutureCard.effect(List.of(), deck);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("No view available to display future cards!"), "Should print fallback message");
+    }
+
     
 
     // ========== Helper Fake View ==========
