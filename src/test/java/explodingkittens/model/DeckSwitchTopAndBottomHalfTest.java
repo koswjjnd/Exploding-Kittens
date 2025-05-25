@@ -30,5 +30,19 @@ public class DeckSwitchTopAndBottomHalfTest {
         assertEquals(List.of(card), deck.getCards(), "One card deck should remain unchanged");
     }
 
+    @Test
+    public void testSwitchTopAndBottomHalf_twoCards() {
+        Card card1 = new AttackCard();
+        Card card2 = new SkipCard();
+        deck.addCard(card1);
+        deck.addCard(card2);
+
+        deck.switchTopAndBottomHalf();
+
+        List<Card> cards = deck.getCards();
+        assertEquals(card2, cards.get(0), "Cards should be swapped");
+        assertEquals(card1, cards.get(1), "Cards should be swapped");
+    }
+
     
 }
