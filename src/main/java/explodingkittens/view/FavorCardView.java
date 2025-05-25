@@ -10,7 +10,7 @@ import java.util.Scanner;
  */
 public class FavorCardView {
     private final Scanner scanner;
-    private String userInput; // 用于测试时模拟用户输入
+    private String userInput; // For testing purposes
     
     /**
      * Creates a new FavorCardView with a Scanner for user input.
@@ -40,21 +40,22 @@ public class FavorCardView {
             throw new IllegalArgumentException("Available players list cannot be null or empty");
         }
         
-        // If there's only one player, validate input
-        if (availablePlayers.size() == 1) {
-            String input = userInput != null ? userInput : scanner.nextLine();
-            try {
-                int selection = Integer.parseInt(input);
-                if (selection == 0) {
-                    return 0;
-                }
-                throw new IllegalArgumentException("Invalid selection. Only player 0 is available.");
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Please enter a valid number.");
-            }
+        // Display all available players
+        System.out.println("\nAvailable players:");
+        for (int i = 0; i < availablePlayers.size(); i++) {
+            System.out.printf("%d: %s%n", i, availablePlayers.get(i).getName());
         }
+        System.out.print("Please select a player (enter number): ");
         
-        // TODO: Implement multiple player selection
-        throw new IllegalArgumentException("Not implemented for multiple players");
+        String input = userInput != null ? userInput : scanner.nextLine();
+        try {
+            int selection = Integer.parseInt(input);
+            if (selection >= 0 && selection < availablePlayers.size()) {
+                return selection;
+            }
+            throw new IllegalArgumentException("Invalid selection. Please choose a player between 0 and " + (availablePlayers.size() - 1));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Please enter a valid number.");
+        }
     }
 }
