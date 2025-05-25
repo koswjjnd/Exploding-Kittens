@@ -30,5 +30,15 @@ public class SwitchDeckByHalfCardTest {
         assertTrue(deck.getCards().isEmpty(), "Empty deck should remain unchanged");
     }
 
+    @Test
+    public void testEffect_oneCard() {
+        Card card = new AttackCard();
+        deck.addCard(card);
+
+        switchDeckByHalfCard.effect(new ArrayList<>(), deck);
+
+        assertEquals(List.of(card), deck.getCards(), "One card deck should remain unchanged");
+    }
+
     
 }
