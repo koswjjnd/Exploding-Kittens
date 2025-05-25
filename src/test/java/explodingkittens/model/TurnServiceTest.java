@@ -189,4 +189,5 @@ class TurnServiceTest {
         assertThrows(RuntimeException.class, () ->
             turnService.playCard(player, card, gameContext));
     }
+
 } 
