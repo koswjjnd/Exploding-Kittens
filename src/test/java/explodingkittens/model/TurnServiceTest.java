@@ -63,6 +63,19 @@ class TurnServiceTest {
         verify(player).receiveCard(card);
         verify(view, never()).selectCardToPlay(any(), any());
     }
+    @Test
+    void takeTurn_WithCards_PlaysAndDraws() throws EmptyDeckException, InvalidCardException {
+        List<Card> hand = new ArrayList<>();
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        when(deck.drawOne()).thenReturn(card);
+        
+        turnService.takeTurn(player, gameContext);
+        
+        verify(cardEffectService).executeCardEffect(card, player, gameContext);
+        verify(player).receiveCard(card);
+    }
 
    
 } 
