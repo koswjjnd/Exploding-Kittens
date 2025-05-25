@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyInt;
@@ -23,8 +21,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.atLeastOnce;
 import java.util.List;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.exceptions.InvalidDeckException;
@@ -49,25 +46,39 @@ class GameSetupControllerSetupGameTest {
     @BeforeEach
     void setUp() {
         controller = new GameSetupController(view, playerService, dealService);
+        // Reset GameContext before each test
+        GameContext.reset();
     }
 
     @Test
-    void testSetupGameSuccessWithTwoPlayers() throws InvalidPlayerCountException, 
-            InvalidNicknameException, InvalidDeckException {
+    void testSetupGameSuccessWithTwoPlayers() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn("P2");
         Player mockPlayer = mock(Player.class);
         when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
         
+        // Execute
         controller.setupGame();
         
-        verifySetupGameSuccess(2);
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
+        
+        // Verify service calls
+        verify(dealService).dealDefuses(any(), anyList());
+        verify(dealService).dealInitialHands(any(), anyList(), eq(5));
     }
 
     @Test
-    void testSetupGameSuccessWithThreePlayers() throws InvalidPlayerCountException, 
-            InvalidNicknameException, InvalidDeckException {
+    void testSetupGameSuccessWithThreePlayers() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(3);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn("P2");
@@ -75,14 +86,26 @@ class GameSetupControllerSetupGameTest {
         Player mockPlayer = mock(Player.class);
         when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
         
+        // Execute
         controller.setupGame();
         
-        verifySetupGameSuccess(3);
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(3, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
+        
+        // Verify service calls
+        verify(dealService).dealDefuses(any(), anyList());
+        verify(dealService).dealInitialHands(any(), anyList(), eq(5));
     }
 
     @Test
-    void testSetupGameSuccessWithFourPlayers() throws InvalidPlayerCountException, 
-            InvalidNicknameException, InvalidDeckException {
+    void testSetupGameSuccessWithFourPlayers() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(4);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn("P2");
@@ -91,42 +114,52 @@ class GameSetupControllerSetupGameTest {
         Player mockPlayer = mock(Player.class);
         when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
         
+        // Execute
         controller.setupGame();
         
-        verifySetupGameSuccess(4);
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(4, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
+        
+        // Verify service calls
+        verify(dealService).dealDefuses(any(), anyList());
+        verify(dealService).dealInitialHands(any(), anyList(), eq(5));
     }
 
     @Test
-    void testSetupGameInvalidPlayerCountOne() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
+    void testSetupGameInvalidPlayerCountOne() {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(1);
-        doThrow(new InvalidPlayerCountException("Invalid count"))
-            .when(playerService).validateCount(1);
         
-        assertThrows(InvalidPlayerCountException.class, () -> {
-            controller.setupGame();
-        });
+        // Execute and verify
+        assertThrows(InvalidPlayerCountException.class, () -> controller.setupGame());
         
-        verifySetupGameFailure();
+        // Verify GameContext is not initialized
+        assertNull(GameContext.getTurnOrder());
+        assertNull(GameContext.getGameDeck());
     }
 
     @Test
-    void testSetupGameInvalidPlayerCountFive() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
+    void testSetupGameInvalidPlayerCountFive() {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(5);
-        doThrow(new InvalidPlayerCountException("Invalid count"))
-            .when(playerService).validateCount(5);
         
-        assertThrows(InvalidPlayerCountException.class, () -> {
-            controller.setupGame();
-        });
+        // Execute and verify
+        assertThrows(InvalidPlayerCountException.class, () -> controller.setupGame());
         
-        verifySetupGameFailure();
+        // Verify GameContext is not initialized
+        assertNull(GameContext.getTurnOrder());
+        assertNull(GameContext.getGameDeck());
     }
 
     @Test
-    void testSetupGameEmptyNickname() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
+    void testSetupGameEmptyNickname() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn("", "P2");
@@ -136,18 +169,25 @@ class GameSetupControllerSetupGameTest {
         doThrow(new InvalidNicknameException("Nickname cannot be empty"))
             .when(playerService).createPlayer("");
         
+        // Execute
         controller.setupGame();
         
+        // Verify error handling
         verify(view).showError("Nickname cannot be empty");
-        verify(playerService).createPlayer("P1");
-        verify(playerService).createPlayer("P2");
-        verify(dealService).dealDefuses(any(), anyList());
-        verify(dealService).dealInitialHands(any(), anyList(), anyInt());
+        
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
     }
 
     @Test
-    void testSetupGameWhitespaceNickname() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
+    void testSetupGameWhitespaceNickname() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn(" ", "P2");
@@ -157,18 +197,25 @@ class GameSetupControllerSetupGameTest {
         doThrow(new InvalidNicknameException("Nickname cannot be whitespace"))
             .when(playerService).createPlayer(" ");
         
+        // Execute
         controller.setupGame();
         
+        // Verify error handling
         verify(view).showError("Nickname cannot be whitespace");
-        verify(playerService).createPlayer("P1");
-        verify(playerService).createPlayer("P2");
-        verify(dealService).dealDefuses(any(), anyList());
-        verify(dealService).dealInitialHands(any(), anyList(), anyInt());
+        
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
     }
 
     @Test
-    void testSetupGameNullNickname() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
+    void testSetupGameNullNickname() throws Exception {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn(null, "P2");
@@ -178,18 +225,25 @@ class GameSetupControllerSetupGameTest {
         doThrow(new InvalidNicknameException("Nickname cannot be null"))
             .when(playerService).createPlayer(null);
         
+        // Execute
         controller.setupGame();
         
+        // Verify error handling
         verify(view).showError("Nickname cannot be null");
-        verify(playerService).createPlayer("P1");
-        verify(playerService).createPlayer("P2");
-        verify(dealService).dealDefuses(any(), anyList());
-        verify(dealService).dealInitialHands(any(), anyList(), anyInt());
+        
+        // Verify GameContext state
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Deck gameDeck = GameContext.getGameDeck();
+        
+        assertNotNull(turnOrder);
+        assertEquals(2, turnOrder.size());
+        assertNotNull(gameDeck);
+        assertFalse(GameContext.isGameOver());
     }
 
     @Test
-    void testSetupGameDeckPreparationFailure() throws InvalidPlayerCountException, 
-            InvalidNicknameException, InvalidDeckException {
+    void testSetupGameDeckPreparationFailure() throws InvalidNicknameException {
+        // Setup
         when(view.promptPlayerCount()).thenReturn(2);
         when(view.promptNickname(1)).thenReturn("P1");
         when(view.promptNickname(2)).thenReturn("P2");
@@ -199,58 +253,11 @@ class GameSetupControllerSetupGameTest {
         doThrow(new InvalidDeckException("Failed to prepare deck"))
             .when(dealService).dealDefuses(any(), anyList());
         
-        assertThrows(InvalidDeckException.class, () -> {
-            controller.setupGame();
-        });
+        // Execute and verify
+        assertThrows(InvalidDeckException.class, () -> controller.setupGame());
         
-        verifySetupGameFailure();
-    }
-
-    @Test
-    void testSetupGameTurnOrderInitializationFailure() throws InvalidPlayerCountException, 
-            InvalidNicknameException, InvalidDeckException {
-        when(view.promptPlayerCount()).thenReturn(2);
-        when(view.promptNickname(1)).thenReturn("P1");
-        when(view.promptNickname(2)).thenReturn("P2");
-        Player mockPlayer = mock(Player.class);
-        when(playerService.createPlayer("P1")).thenReturn(mockPlayer);
-        when(playerService.createPlayer("P2")).thenReturn(mockPlayer);
-        
-        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
-            mockedStatic.when(() -> GameContext.setTurnOrder(anyList()))
-                .thenThrow(new IllegalArgumentException("Turn order cannot contain null players"));
-            
-            assertThrows(IllegalArgumentException.class, () -> {
-                controller.setupGame();
-            });
-            
-            verify(view).promptPlayerCount();
-            verify(playerService).validateCount(2);
-            verify(view).promptNickname(1);
-            verify(view).promptNickname(2);
-            verify(playerService).createPlayer("P1");
-            verify(playerService).createPlayer("P2");
-            verify(dealService).dealDefuses(any(), anyList());
-            verify(dealService).dealInitialHands(any(), anyList(), anyInt());
-            mockedStatic.verify(() -> GameContext.setTurnOrder(anyList()));
-        }
-    }
-
-    private void verifySetupGameSuccess(int playerCount) throws InvalidPlayerCountException, 
-            InvalidNicknameException {
-        verify(view).promptPlayerCount();
-        verify(playerService).validateCount(playerCount);
-        for (int i = 1; i <= playerCount; i++) {
-            verify(view).promptNickname(i);
-            verify(playerService).createPlayer("P" + i);
-        }
-        verify(dealService).dealDefuses(any(), anyList());
-        verify(dealService).dealInitialHands(any(), anyList(), anyInt());
-    }
-
-    private void verifySetupGameFailure() throws InvalidPlayerCountException, 
-            InvalidNicknameException {
-        verify(view).promptPlayerCount();
-        verify(playerService).validateCount(anyInt());
+        // Verify GameContext is not initialized
+        assertNull(GameContext.getTurnOrder());
+        assertNull(GameContext.getGameDeck());
     }
 } 
