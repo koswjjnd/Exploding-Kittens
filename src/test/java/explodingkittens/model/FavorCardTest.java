@@ -36,6 +36,9 @@ class FavorCardTest {
     @Mock
     private Card mockCard2;
     
+    @Mock
+    private Card mockCard3;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -46,6 +49,7 @@ class FavorCardTest {
         when(mockTargetPlayer2.getName()).thenReturn("TargetPlayer2");
         when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
         when(mockCard2.getType()).thenReturn(CardType.CAT_CARD);
+        when(mockCard3.getType()).thenReturn(CardType.CAT_CARD);
     }
     
     /**
@@ -177,6 +181,36 @@ class FavorCardTest {
         // Assert
         verify(mockTargetPlayer1).getHand();
         verify(mockCurrentPlayer).receiveCard(mockCard2);
+        verify(mockView).promptTargetPlayer(anyList());
+        verify(mockView).promptCardSelection(anyList());
+    }
+
+    /**
+     * Test Case 6: turnOrder = 3 players, targetPlayer has 3 cards
+     * Expected: Card transferred to current player
+     * 
+     * This test verifies that when there are three players and the target player has three cards,
+     * the selected card is successfully transferred to the current player.
+     */
+    @Test
+    void testEffectWithThreePlayersAndThreeCards() {
+        // Arrange
+        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer1, mockTargetPlayer2);
+        List<Card> targetHand = new ArrayList<>();
+        targetHand.add(mockCard1);
+        targetHand.add(mockCard2);
+        targetHand.add(mockCard3);
+        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0); // Select first target player
+        when(mockView.promptCardSelection(anyList())).thenReturn(2); // Select third card
+        
+        // Act
+        favorCard.effect(turnOrder, mockDeck);
+        
+        // Assert
+        verify(mockTargetPlayer1).getHand();
+        verify(mockCurrentPlayer).receiveCard(mockCard3);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
     }
