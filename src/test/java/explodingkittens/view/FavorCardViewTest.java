@@ -32,6 +32,9 @@ class FavorCardViewTest {
     @Mock
     private Card mockCard2;
     
+    @Mock
+    private Card mockCard3;
+    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -41,6 +44,7 @@ class FavorCardViewTest {
         when(mockPlayer3.getName()).thenReturn("TestPlayer3");
         when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
         when(mockCard2.getType()).thenReturn(CardType.DEFUSE);
+        when(mockCard3.getType()).thenReturn(CardType.ATTACK);
     }
     
     /**
@@ -201,5 +205,25 @@ class FavorCardViewTest {
         
         // Assert
         assertEquals(1, result, "Should return 1 when selecting the second card");
+    }
+
+    /**
+     * Test Case 3: cards = 3 cards, input = 2
+     * Expected: Returns 2
+     * 
+     * This test verifies that when there are three cards,
+     * selecting the last card (index 2) returns the correct card index.
+     */
+    @Test
+    void testPromptCardSelectionWithThreeCards() {
+        // Arrange
+        List<Card> cards = Arrays.asList(mockCard1, mockCard2, mockCard3);
+        view.setUserInput("2");
+        
+        // Act
+        int result = view.promptCardSelection(cards);
+        
+        // Assert
+        assertEquals(2, result, "Should return 2 when selecting the last card");
     }
 } 
