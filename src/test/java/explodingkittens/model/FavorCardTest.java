@@ -28,7 +28,10 @@ class FavorCardTest {
     private FavorCardView mockView;
     
     @Mock
-    private Card mockCard;
+    private Card mockCard1;
+    
+    @Mock
+    private Card mockCard2;
     
     @BeforeEach
     void setUp() {
@@ -37,7 +40,8 @@ class FavorCardTest {
         favorCard.setView(mockView);
         when(mockCurrentPlayer.getName()).thenReturn("CurrentPlayer");
         when(mockTargetPlayer.getName()).thenReturn("TargetPlayer");
-        when(mockCard.getType()).thenReturn(CardType.CAT_CARD);
+        when(mockCard1.getType()).thenReturn(CardType.CAT_CARD);
+        when(mockCard2.getType()).thenReturn(CardType.CAT_CARD);
     }
     
     /**
@@ -73,7 +77,7 @@ class FavorCardTest {
         // Arrange
         List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer);
         List<Card> targetHand = new ArrayList<>();
-        targetHand.add(mockCard);
+        targetHand.add(mockCard1);
         when(mockTargetPlayer.getHand()).thenReturn(targetHand);
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(0);
@@ -83,7 +87,35 @@ class FavorCardTest {
         
         // Assert
         verify(mockTargetPlayer).getHand();
-        verify(mockCurrentPlayer).receiveCard(mockCard);
+        verify(mockCurrentPlayer).receiveCard(mockCard1);
+        verify(mockView).promptTargetPlayer(anyList());
+        verify(mockView).promptCardSelection(anyList());
+    }
+
+    /**
+     * Test Case 3: turnOrder = 2 players, targetPlayer has 2 cards
+     * Expected: Card transferred to current player
+     * 
+     * This test verifies that when the target player has two cards,
+     * the selected card is successfully transferred to the current player.
+     */
+    @Test
+    void testEffectWithTwoCards() {
+        // Arrange
+        List<Player> turnOrder = Arrays.asList(mockCurrentPlayer, mockTargetPlayer);
+        List<Card> targetHand = new ArrayList<>();
+        targetHand.add(mockCard1);
+        targetHand.add(mockCard2);
+        when(mockTargetPlayer.getHand()).thenReturn(targetHand);
+        when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
+        when(mockView.promptCardSelection(anyList())).thenReturn(1); // Select second card
+        
+        // Act
+        favorCard.effect(turnOrder, mockDeck);
+        
+        // Assert
+        verify(mockTargetPlayer).getHand();
+        verify(mockCurrentPlayer).receiveCard(mockCard2);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
     }
