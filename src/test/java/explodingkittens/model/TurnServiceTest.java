@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -283,5 +284,17 @@ class TurnServiceTest {
         turnService.takeTurn(player, gameContext);
         assertEquals(1, turnOrder.size());
         assertEquals(player, turnOrder.get(0));
+    }
+
+    @Test
+    void testTakeTurnUpdatesTurnOrderWhenPlayerDead() throws EmptyDeckException {
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player);
+        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        when(player.isAlive()).thenReturn(false);
+        when(player.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        turnService.takeTurn(player, gameContext);
+        assertTrue(turnOrder.isEmpty());
     }
 } 
