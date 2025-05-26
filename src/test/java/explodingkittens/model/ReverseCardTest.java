@@ -34,4 +34,9 @@ class ReverseCardTest {
     void testNullTurnOrderThrows() {
         assertThrows(IllegalArgumentException.class, () -> card.effect(null, deck));
     }
+
+    @Test
+    void testEmptyTurnOrderThrows() {
+        assertThrows(IllegalArgumentException.class, () -> card.effect(new ArrayList<>(), deck));
+    }
 } 
