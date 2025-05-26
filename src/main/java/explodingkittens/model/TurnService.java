@@ -35,6 +35,7 @@ public class TurnService {
         processHand(player, ctx);
         drawCard(player, ctx);
         player.decrementLeftTurns();
+        updateTurnOrder(player, ctx);
     }
 
     /**
@@ -162,6 +163,23 @@ public class TurnService {
         } 
         else {
             player.setAlive(false);
+        }
+    }
+
+    /**
+     * Updates the turn order after a player's turn.
+     * If the player is alive, move to end; if not, remove from order.
+     *
+     * @param player The player who just finished their turn
+     * @param ctx The game context
+     */
+    private void updateTurnOrder(Player player, GameContext ctx) {
+        List<Player> turnOrder = ctx.getTurnOrder();
+        if (player.isAlive()) {
+            turnOrder.remove(player);
+            turnOrder.add(player);
+        } else {
+            turnOrder.remove(player);
         }
     }
 }
