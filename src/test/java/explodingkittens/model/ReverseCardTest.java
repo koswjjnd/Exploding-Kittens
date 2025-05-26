@@ -39,4 +39,13 @@ class ReverseCardTest {
     void testEmptyTurnOrderThrows() {
         assertThrows(IllegalArgumentException.class, () -> card.effect(new ArrayList<>(), deck));
     }
+
+    @Test
+    void testSinglePlayerReversesOrder() {
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(1);
+        card.effect(turnOrder, deck);
+        assertEquals(player1, turnOrder.get(0));
+        verify(player1).setLeftTurns(0);
+    }
 } 
