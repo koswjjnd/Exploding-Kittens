@@ -37,5 +37,12 @@ class TimeRewindCardTest {
             card.effect(turnOrder, deck));
     }
 
+    @Test
+    void testSingleCardThrows() {
+        deckCards.add(mock(Card.class));
+        assertThrows(IllegalStateException.class, () -> 
+            card.effect(turnOrder, deck));
+    }
+
     
 } 
