@@ -11,7 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -269,5 +272,50 @@ class TurnServiceTest {
         
         verify(view).showCardDrawn(player, explodingKitten);
         verify(player).setAlive(false);
+    }
+
+    @Test
+    void testTakeTurnUpdatesTurnOrderWhenPlayerAlive() throws EmptyDeckException {
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player);
+        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        turnService.takeTurn(player, gameContext);
+        assertEquals(1, turnOrder.size());
+        assertEquals(player, turnOrder.get(0));
+    }
+
+    @Test
+    void testTakeTurnUpdatesTurnOrderWhenPlayerDead() throws EmptyDeckException {
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player);
+        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        when(player.isAlive()).thenReturn(false);
+        when(player.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        turnService.takeTurn(player, gameContext);
+        assertTrue(turnOrder.isEmpty());
+    }
+
+    @Test
+    void testTakeTurnUpdatesTurnOrderWithMultiplePlayers() throws EmptyDeckException {
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+        Player player3 = mock(Player.class);
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        when(player1.isAlive()).thenReturn(true);
+        when(player1.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        turnService.takeTurn(player1, gameContext);
+        assertEquals(3, turnOrder.size());
+        assertEquals(player2, turnOrder.get(0));
+        assertEquals(player3, turnOrder.get(1));
+        assertEquals(player1, turnOrder.get(2));
     }
 } 
