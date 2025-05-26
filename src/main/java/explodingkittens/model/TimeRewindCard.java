@@ -1,6 +1,7 @@
 package explodingkittens.model;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a Time Rewind card in the game.
@@ -38,9 +39,9 @@ public class TimeRewindCard extends Card {
         }
 
         // Move top 3 cards to bottom
-        for (int i = 0; i < 3; i++) {
-            Card topCard = gameDeck.getCards().remove(0);
-            gameDeck.getCards().add(topCard);
-        }
+        List<Card> cards = gameDeck.getCards();
+        List<Card> topThree = new ArrayList<>(cards.subList(0, 3));
+        cards.removeAll(topThree);
+        cards.addAll(topThree);
     }
 }
