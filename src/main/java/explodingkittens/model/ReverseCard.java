@@ -5,8 +5,10 @@ import java.util.Collections;
 
 /**
  * Represents a Reverse card in the game.
- * When played, the order of play is reversed and the current player's turn ends without drawing a card.
- * If played after being attacked, the order is reversed but only 1 of 2 turns is ended.
+ * When played, the order of play is reversed 
+ * and the current player's turn ends without drawing a card.
+ * If played after being attacked, the order is reversed 
+ * but only 1 of 2 turns is ended.
  */
 public class ReverseCard extends Card {
 
@@ -38,7 +40,8 @@ public class ReverseCard extends Card {
         // Handle turn end for current player
         if (currentPlayer.getLeftTurns() > 1) {
             currentPlayer.decrementLeftTurns();
-        } else {
+        } 
+        else {
             currentPlayer.setLeftTurns(0);  // End turn completely for normal turns
         }
 
