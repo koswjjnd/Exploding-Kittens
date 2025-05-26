@@ -30,5 +30,12 @@ class TimeRewindCardTest {
         assertThrows(IllegalArgumentException.class, () -> 
             card.effect(turnOrder, null));
     }
+
+    @Test
+    void testEmptyDeckThrows() {
+        assertThrows(IllegalStateException.class, () -> 
+            card.effect(turnOrder, deck));
+    }
+
     
 } 
