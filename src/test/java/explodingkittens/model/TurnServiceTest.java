@@ -273,6 +273,7 @@ class TurnServiceTest {
         verify(view).showCardDrawn(player, explodingKitten);
         verify(player).setAlive(false);
     }
+
     @Test
     void testTakeTurnUpdatesTurnOrderWhenPlayerAlive() throws EmptyDeckException {
         List<Player> turnOrder = new ArrayList<>();
@@ -296,5 +297,25 @@ class TurnServiceTest {
         when(deck.drawOne()).thenReturn(card);
         turnService.takeTurn(player, gameContext);
         assertTrue(turnOrder.isEmpty());
+    }
+
+    @Test
+    void testTakeTurnUpdatesTurnOrderWithMultiplePlayers() throws EmptyDeckException {
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+        Player player3 = mock(Player.class);
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        when(player1.isAlive()).thenReturn(true);
+        when(player1.getHand()).thenReturn(new ArrayList<>());
+        when(deck.drawOne()).thenReturn(card);
+        turnService.takeTurn(player1, gameContext);
+        assertEquals(3, turnOrder.size());
+        assertEquals(player2, turnOrder.get(0));
+        assertEquals(player3, turnOrder.get(1));
+        assertEquals(player1, turnOrder.get(2));
     }
 } 
