@@ -16,5 +16,6 @@ public enum CardType {
     SWITCH_DECK_BY_HALF,
     DRAW_FROM_BOTTOM,
     SNATCH,
-    REVERSE
+    REVERSE,
+    TIME_REWIND
 }
