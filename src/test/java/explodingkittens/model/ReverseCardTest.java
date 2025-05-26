@@ -48,4 +48,17 @@ class ReverseCardTest {
         assertEquals(player1, turnOrder.get(0));
         verify(player1).setLeftTurns(0);
     }
+
+    @Test
+    void testMultiplePlayersReversesOrder() {
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        when(player1.getLeftTurns()).thenReturn(1);
+        card.effect(turnOrder, deck);
+        assertEquals(player3, turnOrder.get(0));
+        assertEquals(player2, turnOrder.get(1));
+        assertEquals(player1, turnOrder.get(2));
+        verify(player1, times(1)).setLeftTurns(0);
+    }
 } 

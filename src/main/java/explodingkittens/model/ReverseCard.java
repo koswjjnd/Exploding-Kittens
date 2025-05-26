@@ -32,15 +32,17 @@ public class ReverseCard extends Card {
             throw new IllegalArgumentException("Turn order cannot be null or empty");
         }
 
-        // Reverse the turn order
-        Collections.reverse(turnOrder);
-
-        // If the player was attacked (leftTurns > 1), only end 1 turn
+        // Get current player before reversing
         Player currentPlayer = turnOrder.get(0);
+        
+        // Handle turn end for current player
         if (currentPlayer.getLeftTurns() > 1) {
             currentPlayer.decrementLeftTurns();
         } else {
-            currentPlayer.setLeftTurns(0);
+            currentPlayer.setLeftTurns(0);  // End turn completely for normal turns
         }
+
+        // Reverse the turn order
+        Collections.reverse(turnOrder);
     }
 }
