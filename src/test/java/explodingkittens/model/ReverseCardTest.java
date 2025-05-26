@@ -61,4 +61,12 @@ class ReverseCardTest {
         assertEquals(player1, turnOrder.get(2));
         verify(player1, times(1)).setLeftTurns(0);
     }
+
+    @Test
+    void testNormalTurnEndsCompletely() {
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(1);
+        card.effect(turnOrder, deck);
+        verify(player1).setLeftTurns(0);
+    }
 } 
