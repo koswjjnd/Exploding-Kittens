@@ -69,4 +69,12 @@ class ReverseCardTest {
         card.effect(turnOrder, deck);
         verify(player1).setLeftTurns(0);
     }
+
+    @Test
+    void testAttackedTurnEndsOnlyOneTurn() {
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(2);
+        card.effect(turnOrder, deck);
+        verify(player1).decrementLeftTurns();
+    }
 } 
