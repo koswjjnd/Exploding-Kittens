@@ -85,7 +85,6 @@ class TimeRewindCardTest {
         deckCards.add(card4);
         
         card.effect(turnOrder, deck);
-        
         assertEquals(4, deckCards.size());
         assertEquals(CardType.SEE_THE_FUTURE, deckCards.get(0).getType());
         assertEquals(CardType.SKIP, deckCards.get(1).getType());
