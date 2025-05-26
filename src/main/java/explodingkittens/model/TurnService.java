@@ -178,7 +178,8 @@ public class TurnService {
         if (player.isAlive()) {
             turnOrder.remove(player);
             turnOrder.add(player);
-        } else {
+        } 
+        else {
             turnOrder.remove(player);
         }
     }
