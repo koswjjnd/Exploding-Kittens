@@ -46,7 +46,7 @@ class ReverseCardTest {
         when(player1.getLeftTurns()).thenReturn(1);
         card.effect(turnOrder, deck);
         assertEquals(player1, turnOrder.get(0));
-        verify(player1).setLeftTurns(0);
+        verify(player1, times(1)).setLeftTurns(0);
     }
 
     @Test
@@ -67,7 +67,7 @@ class ReverseCardTest {
         turnOrder.add(player1);
         when(player1.getLeftTurns()).thenReturn(1);
         card.effect(turnOrder, deck);
-        verify(player1).setLeftTurns(0);
+        verify(player1, times(1)).setLeftTurns(0);
     }
 
     @Test
@@ -75,6 +75,6 @@ class ReverseCardTest {
         turnOrder.add(player1);
         when(player1.getLeftTurns()).thenReturn(2);
         card.effect(turnOrder, deck);
-        verify(player1).decrementLeftTurns();
+        verify(player1, times(1)).decrementLeftTurns();
     }
 } 
