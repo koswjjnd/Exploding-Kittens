@@ -126,4 +126,17 @@ public interface GameView {
      * @return The selected position (0-based)
      */
     int selectExplodingKittenPosition();
+
+    /**
+     * Displays when a player uses a defuse card.
+     * @param player the player who used the defuse card
+     */
+    void displayDefuseUsed(Player player);
+
+    /**
+     * Displays when a defuse card is successfully used and the exploding kitten is inserted.
+     * @param player the player who used the defuse card
+     * @param position the position where the exploding kitten was inserted
+     */
+    void displayDefuseSuccess(Player player, int position);
 } 

@@ -85,29 +85,43 @@ public class GameController {
             // This will be implemented by the card effect module
             return;
         }
+        handleDrawAction(player);
+    }
 
-        // Draw a card
+    /**
+     * Handles the draw action for a player.
+     * @param player the current player
+     */
+    private void handleDrawAction(Player player) {
         Card drawn = GameContext.getGameDeck().drawOne();
-        
         if (!(drawn instanceof ExplodingKittenCard)) {
             player.receiveCard(drawn);
             return;
         }
+        handleExplodingKittenDraw(player, drawn);
+    }
 
-        // Handle exploding kitten
+    /**
+     * Handles the scenario when a player draws an Exploding Kitten card.
+     * @param player the current player
+     * @param drawn the drawn Exploding Kitten card
+     */
+    private void handleExplodingKittenDraw(Player player, Card drawn) {
         if (!player.hasDefuse()) {
             player.setAlive(false);
+            view.displayPlayerEliminated(player);
             return;
         }
-
-        // Handle defuse card usage
         if (!player.useDefuse()) {
             player.setAlive(false);
+            view.displayPlayerEliminated(player);
             return;
         }
-
-        // TODO: Handle defuse card insertion
-        // This will be implemented by the card effect module
+        view.displayDefuseUsed(player);
+        int deckSize = GameContext.getGameDeck().size();
+        int position = view.promptDefusePosition(deckSize);
+        GameContext.getGameDeck().insertAt(drawn, position);
+        view.displayDefuseSuccess(player, position);
     }
 
     /**
