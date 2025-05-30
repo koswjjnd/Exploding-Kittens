@@ -173,6 +173,8 @@ class CatCardTest {
         }, "Should throw exception when player has no turns left");
     }
 
+
+	// Input handler Test
 	@Test
     @DisplayName("Test when input handler is not set")
     void testNoInputHandler() {
@@ -185,4 +187,27 @@ class CatCardTest {
         }, "Should throw exception when input handler is not set");
     }
 
+	@Test
+    @DisplayName("Test with invalid input handler implementation")
+    void testInvalidInputHandler() {
+        CatCard.setInputHandler(new CardStealInputHandler() {
+            @Override
+            public Player selectTargetPlayer(List<Player> availablePlayers) {
+                return null; // Invalid implementation
+            }
+
+            @Override
+            public int selectCardIndex(int handSize) {
+                return -1; // Invalid implementation
+            }
+        });
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception with invalid input handler");
+    }
+	
 } 
