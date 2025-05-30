@@ -84,4 +84,19 @@ class SkipCardTest {
         verify(player1).setLeftTurns(2);
     }
 
+	@Test
+    void testEffectWithNegativeLeftTurns() {
+        // Test Case 5: leftTurn = -1
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(-1);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            skipCard.effect(turnOrder, gameDeck);
+        });
+        
+        assertEquals(1, turnOrder.size());
+        assertEquals(player1, turnOrder.get(0));
+        verify(player1, never()).setLeftTurns(anyInt());
+    }
+	
 }
