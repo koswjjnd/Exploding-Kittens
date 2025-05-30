@@ -56,4 +56,14 @@ class CatCardTest {
         }, "Should throw exception when player has only one cat card");
     }
 
+	@Test
+    @DisplayName("Test when player has two different types of cat cards")
+    void testDifferentCatCards() {
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard3);
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has two different types of cat cards");
+    }
+
 } 
