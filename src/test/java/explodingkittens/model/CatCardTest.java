@@ -116,5 +116,17 @@ class CatCardTest {
             catCard1.effect(turnOrder, gameDeck);
         }, "Should throw exception when no other players are available");
     }
-	
+
+	@Test
+    @DisplayName("Test when target player is dead")
+    void testDeadTargetPlayer() {
+        targetPlayer.setAlive(false);
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when target player is dead");
+    }
+
 } 
