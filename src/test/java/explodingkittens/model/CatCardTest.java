@@ -84,4 +84,25 @@ class CatCardTest {
             assertEquals(0, effect.getTargetCardIndex());
         }
     }
+
+	@Test
+    @DisplayName("Test when player has multiple same type cat cards")
+    void testMultipleSameCatCards() {
+        setupInputHandler("1\n1\n"); // Select first player and first card
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new SkipCard());
+        
+        try {
+            catCard1.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } catch (CatCard.CatCardEffect effect) {
+            assertEquals(catCard1, effect.getFirstCard());
+            assertEquals(catCard2, effect.getSecondCard());
+            assertEquals(targetPlayer, effect.getTargetPlayer());
+            assertEquals(0, effect.getTargetCardIndex());
+        }
+    }
+	
 } 
