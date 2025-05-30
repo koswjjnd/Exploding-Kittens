@@ -129,4 +129,15 @@ class CatCardTest {
         }, "Should throw exception when target player is dead");
     }
 
+	@Test
+    @DisplayName("Test when target player has empty hand")
+    void testEmptyTargetHand() {
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when target player has empty hand");
+    }
+
 } 
