@@ -140,4 +140,26 @@ class CatCardTest {
         }, "Should throw exception when target player has empty hand");
     }
 
+	@Test
+    @DisplayName("Test when target player has multiple cards")
+    void testMultipleTargetCards() {
+        setupInputHandler("1\n2\n"); // Select first player and second card
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        targetPlayer.receiveCard(new AttackCard());
+        targetPlayer.receiveCard(new FavorCard());
+        
+        try {
+            catCard1.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } catch (CatCard.CatCardEffect effect) {
+            assertEquals(catCard1, effect.getFirstCard());
+            assertEquals(catCard2, effect.getSecondCard());
+            assertEquals(targetPlayer, effect.getTargetPlayer());
+            assertEquals(1, effect.getTargetCardIndex());
+        }
+    }
+
+
 } 
