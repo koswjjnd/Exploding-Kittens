@@ -47,4 +47,13 @@ class CatCardTest {
         }, "Should throw exception when player has no cat cards");
     }
 
+	@Test
+    @DisplayName("Test when player has only one cat card")
+    void testOneCatCard() {
+        currentPlayer.receiveCard(catCard1);
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has only one cat card");
+    }
+
 } 
