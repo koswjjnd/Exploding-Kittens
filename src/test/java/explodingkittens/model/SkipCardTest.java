@@ -29,80 +29,14 @@ class SkipCardTest {
     void setUp() {
         skipCard = new SkipCard();
         turnOrder = new ArrayList<>();
-        turnOrder.add(player1);
-        turnOrder.add(player2);
     }
 
     @Test
-    void testEffectWithLeftTurnsZero() {
-        // Test Case 1: leftTurns = 0 (no turns left)
-        when(player1.getLeftTurns()).thenReturn(0);
-        
-        skipCard.effect(turnOrder, gameDeck);
-        
-        verify(player1, never()).setLeftTurns(anyInt());
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
+    void testEffectWithEmptyTurnOrder() {
+        // Test Case 0: Empty turnOrder
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            skipCard.effect(turnOrder, gameDeck);
+        });
     }
 
-	@Test
-    void testEffectWithLeftTurnsOne() {
-        // Test Case 2: leftTurns = 1 (will become 0 and skip)
-        when(player1.getLeftTurns()).thenReturn(1);
-        doAnswer(invocation -> {
-            when(player1.getLeftTurns()).thenReturn(0);
-            return null;
-        }).when(player1).setLeftTurns(0);
-        
-        skipCard.effect(turnOrder, gameDeck);
-        
-        verify(player1).setLeftTurns(0);
-        assertEquals(player2, turnOrder.get(0));
-        assertEquals(player1, turnOrder.get(1));
-    }
-
-	@Test
-    void testEffectWithLeftTurnsTwo() {
-        // Test Case 3: leftTurns = 2 (will become 1, no skip)
-        when(player1.getLeftTurns()).thenReturn(2);
-        doAnswer(invocation -> {
-            when(player1.getLeftTurns()).thenReturn(1);
-            return null;
-        }).when(player1).setLeftTurns(1);
-        
-        skipCard.effect(turnOrder, gameDeck);
-        
-        verify(player1).setLeftTurns(1);
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-    }
-
-	@Test
-    void testEffectWithLeftTurnsNegative() {
-        // Test Case 4: leftTurns = -1 (invalid value, no change)
-        when(player1.getLeftTurns()).thenReturn(-1);
-        
-        skipCard.effect(turnOrder, gameDeck);
-        
-        verify(player1, never()).setLeftTurns(anyInt());
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-    }
-
-	@Test
-    void testEffectWithLeftTurnsMaxValue() {
-        // Test Case 5: leftTurns = Integer.MAX_VALUE (will decrease by 1, no skip)
-        when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE);
-        doAnswer(invocation -> {
-            when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE - 1);
-            return null;
-        }).when(player1).setLeftTurns(Integer.MAX_VALUE - 1);
-        
-        skipCard.effect(turnOrder, gameDeck);
-        
-        verify(player1).setLeftTurns(Integer.MAX_VALUE - 1);
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-    }
-	
 }

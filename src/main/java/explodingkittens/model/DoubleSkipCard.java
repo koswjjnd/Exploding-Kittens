@@ -14,7 +14,9 @@ public class DoubleSkipCard extends Card {
         int currentLeftTurns = currentPlayer.getLeftTurns();
         
         if (currentLeftTurns <= 0) {
-            throw new IllegalStateException("Cannot use DoubleSkip card when leftTurns is 0 or negative");
+            throw new IllegalStateException(
+                "Cannot use DoubleSkip card when leftTurns is 0 or negative"
+            );
         }
         
         // Reduce by 2, but not below 0
