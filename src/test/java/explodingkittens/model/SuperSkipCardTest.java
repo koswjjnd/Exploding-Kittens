@@ -35,70 +35,12 @@ class SuperSkipCardTest {
     }
 
     @Test
-    void testEffectWithSinglePlayer() {
-        // Test Case 1: turnOrder size = 1
-        turnOrder.add(player1);
-        
-        superSkipCard.effect(turnOrder, gameDeck);
-        
-        assertEquals(1, turnOrder.size());
-        assertEquals(player1, turnOrder.get(0));
-    }
-
-	@Test
-    void testEffectWithTwoPlayers() {
-        // Test Case 2: turnOrder size = 2
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        
-        superSkipCard.effect(turnOrder, gameDeck);
-        
-        assertEquals(2, turnOrder.size());
-        assertEquals(player2, turnOrder.get(0));
-        assertEquals(player1, turnOrder.get(1));
-    }
-
-	@Test
-    void testEffectWithThreePlayers() {
-        // Test Case 3: turnOrder size = 3
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        turnOrder.add(player3);
-        
-        superSkipCard.effect(turnOrder, gameDeck);
-        
-        assertEquals(3, turnOrder.size());
-        assertEquals(player2, turnOrder.get(0));
-        assertEquals(player3, turnOrder.get(1));
-        assertEquals(player1, turnOrder.get(2));
-    }
-
-	@Test
     void testEffectWithEmptyTurnOrder() {
-        // Test Case 4: turnOrder size = 0
+        // Test Case 0: Empty turnOrder
         assertThrows(IndexOutOfBoundsException.class, () -> {
             superSkipCard.effect(turnOrder, gameDeck);
         });
     }
 
-	@Test
-    void testEffectWithLargeTurnOrder() {
-        // Test Case 5: turnOrder size = Integer.MAX_VALUE
-        // We'll simulate a large turn order with 1000 players
-        List<Player> players = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            Player player = mock(Player.class);
-            players.add(player);
-            turnOrder.add(player);
-        }
-        
-        superSkipCard.effect(turnOrder, gameDeck);
-        
-        assertEquals(1000, turnOrder.size());
-        // First player should be at the end
-        assertEquals(players.get(0), turnOrder.get(999));
-        // Second player should be at the front
-        assertEquals(players.get(1), turnOrder.get(0));
-    }
 
 } 

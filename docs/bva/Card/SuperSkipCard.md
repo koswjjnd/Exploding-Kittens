@@ -46,4 +46,4 @@
 
 ### Step 4: Determine the test cases using either all-combination or each-choice strategy.
 - Using each-choice strategy since we're testing a single input parameter
-- Test cases cover all boundary conditions and typical scenarios 
+- Test cases cover all boundary conditions and typical scenarios
