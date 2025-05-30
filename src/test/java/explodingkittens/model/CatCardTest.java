@@ -161,5 +161,17 @@ class CatCardTest {
         }
     }
 
+	@Test
+    @DisplayName("Test when player has no turns left")
+    void testNoTurnsLeft() {
+        currentPlayer.setLeftTurns(0);
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has no turns left");
+    }
+
 
 } 
