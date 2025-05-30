@@ -173,5 +173,16 @@ class CatCardTest {
         }, "Should throw exception when player has no turns left");
     }
 
+	@Test
+    @DisplayName("Test when input handler is not set")
+    void testNoInputHandler() {
+        CatCard.setInputHandler(null);
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catCard1.effect(turnOrder, gameDeck);
+        }, "Should throw exception when input handler is not set");
+    }
 
 } 
