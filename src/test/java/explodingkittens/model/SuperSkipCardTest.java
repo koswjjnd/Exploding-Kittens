@@ -117,4 +117,19 @@ class SuperSkipCardTest {
         verify(player1).setLeftTurns(0);
     }
 
+	@Test
+    void testEffectWithMaxValueLeftTurns() {
+        // Test Case 6: leftTurn = Integer.MAX_VALUE
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE);
+        
+        superSkipCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(2, turnOrder.size());
+        assertEquals(player2, turnOrder.get(0));
+        assertEquals(player1, turnOrder.get(1));
+        verify(player1).setLeftTurns(0);
+    }
+	
 } 
