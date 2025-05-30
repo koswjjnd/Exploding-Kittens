@@ -72,5 +72,13 @@ class SuperSkipCardTest {
         assertEquals(player3, turnOrder.get(1));
         assertEquals(player1, turnOrder.get(2));
     }
+
+	@Test
+    void testEffectWithEmptyTurnOrder() {
+        // Test Case 4: turnOrder size = 0
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            superSkipCard.effect(turnOrder, gameDeck);
+        });
+    }
 	
 } 
