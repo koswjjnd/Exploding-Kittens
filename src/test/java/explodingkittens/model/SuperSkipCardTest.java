@@ -58,4 +58,19 @@ class SuperSkipCardTest {
         assertEquals(player1, turnOrder.get(1));
     }
 
-} s
+	@Test
+    void testEffectWithThreePlayers() {
+        // Test Case 3: turnOrder size = 3
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        
+        superSkipCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(3, turnOrder.size());
+        assertEquals(player2, turnOrder.get(0));
+        assertEquals(player3, turnOrder.get(1));
+        assertEquals(player1, turnOrder.get(2));
+    }
+	
+} 
