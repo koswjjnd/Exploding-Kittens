@@ -80,5 +80,25 @@ class SuperSkipCardTest {
             superSkipCard.effect(turnOrder, gameDeck);
         });
     }
-	
+
+	@Test
+    void testEffectWithLargeTurnOrder() {
+        // Test Case 5: turnOrder size = Integer.MAX_VALUE
+        // We'll simulate a large turn order with 1000 players
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            Player player = mock(Player.class);
+            players.add(player);
+            turnOrder.add(player);
+        }
+        
+        superSkipCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(1000, turnOrder.size());
+        // First player should be at the end
+        assertEquals(players.get(0), turnOrder.get(999));
+        // Second player should be at the front
+        assertEquals(players.get(1), turnOrder.get(0));
+    }
+
 } 
