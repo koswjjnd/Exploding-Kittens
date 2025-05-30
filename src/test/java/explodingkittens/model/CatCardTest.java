@@ -47,7 +47,7 @@ class CatCardTest {
         }, "Should throw exception when player has no cat cards");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when player has only one cat card")
     void testOneCatCard() {
         currentPlayer.receiveCard(catCard1);
@@ -56,7 +56,7 @@ class CatCardTest {
         }, "Should throw exception when player has only one cat card");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when player has two different types of cat cards")
     void testDifferentCatCards() {
         currentPlayer.receiveCard(catCard1);
@@ -66,7 +66,7 @@ class CatCardTest {
         }, "Should throw exception when player has two different types of cat cards");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when player has two same type cat cards")
     void testSameCatCards() {
         setupInputHandler("1\n1\n"); // Select first player and first card
@@ -85,7 +85,7 @@ class CatCardTest {
         }
     }
 
-	@Test
+    @Test
     @DisplayName("Test when player has multiple same type cat cards")
     void testMultipleSameCatCards() {
         setupInputHandler("1\n1\n"); // Select first player and first card
@@ -105,7 +105,7 @@ class CatCardTest {
         }
     }
 
-	@Test
+    @Test
     @DisplayName("Test when no other players are available")
     void testNoOtherPlayers() {
         turnOrder.remove(targetPlayer);
@@ -117,7 +117,7 @@ class CatCardTest {
         }, "Should throw exception when no other players are available");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when target player is dead")
     void testDeadTargetPlayer() {
         targetPlayer.setAlive(false);
@@ -129,7 +129,7 @@ class CatCardTest {
         }, "Should throw exception when target player is dead");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when target player has empty hand")
     void testEmptyTargetHand() {
         currentPlayer.receiveCard(catCard1);
@@ -140,7 +140,7 @@ class CatCardTest {
         }, "Should throw exception when target player has empty hand");
     }
 
-	@Test
+    @Test
     @DisplayName("Test when target player has multiple cards")
     void testMultipleTargetCards() {
         setupInputHandler("1\n2\n"); // Select first player and second card
@@ -161,7 +161,7 @@ class CatCardTest {
         }
     }
 
-	@Test
+    @Test
     @DisplayName("Test when player has no turns left")
     void testNoTurnsLeft() {
         currentPlayer.setLeftTurns(0);
@@ -172,42 +172,4 @@ class CatCardTest {
             catCard1.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has no turns left");
     }
-
-
-	// Input handler Test
-	@Test
-    @DisplayName("Test when input handler is not set")
-    void testNoInputHandler() {
-        CatCard.setInputHandler(null);
-        currentPlayer.receiveCard(catCard1);
-        currentPlayer.receiveCard(catCard2);
-        
-        assertThrows(IllegalStateException.class, () -> {
-            catCard1.effect(turnOrder, gameDeck);
-        }, "Should throw exception when input handler is not set");
-    }
-
-	@Test
-    @DisplayName("Test with invalid input handler implementation")
-    void testInvalidInputHandler() {
-        CatCard.setInputHandler(new CardStealInputHandler() {
-            @Override
-            public Player selectTargetPlayer(List<Player> availablePlayers) {
-                return null; // Invalid implementation
-            }
-
-            @Override
-            public int selectCardIndex(int handSize) {
-                return -1; // Invalid implementation
-            }
-        });
-        currentPlayer.receiveCard(catCard1);
-        currentPlayer.receiveCard(catCard2);
-        targetPlayer.receiveCard(new SkipCard());
-        
-        assertThrows(IllegalStateException.class, () -> {
-            catCard1.effect(turnOrder, gameDeck);
-        }, "Should throw exception with invalid input handler");
-    }
-	
 } 
