@@ -90,5 +90,18 @@ class DoubleSkipCardTest {
         assertEquals(player2, turnOrder.get(1));
         verify(player1).setLeftTurns(1);
     }
+
+    @Test
+    void testEffectWithNegativeLeftTurns() {
+        // Test Case 5: leftTurn = -1
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(-1);
+        
+        doubleSkipCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(1, turnOrder.size());
+        assertEquals(player1, turnOrder.get(0));
+        verify(player1).setLeftTurns(0);
+    }
     
 } 
