@@ -97,11 +97,13 @@ class DoubleSkipCardTest {
         turnOrder.add(player1);
         when(player1.getLeftTurns()).thenReturn(-1);
         
-        doubleSkipCard.effect(turnOrder, gameDeck);
+        assertThrows(IllegalStateException.class, () -> {
+            doubleSkipCard.effect(turnOrder, gameDeck);
+        });
         
         assertEquals(1, turnOrder.size());
         assertEquals(player1, turnOrder.get(0));
-        verify(player1).setLeftTurns(0);
+        verify(player1, never()).setLeftTurns(anyInt());
     }
 
     @Test
