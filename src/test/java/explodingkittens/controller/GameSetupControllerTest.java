@@ -120,7 +120,7 @@ class GameSetupControllerTest {
         when(playerService.createPlayer(anyString())).thenReturn(mockPlayer);
         doThrow(new InvalidDeckException())
             .when(dealService).dealDefuses(any(Deck.class), anyList());
-        
+
         // Execute and verify
         assertThrows(InvalidDeckException.class, () -> controller.setupGame());
     }
