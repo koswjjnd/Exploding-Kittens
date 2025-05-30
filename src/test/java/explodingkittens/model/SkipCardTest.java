@@ -77,4 +77,16 @@ class SkipCardTest {
         assertEquals(player2, turnOrder.get(1));
     }
 
+	@Test
+    void testEffectWithLeftTurnsNegative() {
+        // Test Case 4: leftTurns = -1 (invalid value, no change)
+        when(player1.getLeftTurns()).thenReturn(-1);
+        
+        skipCard.effect(turnOrder, gameDeck);
+        
+        verify(player1, never()).setLeftTurns(anyInt());
+        assertEquals(player1, turnOrder.get(0));
+        assertEquals(player2, turnOrder.get(1));
+    }
+	
 }
