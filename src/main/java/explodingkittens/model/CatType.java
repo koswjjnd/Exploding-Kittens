@@ -4,5 +4,6 @@ public enum CatType {
     TACOCAT,
     BEARD_CAT,
     CATTERMELON,
-    RAINBOW_CAT
+    RAINBOW_CAT,
+    HAIRY_POTATO_CAT
 } 

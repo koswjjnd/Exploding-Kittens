@@ -2,23 +2,25 @@ package explodingkittens.model;
 
 import java.util.List;
 
-public class SkipCard extends Card {
-    public SkipCard() {
-        super(CardType.SKIP);
+public class DoubleSkipCard extends Card {
+    public DoubleSkipCard() {
+        super(CardType.DOUBLE_SKIP);
     }
 
     @Override
     public void effect(List<Player> turnOrder, Deck gameDeck) {
-        // Skip card effect: Reduce leftTurns by 1, but not below 0
+        // DoubleSkip card effect: Reduce leftTurns by 2, but not below 0
         Player currentPlayer = turnOrder.get(0);
         int currentLeftTurns = currentPlayer.getLeftTurns();
         
         if (currentLeftTurns <= 0) {
-            throw new IllegalStateException("Cannot use Skip card when leftTurns is 0 or negative");
+            throw new IllegalStateException(
+                "Cannot use DoubleSkip card when leftTurns is 0 or negative"
+            );
         }
         
-        // Reduce by 1
-        int newLeftTurns = currentLeftTurns - 1;
+        // Reduce by 2, but not below 0
+        int newLeftTurns = Math.max(0, currentLeftTurns - 2);
         currentPlayer.setLeftTurns(newLeftTurns);
         
         // Only move player to end if they have no turns left
