@@ -88,5 +88,21 @@ class SkipCardTest {
         assertEquals(player1, turnOrder.get(0));
         assertEquals(player2, turnOrder.get(1));
     }
+
+	@Test
+    void testEffectWithLeftTurnsMaxValue() {
+        // Test Case 5: leftTurns = Integer.MAX_VALUE (will decrease by 1, no skip)
+        when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE);
+        doAnswer(invocation -> {
+            when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE - 1);
+            return null;
+        }).when(player1).setLeftTurns(Integer.MAX_VALUE - 1);
+        
+        skipCard.effect(turnOrder, gameDeck);
+        
+        verify(player1).setLeftTurns(Integer.MAX_VALUE - 1);
+        assertEquals(player1, turnOrder.get(0));
+        assertEquals(player2, turnOrder.get(1));
+    }
 	
 }
