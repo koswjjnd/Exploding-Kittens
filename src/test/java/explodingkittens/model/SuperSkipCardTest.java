@@ -131,5 +131,29 @@ class SuperSkipCardTest {
         assertEquals(player1, turnOrder.get(1));
         verify(player1).setLeftTurns(0);
     }
+
+	@Test
+    void testEffectWithLargeTurnOrder() {
+        // Test Case 7: turnOrder size = 10
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Player player = mock(Player.class);
+            if (i == 0) {
+                when(player.getLeftTurns()).thenReturn(1);
+            }
+            players.add(player);
+            turnOrder.add(player);
+        }
+        
+        superSkipCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(10, turnOrder.size());
+        // First player should be at the end
+        assertEquals(players.get(0), turnOrder.get(9));
+        // Second player should be at the front
+        assertEquals(players.get(1), turnOrder.get(0));
+        // Verify leftTurns was set to 0 for the first player
+        verify(players.get(0)).setLeftTurns(0);
+    }
 	
 } 
