@@ -3,6 +3,8 @@ package explodingkittens.controller;
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
 import explodingkittens.model.Card;
+import explodingkittens.model.CatCard;
+import explodingkittens.model.CatCard.CatCardEffect;
 import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 public class GameController {
     private final GameView view;
+
     /**
      * Constructs a GameController with the given view.
      * @param view the view to interact with the user
@@ -136,5 +139,46 @@ public class GameController {
         else {
             view.displayGameOver();
         }
+    }
+
+    /**
+     * Handles the effect of a cat card.
+     * @param card The cat card to handle
+     * @param turnOrder The current turn order
+     * @param gameDeck The game deck
+     */
+    private void handleCatCard(CatCard card, List<Player> turnOrder, Deck gameDeck) {
+        try {
+            card.effect(turnOrder, gameDeck);
+        } 
+        catch (CatCardEffect effect) {
+            // Check for Nope cards
+            if (!checkForNope(turnOrder)) {
+                // No Nope cards played, execute the effect
+                Player currentPlayer = turnOrder.get(0);
+                
+                // Remove the cat card pair
+                currentPlayer.removeCard(effect.getFirstCard());
+                currentPlayer.removeCard(effect.getSecondCard());
+                
+                // Get and remove the target card
+                Card cardToSteal = effect.getTargetPlayer()
+                    .getHand()
+                    .get(effect.getTargetCardIndex());
+                if (effect.getTargetPlayer().removeCard(cardToSteal)) {
+                    currentPlayer.receiveCard(cardToSteal);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if any player wants to play a Nope card.
+     * @param turnOrder The current turn order
+     * @return true if a Nope card was played, false otherwise
+     */
+    private boolean checkForNope(List<Player> turnOrder) {
+        // TODO: Implement Nope card checking logic
+        return false;
     }
 }

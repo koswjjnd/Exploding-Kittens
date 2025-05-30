@@ -8,11 +8,14 @@ import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.model.Deck;
 import explodingkittens.service.DealService;
 import explodingkittens.exceptions.InvalidDeckException;
+import explodingkittens.model.CatCard;
+import explodingkittens.model.ConsoleCardStealInputHandler;
 
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * The GameSetupController class manages the initial setup phase of the
@@ -71,6 +74,9 @@ public class GameSetupController {
         GameContext.setGameDeck(gameDeck);
         GameContext.setTurnOrder(players);
         GameContext.setGameOver(false);
+
+        Scanner scanner = new Scanner(System.in);
+        CatCard.setInputHandler(new ConsoleCardStealInputHandler(scanner));
     }
 
     /**
