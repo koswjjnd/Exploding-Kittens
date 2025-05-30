@@ -57,4 +57,18 @@ class SuperSkipCardTest {
         verify(player1, never()).setLeftTurns(anyInt());
     }
 
+	@Test
+    void testEffectWithNegativeLeftTurns() {
+        // Test Case 2: leftTurn = -1
+        turnOrder.add(player1);
+        when(player1.getLeftTurns()).thenReturn(-1);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            superSkipCard.effect(turnOrder, gameDeck);
+        });
+        
+        assertEquals(1, turnOrder.size());
+        assertEquals(player1, turnOrder.get(0));
+        verify(player1, never()).setLeftTurns(anyInt());
+    }
 } 
