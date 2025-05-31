@@ -98,4 +98,13 @@ class ConsoleCardStealInputHandlerTest {
         });
     }
 
+    // selectCardIndex method tests
+    @Test
+    @DisplayName("Test Case 1: Select first card")
+    void testSelectFirstCard() {
+        setupInputHandler("1\n");
+        int selected = inputHandler.selectCardIndex(3);
+        assertEquals(0, selected);
+    }
+
 } 
