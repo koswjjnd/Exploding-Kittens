@@ -57,5 +57,18 @@ class CatRequestCardTest {
         }, "Should throw exception when controller is not set");
     }
 
-    
+    @Test
+    @DisplayName("Test Case 2: Player has no turns left")
+    void testNoTurnsLeft() {
+        currentPlayer.setLeftTurns(0);
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catRequestCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has no turns left");
+    }
+
+	
 } 
