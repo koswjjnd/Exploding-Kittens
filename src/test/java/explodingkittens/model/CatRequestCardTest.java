@@ -110,4 +110,17 @@ class CatRequestCardTest {
         assertEquals(2, currentPlayer.getHand().size(), "Should have two cards (one remaining cat card and the requested card)");
         assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
     }
+
+    @Test
+    @DisplayName("Test Case 6: No other players available")
+    void testNoOtherPlayers() {
+        turnOrder.remove(targetPlayer);
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catRequestCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when no other players are available");
+    }
 } 
