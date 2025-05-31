@@ -70,5 +70,16 @@ class CatRequestCardTest {
         }, "Should throw exception when player has no turns left");
     }
 
-	
+	@Test
+    @DisplayName("Test Case 3: Player has less than three cat cards of EXACT SAME TYPE")
+    void testLessThanThreeCatCards() {
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.BEARD_CAT)); // Different type
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catRequestCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has less than three cat cards of EXACT SAME TYPE");
+    }
+
 } 
