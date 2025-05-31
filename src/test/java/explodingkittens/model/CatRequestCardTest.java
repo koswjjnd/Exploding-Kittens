@@ -95,4 +95,19 @@ class CatRequestCardTest {
         assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
         assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
     }
+
+    @Test
+    @DisplayName("Test Case 5: Player has more than three cat cards of EXACT SAME TYPE")
+    void testMoreThanThreeCatCards() {
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new SkipCard());
+        
+        catRequestCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(2, currentPlayer.getHand().size(), "Should have two cards (one remaining cat card and the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+    }
 } 
