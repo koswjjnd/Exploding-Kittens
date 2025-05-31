@@ -3,13 +3,18 @@ package explodingkittens.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import explodingkittens.model.Player;
 import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
@@ -18,6 +23,7 @@ import explodingkittens.model.AttackCard;
 import explodingkittens.model.FavorCard;
 import explodingkittens.model.CatCard;
 import explodingkittens.model.CatType;
+import explodingkittens.model.CatRequestCard;
 
 /**
  * Tests for ConsoleCatCardRequestInputHandler.
@@ -26,6 +32,12 @@ class ConsoleCatCardRequestInputHandlerTest {
     private List<Player> availablePlayers;
     private ConsoleCatCardRequestInputHandler inputHandler;
     private Scanner scanner;
+    private Player targetPlayer;
+    private Player currentPlayer;
+    private CatRequestCard requestCard;
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
+    private CatCardRequestController controller;
+    private ByteArrayInputStream inputStream;
 
     @BeforeEach
     void setUp() {
@@ -33,11 +45,45 @@ class ConsoleCatCardRequestInputHandlerTest {
         availablePlayers.add(new Player("Player1"));
         availablePlayers.add(new Player("Player2"));
         availablePlayers.add(new Player("Player3"));
+        targetPlayer = new Player("Target");
+        currentPlayer = new Player("Current");
+        inputHandler = new ConsoleCatCardRequestInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name()));
+        controller = new CatCardRequestController(inputHandler);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (scanner != null) {
+            scanner.close();
+        }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } 
+            catch (IOException e) {
+                // Ignore close exception
+            }
+        }
+        // Restore original System.in
+        System.setIn(System.in);
     }
 
     private void setupInputHandler(String input) {
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        scanner = new Scanner(System.in);
+        if (scanner != null) {
+            scanner.close();
+        }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } 
+            catch (IOException e) {
+                // Ignore close exception
+            }
+        }
+        inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+        System.setIn(inputStream);
+        scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
     }
 
@@ -58,7 +104,19 @@ class ConsoleCatCardRequestInputHandlerTest {
 
         // Mock user input
         String input = "1\n";
-        scanner = new Scanner(input);
+        if (scanner != null) {
+            scanner.close();
+        }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } 
+            catch (IOException e) {
+                // Ignore close exception
+            }
+        }
+        inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+        scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
 
         Player selected = inputHandler.selectTargetPlayer(players);
@@ -75,7 +133,9 @@ class ConsoleCatCardRequestInputHandlerTest {
 
         // Mock user input
         String input = "1\n";
-        scanner = new Scanner(input);
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), 
+            StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
 
         Card selected = inputHandler.selectCard(targetPlayer);
@@ -89,7 +149,9 @@ class ConsoleCatCardRequestInputHandlerTest {
         
         // Mock user input
         String input = "1\n";
-        scanner = new Scanner(input);
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), 
+            StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -105,7 +167,9 @@ class ConsoleCatCardRequestInputHandlerTest {
         
         // Mock user input
         String input = "2\n";
-        scanner = new Scanner(input);
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), 
+            StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -241,5 +305,58 @@ class ConsoleCatCardRequestInputHandlerTest {
         assertThrows(IllegalArgumentException.class, () -> {
             inputHandler.selectCard(targetPlayer);
         });
+    }
+
+    @Test
+    @DisplayName("Test Case 2: Invalid implementation")
+    void testInvalidImplementation() {
+        CatCardRequestController controller = new CatCardRequestController(
+            new CatCardRequestInputHandler() {
+                @Override
+                public Player selectTargetPlayer(List<Player> availablePlayers) {
+                    return null;
+                }
+
+                @Override
+                public Card selectCard(Player targetPlayer) {
+                    return null;
+                }
+            }
+        );
+
+        assertNotNull(controller);
+    }
+
+    @Test
+    @DisplayName("Test Case 5: Exception throwing handler")
+    void testExceptionThrowingHandler() {
+        CatCardRequestController controller = new CatCardRequestController(
+            new CatCardRequestInputHandler() {
+                @Override
+                public Player selectTargetPlayer(List<Player> availablePlayers) {
+                    throw new RuntimeException("Test exception");
+                }
+
+                @Override
+                public Card selectCard(Player targetPlayer) {
+                    throw new RuntimeException("Test exception");
+                }
+            }
+        );
+
+        assertNotNull(controller);
+    }
+
+    private void setupPlayerCards() {
+        // Give target player some cards
+        targetPlayer.receiveCard(new SkipCard());
+        targetPlayer.receiveCard(new CatCard(CatType.BEARD_CAT));
+
+        // Give current player three TACOCAT cards and a CatRequestCard for the request
+        requestCard = new CatRequestCard(CatType.TACOCAT);
+        currentPlayer.receiveCard(requestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
     }
 }

@@ -162,6 +162,7 @@ public class CatCard extends Card {
 
         public CatCardEffect(CatCard firstCard, CatCard secondCard, Player targetPlayer, 
                 int targetCardIndex) {
+            super("Cat card effect");
             this.firstCard = firstCard;
             this.secondCard = secondCard;
             this.targetPlayer = targetPlayer;

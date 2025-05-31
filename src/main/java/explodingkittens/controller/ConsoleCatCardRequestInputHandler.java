@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Implementation of CatCardRequestInputHandler that uses console input.
+ * Console-based implementation of CatCardRequestInputHandler.
  */
 public class ConsoleCatCardRequestInputHandler implements CatCardRequestInputHandler {
     private final Scanner scanner;

@@ -60,7 +60,8 @@ class CatCardRequestInputHandlerTest {
                 public Card selectCard(Player targetPlayer) {
                     return null;
                 }
-            });
+            }
+        );
 
         assertNotNull(controller);
     }
@@ -94,7 +95,8 @@ class CatCardRequestInputHandlerTest {
                 public Card selectCard(Player targetPlayer) {
                     throw new RuntimeException("Test exception");
                 }
-            });
+            }
+        );
 
         assertNotNull(controller);
     }

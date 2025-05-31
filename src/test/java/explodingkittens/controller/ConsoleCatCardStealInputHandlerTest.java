@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayInputStream;
 import explodingkittens.model.Player;
 import explodingkittens.model.CatType;
 import explodingkittens.model.CatCard;
@@ -24,7 +26,8 @@ class ConsoleCatCardStealInputHandlerTest {
 
     @BeforeEach
     void setUp() {
-        scanner = new Scanner(System.in);
+        // Use an empty input stream for setup
+        scanner = new Scanner(new ByteArrayInputStream(new byte[0]), StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardStealInputHandler(scanner);
     }
 
@@ -45,7 +48,10 @@ class ConsoleCatCardStealInputHandlerTest {
 
         // Mock user input
         String input = "1\n";
-        scanner = new Scanner(input);
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8
+        );
         inputHandler = new ConsoleCatCardStealInputHandler(scanner);
 
         Player selected = inputHandler.selectTargetPlayer(players);
@@ -57,7 +63,10 @@ class ConsoleCatCardStealInputHandlerTest {
     void testSelectCardIndex() {
         // Mock user input
         String input = "2\n";
-        scanner = new Scanner(input);
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8
+        );
         inputHandler = new ConsoleCatCardStealInputHandler(scanner);
 
         int index = inputHandler.selectCardIndex(3);
@@ -67,6 +76,18 @@ class ConsoleCatCardStealInputHandlerTest {
     @Test
     @DisplayName("Test Case 4: Handle card steal")
     void testHandleCardSteal() {
+        List<Player> players = setupPlayersWithCards();
+        setupInputHandler("2\n1\n2\n1\n");
+
+        // Set the input handler for CatCard
+        CatCard.setInputHandler(inputHandler);
+
+        assertDoesNotThrow(() -> {
+            inputHandler.handleCardSteal(players.get(0), players, CatType.TACOCAT);
+        });
+    }
+
+    private List<Player> setupPlayersWithCards() {
         List<Player> players = new ArrayList<>();
         Player currentPlayer = new Player("Player1");
         Player targetPlayer = new Player("Player2");
@@ -82,16 +103,14 @@ class ConsoleCatCardStealInputHandlerTest {
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
 
-        // Mock user input - provide extra input in case of retries
-        String input = "2\n1\n2\n1\n";
-        scanner = new Scanner(input);
+        return players;
+    }
+
+    private void setupInputHandler(String input) {
+        scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8
+        );
         inputHandler = new ConsoleCatCardStealInputHandler(scanner);
-
-        // Set the input handler for CatCard
-        CatCard.setInputHandler(inputHandler);
-
-        assertDoesNotThrow(() -> {
-            inputHandler.handleCardSteal(currentPlayer, players, CatType.TACOCAT);
-        });
     }
 } 

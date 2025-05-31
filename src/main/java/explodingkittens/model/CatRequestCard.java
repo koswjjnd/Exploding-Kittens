@@ -30,10 +30,26 @@ public class CatRequestCard extends CatCard {
 
     /**
      * Sets the controller for handling card requests.
-     * @param controller The controller to use
+     * @param controller The controller to set
+     * @throws IllegalArgumentException if controller is null
      */
-    public static void setController(CatCardRequestController controller) {
+    public static synchronized void setController(CatCardRequestController controller) {
+        if (controller == null) {
+            throw new IllegalArgumentException("Controller cannot be null");
+        }
         CatRequestCard.controller = controller;
+    }
+
+    /**
+     * Gets the controller for handling card requests.
+     * @return The controller
+     * @throws IllegalStateException if controller is not set
+     */
+    public static CatCardRequestController getController() {
+        if (controller == null) {
+            throw new IllegalStateException("Controller not set");
+        }
+        return controller;
     }
 
     /**

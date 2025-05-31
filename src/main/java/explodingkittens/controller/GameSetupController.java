@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The GameSetupController class manages the initial setup phase of the
@@ -77,7 +78,7 @@ public class GameSetupController {
         GameContext.setTurnOrder(players);
         GameContext.setGameOver(false);
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
         CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(scanner));
     }
 
