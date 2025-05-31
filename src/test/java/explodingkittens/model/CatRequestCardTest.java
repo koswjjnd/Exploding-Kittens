@@ -82,4 +82,17 @@ class CatRequestCardTest {
         }, "Should throw exception when player has less than three cat cards of EXACT SAME TYPE");
     }
 
+    @Test
+    @DisplayName("Test Case 4: Player has exactly three cat cards of EXACT SAME TYPE")
+    void testExactlyThreeCatCards() {
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new SkipCard());
+        
+        catRequestCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+    }
 } 
