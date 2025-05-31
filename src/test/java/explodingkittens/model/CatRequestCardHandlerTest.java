@@ -20,4 +20,21 @@ class CatRequestCardHandlerTest {
         CatRequestCard.setInputHandler(null);
         // Should not throw any exception
     }
+
+    @Test
+    @DisplayName("Test Case 2: handler = invalid implementation")
+    void testInvalidHandler() {
+        CatRequestCard.setInputHandler(new CardStealInputHandler() {
+            @Override
+            public Player selectTargetPlayer(List<Player> availablePlayers) {
+                return null;
+            }
+
+            @Override
+            public int selectCardIndex(int handSize) {
+                return -1;
+            }
+        });
+        // Should not throw any exception
+    }
 } 
