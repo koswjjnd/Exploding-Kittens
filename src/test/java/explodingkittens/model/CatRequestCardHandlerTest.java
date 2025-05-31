@@ -45,4 +45,13 @@ class CatRequestCardHandlerTest {
         CatRequestCard.setInputHandler(inputHandler);
         // Should not throw any exception
     }
+
+    @Test
+    @DisplayName("Test Case 4: handler = multiple instances")
+    void testMultipleHandlers() {
+        setupInputHandler("1\n1\n");
+        CatRequestCard.setInputHandler(inputHandler);
+        CatRequestCard.setInputHandler(inputHandler);
+        // Should not throw any exception
+    }
 } 
