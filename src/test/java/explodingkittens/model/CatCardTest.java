@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 class CatCardTest {
     private List<Player> turnOrder;
@@ -40,8 +41,10 @@ class CatCardTest {
     }
 
     private void setupInputHandler(String input) {
-        // Create a new Scanner with the input string
-        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        // Create a new Scanner with the input string and UTF-8 encoding
+        Scanner scanner = new Scanner(
+            new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)), 
+            StandardCharsets.UTF_8.name());
         inputHandler = new ConsoleCatCardStealInputHandler(scanner);
         CatCard.setInputHandler(inputHandler);
     }
@@ -213,7 +216,8 @@ class CatCardTest {
         players.add(player);
         players.add(new Player("Player2"));
 
-        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(new Scanner(System.in)));
+        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name())));
 
         assertThrows(IllegalStateException.class, () -> {
             card.effect(players, null);
@@ -230,7 +234,8 @@ class CatCardTest {
         players.add(player);
         players.add(new Player("Player2"));
 
-        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(new Scanner(System.in)));
+        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name())));
 
         assertThrows(IllegalStateException.class, () -> {
             card.effect(players, null);

@@ -18,6 +18,7 @@ import explodingkittens.model.CatType;
 import explodingkittens.model.CatCard;
 import java.util.Scanner;
 import explodingkittens.model.CatRequestCard;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Tests for CatCardRequestInputHandler.
@@ -25,7 +26,6 @@ import explodingkittens.model.CatRequestCard;
 class CatCardRequestInputHandlerTest {
     private CatCardRequestInputHandler inputHandler;
     private CatCardRequestController controller;
-    private Scanner scanner;
     private List<Player> players;
     private Player currentPlayer;
     private Player targetPlayer;
@@ -33,7 +33,8 @@ class CatCardRequestInputHandlerTest {
 
     @BeforeEach
     void setUp() {
-        inputHandler = new ConsoleCatCardRequestInputHandler(new Scanner(System.in));
+        inputHandler = new ConsoleCatCardRequestInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name()));
         controller = new CatCardRequestController(inputHandler);
     }
 
