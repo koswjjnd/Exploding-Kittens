@@ -141,4 +141,13 @@ class ConsoleCardStealInputHandlerTest {
         });
     }
 
+    @Test
+    @DisplayName("Test Case 6: Invalid hand size")
+    void testInvalidHandSize() {
+        setupInputHandler("1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectCardIndex(0);
+        });
+    }
+    
 } 
