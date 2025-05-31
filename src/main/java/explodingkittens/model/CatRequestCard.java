@@ -1,6 +1,8 @@
 package explodingkittens.model;
 
+import explodingkittens.controller.CardRequestController;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A cat card that allows the player to request a specific card from another player.
@@ -15,6 +17,7 @@ import java.util.List;
  */
 public class CatRequestCard extends CatCard {
     private static CardRequestController controller;
+    private final CatType catType;
 
     /**
      * Creates a new CatRequestCard with the given type.
@@ -22,6 +25,7 @@ public class CatRequestCard extends CatCard {
      */
     public CatRequestCard(CatType type) {
         super(type);
+        this.catType = type;
     }
 
     /**
@@ -37,10 +41,12 @@ public class CatRequestCard extends CatCard {
      * The player must have three cat cards of the EXACT SAME TYPE.
      * The player can select a target player and a specific card to request.
      * If the target player has the requested card, they must give it to the current player.
-     * If the target player doesn't have the requested card, the three cat cards are still discarded.
+     * If the target player doesn't have the requested card, the three cat cards are still 
+     * discarded.
      * @param turnOrder The current turn order
      * @param gameDeck The game deck
-     * @throws IllegalStateException if the player doesn't have three cat cards of the EXACT SAME TYPE
+     * @throws IllegalStateException if the player doesn't have three cat cards of the EXACT 
+     *         SAME TYPE
      * @throws IllegalStateException if there are no other players available
      * @throws IllegalStateException if the target player is dead
      * @throws IllegalStateException if the target player has no cards
@@ -58,27 +64,33 @@ public class CatRequestCard extends CatCard {
             throw new IllegalStateException("No turns left");
         }
 
-        // Check if player has three cat cards of the EXACT SAME TYPE
+        validateCatCards(currentPlayer);
+        List<Player> availablePlayers = getAvailablePlayers(turnOrder, currentPlayer);
+        controller.handleCardRequest(currentPlayer, availablePlayers, catType);
+    }
+
+    private void validateCatCards(Player currentPlayer) {
         List<Card> hand = currentPlayer.getHand();
         int sameTypeCount = 0;
         for (Card card : hand) {
-            if (card instanceof CatCard && ((CatCard) card).getType() == this.getType()) {
+            if (card instanceof CatCard 
+                    && ((CatCard) card).getCatType() == catType) {
                 sameTypeCount++;
             }
         }
         if (sameTypeCount < 3) {
-            throw new IllegalStateException("Need three cat cards of the EXACT SAME TYPE");
+            throw new IllegalStateException(
+                "Need three cat cards of the EXACT SAME TYPE");
         }
+    }
 
-        // Get available players (excluding current player and dead players)
+    private List<Player> getAvailablePlayers(List<Player> turnOrder, Player currentPlayer) {
         List<Player> availablePlayers = turnOrder.stream()
             .filter(p -> p != currentPlayer && p.isAlive())
-            .toList();
+            .collect(Collectors.toList());
         if (availablePlayers.isEmpty()) {
             throw new IllegalStateException("No other players available");
         }
-
-        // Use controller to handle the request
-        controller.handleCardRequest(currentPlayer, availablePlayers, this.getType());
+        return availablePlayers;
     }
 } 

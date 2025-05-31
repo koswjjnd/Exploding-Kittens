@@ -18,6 +18,14 @@ public class CatCard extends Card {
     }
 
     /**
+     * Gets the type of cat card.
+     * @return The type of cat card
+     */
+    public CatType getCatType() {
+        return type;
+    }
+
+    /**
      * Sets the input handler for card stealing.
      * @param handler The input handler to use
      */
