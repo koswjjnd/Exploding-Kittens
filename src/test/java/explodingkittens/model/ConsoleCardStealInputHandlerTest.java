@@ -122,4 +122,14 @@ class ConsoleCardStealInputHandlerTest {
         int selected = inputHandler.selectCardIndex(3);
         assertEquals(1, selected);
     }
+
+    @Test
+    @DisplayName("Test Case 4: Invalid card selection")
+    void testInvalidCardSelection() {
+        setupInputHandler("4\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectCardIndex(3);
+        });
+    }
+    
 } 
