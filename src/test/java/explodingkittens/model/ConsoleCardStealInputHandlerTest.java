@@ -149,5 +149,14 @@ class ConsoleCardStealInputHandlerTest {
             inputHandler.selectCardIndex(0);
         });
     }
+
+    @Test
+    @DisplayName("Test Case 7: Negative hand size")
+    void testNegativeHandSize() {
+        setupInputHandler("1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectCardIndex(-1);
+        });
+    }
     
 } 
