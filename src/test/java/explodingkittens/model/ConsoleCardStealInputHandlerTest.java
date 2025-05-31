@@ -88,6 +88,14 @@ class ConsoleCardStealInputHandlerTest {
             inputHandler.selectTargetPlayer(new ArrayList<>());
         });
     }
-    
+
+    @Test
+    @DisplayName("Test Case 7: Null player list")
+    void testNullPlayerList() {
+        setupInputHandler("1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectTargetPlayer(null);
+        });
+    }
 
 } 
