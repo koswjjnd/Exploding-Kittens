@@ -79,5 +79,15 @@ class ConsoleCardStealInputHandlerTest {
             inputHandler.selectTargetPlayer(availablePlayers);
         });
     }
+
+    @Test
+    @DisplayName("Test Case 6: Empty player list")
+    void testEmptyPlayerList() {
+        setupInputHandler("1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectTargetPlayer(new ArrayList<>());
+        });
+    }
     
+
 } 
