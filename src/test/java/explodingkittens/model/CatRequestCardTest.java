@@ -136,4 +136,16 @@ class CatRequestCardTest {
             catRequestCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when target player is dead");
     }
+
+    @Test
+    @DisplayName("Test Case 8: Target player has no cards")
+    void testEmptyTargetHand() {
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        
+        assertThrows(IllegalStateException.class, () -> {
+            catRequestCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when target player has no cards");
+    }
 } 
