@@ -131,5 +131,14 @@ class ConsoleCardStealInputHandlerTest {
             inputHandler.selectCardIndex(3);
         });
     }
-    
+
+    @Test
+    @DisplayName("Test Case 5: Negative card selection")
+    void testNegativeCardSelection() {
+        setupInputHandler("-1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectCardIndex(3);
+        });
+    }
+
 } 
