@@ -162,4 +162,18 @@ class CatRequestCardTest {
         assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
         assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
     }
+
+    @Test
+    @DisplayName("Test Case 10: Target player doesn't have the requested card")
+    void testTargetDoesntHaveRequestedCard() {
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new SkipCard());
+        
+        catRequestCard.effect(turnOrder, gameDeck);
+        
+        assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+    }
 } 
