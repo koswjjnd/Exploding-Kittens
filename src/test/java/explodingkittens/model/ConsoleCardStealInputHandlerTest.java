@@ -70,4 +70,14 @@ class ConsoleCardStealInputHandlerTest {
             inputHandler.selectTargetPlayer(availablePlayers);
         });
     }
+
+    @Test
+    @DisplayName("Test Case 5: Negative player selection")
+    void testNegativePlayerSelection() {
+        setupInputHandler("-1\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectTargetPlayer(availablePlayers);
+        });
+    }
+    
 } 
