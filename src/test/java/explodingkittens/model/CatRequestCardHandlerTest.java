@@ -54,4 +54,21 @@ class CatRequestCardHandlerTest {
         CatRequestCard.setInputHandler(inputHandler);
         // Should not throw any exception
     }
+
+    @Test
+    @DisplayName("Test Case 5: handler = exception throwing")
+    void testExceptionThrowingHandler() {
+        CatRequestCard.setInputHandler(new CardStealInputHandler() {
+            @Override
+            public Player selectTargetPlayer(List<Player> availablePlayers) {
+                throw new RuntimeException("Test exception");
+            }
+
+            @Override
+            public int selectCardIndex(int handSize) {
+                throw new RuntimeException("Test exception");
+            }
+        });
+        // Should not throw any exception
+    }
 } 
