@@ -61,5 +61,13 @@ class ConsoleCardStealInputHandlerTest {
         Player selected = inputHandler.selectTargetPlayer(availablePlayers);
         assertEquals(availablePlayers.get(1), selected);
     }
-    
+
+    @Test
+    @DisplayName("Test Case 4: Invalid player selection")
+    void testInvalidPlayerSelection() {
+        setupInputHandler("4\n");
+        assertThrows(IllegalArgumentException.class, () -> {
+            inputHandler.selectTargetPlayer(availablePlayers);
+        });
+    }
 } 
