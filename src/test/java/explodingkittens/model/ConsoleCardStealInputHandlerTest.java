@@ -107,4 +107,12 @@ class ConsoleCardStealInputHandlerTest {
         assertEquals(0, selected);
     }
 
+    @Test
+    @DisplayName("Test Case 2: Select last card")
+    void testSelectLastCard() {
+        setupInputHandler("3\n");
+        int selected = inputHandler.selectCardIndex(3);
+        assertEquals(2, selected);
+    }
+    
 } 
