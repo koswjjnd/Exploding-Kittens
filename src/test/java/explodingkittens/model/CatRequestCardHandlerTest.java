@@ -37,4 +37,12 @@ class CatRequestCardHandlerTest {
         });
         // Should not throw any exception
     }
+
+    @Test
+    @DisplayName("Test Case 3: handler = valid implementation")
+    void testValidHandler() {
+        setupInputHandler("1\n1\n");
+        CatRequestCard.setInputHandler(inputHandler);
+        // Should not throw any exception
+    }
 } 
