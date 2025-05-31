@@ -9,7 +9,9 @@ import explodingkittens.model.Deck;
 import explodingkittens.service.DealService;
 import explodingkittens.exceptions.InvalidDeckException;
 import explodingkittens.model.CatCard;
-import explodingkittens.model.ConsoleCardStealInputHandler;
+import explodingkittens.model.Card;
+import explodingkittens.model.CardType;
+import explodingkittens.model.CatType;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public class GameSetupController {
         GameContext.setGameOver(false);
 
         Scanner scanner = new Scanner(System.in);
-        CatCard.setInputHandler(new ConsoleCardStealInputHandler(scanner));
+        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(scanner));
     }
 
     /**

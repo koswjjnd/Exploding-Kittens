@@ -1,5 +1,6 @@
 package explodingkittens.model;
 
+import explodingkittens.controller.CatCardStealInputHandler;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -9,12 +10,12 @@ import java.util.stream.Collectors;
  * Cat cards can be used to steal cards from other players.
  */
 public class CatCard extends Card {
-    private static CardStealInputHandler inputHandler;
-    private final CatType type;
+    private final CatType catType;
+    private static CatCardStealInputHandler inputHandler;
 
-    public CatCard(CatType type) {
+    public CatCard(CatType catType) {
         super(CardType.CAT_CARD);
-        this.type = type;
+        this.catType = catType;
     }
 
     /**
@@ -22,20 +23,20 @@ public class CatCard extends Card {
      * @return The type of cat card
      */
     public CatType getCatType() {
-        return type;
+        return catType;
     }
 
     /**
      * Sets the input handler for card stealing.
      * @param handler The input handler to use
      */
-    public static void setInputHandler(CardStealInputHandler handler) {
+    public static void setInputHandler(CatCardStealInputHandler handler) {
         inputHandler = handler;
     }
 
     private CatCard findFirstCatCard(List<Card> hand) {
         for (Card card : hand) {
-            if (card instanceof CatCard && ((CatCard) card).type == this.type) {
+            if (card instanceof CatCard && ((CatCard) card).catType == this.catType) {
                 return (CatCard) card;
             }
         }
@@ -49,7 +50,7 @@ public class CatCard extends Card {
                 foundFirst = true;
                 continue;
             }
-            if (foundFirst && card instanceof CatCard && ((CatCard) card).type == this.type) {
+            if (foundFirst && card instanceof CatCard && ((CatCard) card).catType == this.catType) {
                 return (CatCard) card;
             }
         }
@@ -89,8 +90,8 @@ public class CatCard extends Card {
         }
 
         Player targetPlayer = inputHandler.selectTargetPlayer(availablePlayers);
-        if (targetPlayer == null) {
-            throw new IllegalStateException("Invalid target player selection");
+        if (targetPlayer == null || !availablePlayers.contains(targetPlayer)) {
+            throw new IllegalArgumentException("Invalid target player selection");
         }
         return targetPlayer;
     }
@@ -98,7 +99,7 @@ public class CatCard extends Card {
     private int selectCardIndex(Player targetPlayer) {
         int cardIndex = inputHandler.selectCardIndex(targetPlayer.getHand().size());
         if (cardIndex < 0 || cardIndex >= targetPlayer.getHand().size()) {
-            throw new IllegalStateException("Invalid card index selection");
+            throw new IllegalArgumentException("Invalid card index selection");
         }
         return cardIndex;
     }
@@ -107,13 +108,47 @@ public class CatCard extends Card {
     public void effect(List<Player> turnOrder, Deck gameDeck) {
         validateInputHandler();
         Player currentPlayer = turnOrder.get(0);
-        List<Card> hand = currentPlayer.getHand();
+        validatePlayerTurns(currentPlayer);
         
-        CatCard[] catCards = findCatCardPair(hand);
+        // Find two cat cards of the same type
+        CatCard[] catCards = findCatCardPair(currentPlayer.getHand());
+        
+        // Get available targets and validate
+        List<Player> availableTargets = getAvailableTargets(turnOrder, currentPlayer);
+        if (availableTargets.isEmpty()) {
+            throw new IllegalStateException("No valid target players available");
+        }
+
+        // Select target player and validate
         Player targetPlayer = selectTargetPlayer(turnOrder, currentPlayer);
+        validateTargetPlayer(targetPlayer);
+
+        // Select card to steal
         int cardIndex = selectCardIndex(targetPlayer);
 
+        // Throw CatCardEffect to handle the actual card stealing
         throw new CatCardEffect(catCards[0], catCards[1], targetPlayer, cardIndex);
+    }
+
+    private void validatePlayerTurns(Player currentPlayer) {
+        if (currentPlayer.getLeftTurns() <= 0) {
+            throw new IllegalStateException("No turns left");
+        }
+    }
+
+    private void validateTargetPlayer(Player targetPlayer) {
+        if (targetPlayer.getHand().isEmpty()) {
+            throw new IllegalStateException("Target player has no cards");
+        }
+    }
+
+    /**
+     * Plays the cat card effect for the current player.
+     * @param currentPlayer The player playing the card
+     * @param turnOrder The list of players in turn order
+     */
+    public void play(Player currentPlayer, List<Player> turnOrder) {
+        effect(turnOrder, null);
     }
 
     /**

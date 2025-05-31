@@ -3,11 +3,16 @@ package explodingkittens.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import explodingkittens.controller.CardRequestController;
-import explodingkittens.controller.CardStealInputHandler;
+import explodingkittens.controller.CatCardRequestController;
+import explodingkittens.controller.CatCardRequestInputHandler;
+import explodingkittens.model.Card;
+import explodingkittens.model.SkipCard;
 
 class CatRequestCardTest {
     private List<Player> turnOrder;
@@ -15,8 +20,8 @@ class CatRequestCardTest {
     private Player currentPlayer;
     private Player targetPlayer;
     private CatRequestCard catRequestCard;
-    private CardRequestController controller;
-    private CardStealInputHandler inputHandler;
+    private CatCardRequestController controller;
+    private CatCardRequestInputHandler inputHandler;
 
     @BeforeEach
     void setUp() {
@@ -27,20 +32,20 @@ class CatRequestCardTest {
         turnOrder.add(currentPlayer);
         turnOrder.add(targetPlayer);
         catRequestCard = new CatRequestCard(CatType.TACOCAT);
-        inputHandler = new MockCardStealInputHandler();
-        controller = new CardRequestController(inputHandler);
+        inputHandler = new MockCardRequestInputHandler();
+        controller = new CatCardRequestController(inputHandler);
         CatRequestCard.setController(controller);
     }
 
-    private class MockCardStealInputHandler implements CardStealInputHandler {
+    private class MockCardRequestInputHandler implements CatCardRequestInputHandler {
         @Override
         public Player selectTargetPlayer(List<Player> availablePlayers) {
             return targetPlayer;
         }
 
         @Override
-        public int selectCardIndex(int handSize) {
-            return 0;
+        public Card selectCard(Player targetPlayer) {
+            return targetPlayer.getHand().get(0);
         }
     }
 
@@ -92,8 +97,10 @@ class CatRequestCardTest {
         
         catRequestCard.effect(turnOrder, gameDeck);
         
-        assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
-        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+        assertEquals(1, currentPlayer.getHand().size(), 
+            "Should have one card (the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), 
+            "Should have no cards after giving one away");
     }
 
     @Test
@@ -107,8 +114,10 @@ class CatRequestCardTest {
         
         catRequestCard.effect(turnOrder, gameDeck);
         
-        assertEquals(2, currentPlayer.getHand().size(), "Should have two cards (one remaining cat card and the requested card)");
-        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+        assertEquals(2, currentPlayer.getHand().size(), 
+            "Should have two cards (one remaining cat card and the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), 
+            "Should have no cards after giving one away");
     }
 
     @Test
@@ -159,8 +168,11 @@ class CatRequestCardTest {
         
         catRequestCard.effect(turnOrder, gameDeck);
         
-        assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
-        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+        assertEquals(1, 
+            currentPlayer.getHand().size(), 
+            "Should have one card (the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), 
+            "Should have no cards after giving one away");
     }
 
     @Test
@@ -173,7 +185,58 @@ class CatRequestCardTest {
         
         catRequestCard.effect(turnOrder, gameDeck);
         
-        assertEquals(1, currentPlayer.getHand().size(), "Should have one card (the requested card)");
-        assertTrue(targetPlayer.getHand().isEmpty(), "Should have no cards after giving one away");
+        assertEquals(1, 
+            currentPlayer.getHand().size(), 
+            "Should have one card (the requested card)");
+        assertTrue(targetPlayer.getHand().isEmpty(), 
+            "Should have no cards after giving one away");
+    }
+
+    @Test
+    @DisplayName("Test Case 2: Handle card request with invalid target")
+    void testHandleCardRequestWithInvalidTarget() {
+        // Create a mock input handler that returns an invalid target
+        inputHandler = new CatCardRequestInputHandler() {
+            @Override
+            public Player selectTargetPlayer(List<Player> availablePlayers) {
+                return null;
+            }
+
+            @Override
+            public Card selectCard(Player targetPlayer) {
+                return targetPlayer.getHand().get(0);
+            }
+        };
+        controller = new CatCardRequestController(inputHandler);
+        CatRequestCard.setController(controller);
+
+        // Give target player some cards
+        targetPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new CatCard(CatType.BEARD_CAT));
+
+        // Give current player three TACOCAT cards for the request
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+
+        assertThrows(IllegalArgumentException.class, 
+            () -> catRequestCard.effect(turnOrder, gameDeck));
+    }
+
+    @Test
+    @DisplayName("Test Case 3: Handle card request with valid target")
+    void testHandleCardRequestWithValidTarget() {
+        // Give target player some cards
+        targetPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        targetPlayer.receiveCard(new CatCard(CatType.BEARD_CAT));
+
+        // Give current player three TACOCAT cards for the request
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+
+        assertDoesNotThrow(() -> catRequestCard.effect(turnOrder, gameDeck));
     }
 } 

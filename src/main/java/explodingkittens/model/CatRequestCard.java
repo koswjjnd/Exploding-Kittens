@@ -1,6 +1,6 @@
 package explodingkittens.model;
 
-import explodingkittens.controller.CardRequestController;
+import explodingkittens.controller.CatCardRequestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * - Three BEARD_CAT cards can be used to request a card
  */
 public class CatRequestCard extends CatCard {
-    private static CardRequestController controller;
+    private static CatCardRequestController controller;
     private final CatType catType;
 
     /**
@@ -32,7 +32,7 @@ public class CatRequestCard extends CatCard {
      * Sets the controller for handling card requests.
      * @param controller The controller to use
      */
-    public static void setController(CardRequestController controller) {
+    public static void setController(CatCardRequestController controller) {
         CatRequestCard.controller = controller;
     }
 
@@ -85,8 +85,11 @@ public class CatRequestCard extends CatCard {
     }
 
     private List<Player> getAvailablePlayers(List<Player> turnOrder, Player currentPlayer) {
+        if (turnOrder == null || currentPlayer == null) {
+            throw new IllegalArgumentException("Turn order and current player cannot be null");
+        }
         List<Player> availablePlayers = turnOrder.stream()
-            .filter(p -> p != currentPlayer && p.isAlive())
+            .filter(p -> p != currentPlayer && p.isAlive() && !p.getHand().isEmpty())
             .collect(Collectors.toList());
         if (availablePlayers.isEmpty()) {
             throw new IllegalStateException("No other players available");
