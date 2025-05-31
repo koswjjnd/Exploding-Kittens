@@ -37,5 +37,13 @@ class ConsoleCardStealInputHandlerTest {
         }, "Should throw exception when scanner is null");
     }
 
+    // selectTargetPlayer method tests
+    @Test
+    @DisplayName("Test Case 1: Select first player")
+    void testSelectFirstPlayer() {
+        setupInputHandler("1\n");
+        Player selected = inputHandler.selectTargetPlayer(availablePlayers);
+        assertEquals(availablePlayers.get(0), selected);
+    }
     
 } 
