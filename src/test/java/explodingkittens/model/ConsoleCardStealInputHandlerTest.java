@@ -54,4 +54,12 @@ class ConsoleCardStealInputHandlerTest {
         assertEquals(availablePlayers.get(2), selected);
     }
 
+    @Test
+    @DisplayName("Test Case 3: Select middle player")
+    void testSelectMiddlePlayer() {
+        setupInputHandler("2\n");
+        Player selected = inputHandler.selectTargetPlayer(availablePlayers);
+        assertEquals(availablePlayers.get(1), selected);
+    }
+    
 } 
