@@ -19,7 +19,7 @@
 | Test Case 4 | turnOrder = valid list with player having no defuse, gameDeck = valid deck | Player dies | Yes |
 | Test Case 5 | turnOrder = valid list with dead player, gameDeck = valid deck | Player stays dead | Yes |
 
-## Recall the 4 steps of BVA
+## Get the 4 steps of BVA
 ### Step 1: Describe the input and output in terms of the domain.
 - Input: 
   - turnOrder: List of players in the game

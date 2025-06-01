@@ -52,77 +52,25 @@ public class ExplodingKittenCardTest {
      * Test that the card can be cloned.
      */
     @Test // BVA Test Case 2: turnOrder = multiple players, current player's left turns = 0
-    public void testDefuseCardClone() {
-        Card clonedCard = defuseCard.clone();
-        assertNotNull(clonedCard);
-        assertTrue(clonedCard instanceof DefuseCard);
-        assertEquals(defuseCard.getType(), clonedCard.getType());
-    }
-
-
-    /**
-     * Test that the effect method exists and can be called.
-     */
-    @Test // BVA Test Case 3: turnOrder = multiple players, current player's left turns = 1
-    public void testDefuseCardEffect() {
-        defuseCard.effect(turnOrder, gameDeck);
-    }
-
-    /**
-     * Test equals method.
-     */
-    @Test // BVA Test Case 4: turnOrder = multiple players, current player's left turns = 2
-    public void testDefuseCardEquals() {
-        DefuseCard anotherDefuseCard = new DefuseCard();
-        assertTrue(defuseCard.equals(anotherDefuseCard));
-        assertFalse(defuseCard.equals(null));
-        assertFalse(defuseCard.equals(new AttackCard()));
-    }
-
-     /**
-     * Test hashCode method.
-     */
-    @Test // BVA Test Case 5: turnOrder = multiple players, current player's left turns = 3
-    public void testDefuseCardHashCode() {
-        DefuseCard anotherDefuseCard = new DefuseCard();
-        assertEquals(defuseCard.hashCode(), anotherDefuseCard.hashCode());
-    }
-     /**
-     * Test the interaction with ExplodingKittenCard.
-     */
-    @Test // BVA Test Case 6: turnOrder = multiple players, current player's left turns = 4
-    public void testDefuseCardWithExplodingKitten() {
-        ExplodingKittenCard explodingKitten = new ExplodingKittenCard();
-        gameDeck.addCard(explodingKitten);
-        Card drawnCard = gameDeck.drawOne();
-        assertTrue(drawnCard instanceof ExplodingKittenCard);
-        player1.receiveCard(defuseCard);
-        assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
-        assertFalse(player1.hasDefuse());
-    }
-
-     /**
-     * Test that the card can be cloned.
-     */
-    @Test // BVA Test Case 7: turnOrder = multiple players, current player's left turns = 5
     public void testExplodingKittenCardClone() {
         Card clonedCard = explodingKittenCard.clone();
         assertNotNull(clonedCard);
         assertTrue(clonedCard instanceof ExplodingKittenCard);
         assertEquals(explodingKittenCard.getType(), clonedCard.getType());
     }
+
     /**
      * Test that the effect method exists and can be called.
      */
-    @Test // BVA Test Case 8: turnOrder = multiple players, current player's left turns = 6
+    @Test // BVA Test Case 3: turnOrder = multiple players, current player's left turns = 1
     public void testExplodingKittenCardEffect() {
         explodingKittenCard.effect(playerTurnOrder, gameDeck);
     }
-      /**
+
+    /**
      * Test equals method.
      */
-    @Test // BVA Test Case 9: turnOrder = multiple players, current player's left turns = 7
+    @Test // BVA Test Case 4: turnOrder = multiple players, current player's left turns = 2
     public void testExplodingKittenCardEquals() {
         ExplodingKittenCard anotherExplodingKittenCard = new ExplodingKittenCard();
         assertTrue(explodingKittenCard.equals(anotherExplodingKittenCard));
@@ -130,6 +78,30 @@ public class ExplodingKittenCardTest {
         assertFalse(explodingKittenCard.equals(new AttackCard()));
     }
 
+    /**
+     * Test hashCode method.
+     */
+    @Test // BVA Test Case 5: turnOrder = multiple players, current player's left turns = 3
+    public void testExplodingKittenCardHashCode() {
+        ExplodingKittenCard anotherExplodingKittenCard = new ExplodingKittenCard();
+        assertEquals(explodingKittenCard.hashCode(), anotherExplodingKittenCard.hashCode());
+    }
 
+    /**
+     * Test the interaction with DefuseCard.
+     */
+    @Test // BVA Test Case 6: turnOrder = multiple players, current player's left turns = 4
+    public void testExplodingKittenCardWithDefuse() {
+        // Test when player has no defuse card
+        explodingKittenCard.effect(playerTurnOrder, gameDeck);
+        assertFalse(player1.isAlive());
 
+        // Reset player state
+        player1.setAlive(true);
+        
+        // Test when player has defuse card
+        player1.receiveCard(new DefuseCard());
+        explodingKittenCard.effect(playerTurnOrder, gameDeck);
+        assertTrue(player1.isAlive());
+    }
 } 
