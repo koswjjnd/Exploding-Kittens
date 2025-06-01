@@ -49,10 +49,17 @@ class RainbowCatCardTest {
         assertEquals(CatType.RAINBOW_CAT, rainbowCatCard.getCatType());
         assertEquals(CardType.CAT_CARD, rainbowCatCard.getType());
     }
-    
+
     @Test
     void testEffectWithNoTurnsLeft() {
         when(currentPlayer.getLeftTurns()).thenReturn(0);
+        assertThrows(IllegalStateException.class, () -> 
+            rainbowCatCard.effect(turnOrder, gameDeck));
+    }
+
+    @Test
+    void testEffectWithNoTargetPlayers() {
+        when(targetPlayer.getHand()).thenReturn(new ArrayList<>());
         assertThrows(IllegalStateException.class, () -> 
             rainbowCatCard.effect(turnOrder, gameDeck));
     }
