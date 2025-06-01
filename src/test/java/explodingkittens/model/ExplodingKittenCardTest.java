@@ -60,5 +60,12 @@ public class ExplodingKittenCardTest {
     }
 
 
+    /**
+     * Test that the effect method exists and can be called.
+     */
+    @Test // BVA Test Case 3: turnOrder = multiple players, current player's left turns = 1
+    public void testDefuseCardEffect() {
+        defuseCard.effect(turnOrder, gameDeck);
+    }
 
 } 
