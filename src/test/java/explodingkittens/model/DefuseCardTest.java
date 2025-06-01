@@ -121,5 +121,20 @@ public class DefuseCardTest {
         assertFalse(player1.hasDefuse());
     }
 
+    /**
+     * Test defuse card interaction with other cards.
+     */
+    @Test // BVA Test Case 9: turnOrder = multiple players, current player's left turns = 7
+    public void testDefuseCardWithOtherCards() {
+        player1.receiveCard(defuseCard);
+        player1.receiveCard(new AttackCard());
+        player1.receiveCard(new SkipCard());
+        assertTrue(player1.hasDefuse());
+        assertTrue(player1.useDefuse());
+        assertFalse(player1.hasDefuse());
+        assertEquals(2, player1.getHand().size());
+    }
+
+
     
 } 
