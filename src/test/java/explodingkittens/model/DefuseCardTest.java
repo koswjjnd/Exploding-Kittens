@@ -106,5 +106,20 @@ public class DefuseCardTest {
         assertFalse(player1.hasDefuse());
     }
 
+     /**
+     * Test handling multiple defuse cards.
+     */
+    @Test // BVA Test Case 8: turnOrder = multiple players, current player's left turns = 6
+    public void testMultipleDefuseCards() {
+        DefuseCard secondDefuseCard = new DefuseCard();
+        player1.receiveCard(defuseCard);
+        player1.receiveCard(secondDefuseCard);
+        assertTrue(player1.hasDefuse());
+        assertTrue(player1.useDefuse());
+        assertTrue(player1.hasDefuse());
+        assertTrue(player1.useDefuse());
+        assertFalse(player1.hasDefuse());
+    }
+
     
 } 
