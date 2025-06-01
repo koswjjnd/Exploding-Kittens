@@ -112,6 +112,24 @@ public class ExplodingKittenCardTest {
         assertTrue(clonedCard instanceof ExplodingKittenCard);
         assertEquals(explodingKittenCard.getType(), clonedCard.getType());
     }
+    /**
+     * Test that the effect method exists and can be called.
+     */
+    @Test // BVA Test Case 8: turnOrder = multiple players, current player's left turns = 6
+    public void testExplodingKittenCardEffect() {
+        explodingKittenCard.effect(playerTurnOrder, gameDeck);
+    }
+      /**
+     * Test equals method.
+     */
+    @Test // BVA Test Case 9: turnOrder = multiple players, current player's left turns = 7
+    public void testExplodingKittenCardEquals() {
+        ExplodingKittenCard anotherExplodingKittenCard = new ExplodingKittenCard();
+        assertTrue(explodingKittenCard.equals(anotherExplodingKittenCard));
+        assertFalse(explodingKittenCard.equals(null));
+        assertFalse(explodingKittenCard.equals(new AttackCard()));
+    }
+
 
 
 } 
