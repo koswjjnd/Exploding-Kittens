@@ -44,5 +44,10 @@ class RainbowCatCardTest {
         CatCard.setInputHandler(inputHandler);
     }
 
-    
+    @Test
+    void testRainbowCatCardCreation() {
+        assertEquals(CatType.RAINBOW_CAT, rainbowCatCard.getCatType());
+        assertEquals(CardType.CAT_CARD, rainbowCatCard.getType());
+    }
+
 } 
