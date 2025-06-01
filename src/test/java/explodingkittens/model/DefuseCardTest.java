@@ -60,6 +60,25 @@ public class DefuseCardTest {
         defuseCard.effect(turnOrder, gameDeck);
     }
 
+     /**
+     * Test equals method.
+     */
+    @Test // BVA Test Case 4: turnOrder = multiple players, current player's left turns = 2
+    public void testDefuseCardEquals() {
+        DefuseCard anotherDefuseCard = new DefuseCard();
+        assertTrue(defuseCard.equals(anotherDefuseCard));
+        assertFalse(defuseCard.equals(null));
+        assertFalse(defuseCard.equals(new AttackCard()));
+    }
+    
+    /**
+     * Test hashCode method.
+     */
+    @Test // BVA Test Case 5: turnOrder = multiple players, current player's left turns = 3
+    public void testDefuseCardHashCode() {
+        DefuseCard anotherDefuseCard = new DefuseCard();
+        assertEquals(defuseCard.hashCode(), anotherDefuseCard.hashCode());
+    }
 
 
 
