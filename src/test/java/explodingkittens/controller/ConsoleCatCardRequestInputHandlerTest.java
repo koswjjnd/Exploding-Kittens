@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import explodingkittens.model.Player;
 import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
@@ -35,8 +34,6 @@ class ConsoleCatCardRequestInputHandlerTest {
     private Player targetPlayer;
     private Player currentPlayer;
     private CatRequestCard requestCard;
-    @SuppressFBWarnings("URF_UNREAD_FIELD")
-    private CatCardRequestController controller;
     private ByteArrayInputStream inputStream;
 
     @BeforeEach
@@ -49,7 +46,6 @@ class ConsoleCatCardRequestInputHandlerTest {
         currentPlayer = new Player("Current");
         inputHandler = new ConsoleCatCardRequestInputHandler(
             new Scanner(System.in, StandardCharsets.UTF_8.name()));
-        controller = new CatCardRequestController(inputHandler);
     }
 
     @AfterEach
@@ -65,8 +61,6 @@ class ConsoleCatCardRequestInputHandlerTest {
                 // Ignore close exception
             }
         }
-        // Restore original System.in
-        System.setIn(System.in);
     }
 
     private void setupInputHandler(String input) {
@@ -82,8 +76,7 @@ class ConsoleCatCardRequestInputHandlerTest {
             }
         }
         inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        System.setIn(inputStream);
-        scanner = new Scanner(System.in, StandardCharsets.UTF_8);
+        scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
         inputHandler = new ConsoleCatCardRequestInputHandler(scanner);
     }
 

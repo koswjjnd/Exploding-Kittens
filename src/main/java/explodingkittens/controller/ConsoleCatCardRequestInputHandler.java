@@ -5,11 +5,15 @@ import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
 import java.util.List;
 import java.util.Scanner;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Console-based implementation of CatCardRequestInputHandler.
  */
-public class ConsoleCatCardRequestInputHandler implements CatCardRequestInputHandler {
+public final class ConsoleCatCardRequestInputHandler implements CatCardRequestInputHandler {
+    @SuppressFBWarnings("EI_EXPOSE_REP2") 
     private final Scanner scanner;
 
     /**

@@ -6,6 +6,7 @@ import explodingkittens.model.CatType;
 import explodingkittens.model.Player;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Controller for handling cat card stealing between players.
@@ -31,15 +32,9 @@ public class CatCardStealController {
     public void handleCardSteal(Player currentPlayer, List<Player> availablePlayers, 
             CatType catType) {
         try {
-            // Validate target player
-            Player targetPlayer = inputHandler.selectTargetPlayer(availablePlayers);
-            if (targetPlayer == null || !availablePlayers.contains(targetPlayer)) {
-                throw new IllegalArgumentException("Invalid target player selection");
-            }
-            if (targetPlayer.getHand().isEmpty()) {
-                throw new IllegalStateException("Target player has no cards");
-            }
-
+            // Validate target player and get the card to steal
+            Card stolenCard = validateAndGetStolenCard(availablePlayers);
+            
             // Set the input handler for CatCard
             CatCard.setInputHandler(inputHandler);
             
@@ -53,10 +48,33 @@ public class CatCardStealController {
             currentPlayer.removeCard(effect.getSecondCard());
             
             // Steal the card from the target player
-            Card stolenCard = effect.getTargetPlayer().getHand().get(effect.getTargetCardIndex());
-            effect.getTargetPlayer().removeCard(stolenCard);
+            Card stolenCard = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
+            Player targetPlayer = availablePlayers.stream()
+                .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Target player not found"));
+            targetPlayer.removeCard(stolenCard);
             currentPlayer.receiveCard(stolenCard);
         }
+    }
+
+    /**
+     * Validates the target player and gets the card to steal.
+     * @param availablePlayers The list of available target players
+     * @return The card to steal
+     * @throws IllegalStateException if the target player has no cards
+     * @throws IllegalArgumentException if the target player selection is invalid
+     */
+    private Card validateAndGetStolenCard(List<Player> availablePlayers) {
+        // Validate target player
+        Player targetPlayer = inputHandler.selectTargetPlayer(availablePlayers);
+        if (targetPlayer == null || !availablePlayers.contains(targetPlayer)) {
+            throw new IllegalArgumentException("Invalid target player selection");
+        }
+        if (targetPlayer.getHand().isEmpty()) {
+            throw new IllegalStateException("Target player has no cards");
+        }
+        return targetPlayer.getHand().get(0);
     }
 
     private void removeTwoCatCards(Player currentPlayer, CatType catType) {

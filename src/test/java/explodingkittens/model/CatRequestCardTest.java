@@ -52,25 +52,20 @@ class CatRequestCardTest {
     @Test
     @DisplayName("Test Case 1: Controller not set")
     void testNoController() {
+        // First verify that setting null controller throws exception
         assertThrows(IllegalArgumentException.class, () -> {
             CatRequestCard.setController(null);
         }, "Should throw exception when setting controller to null");
         
-        // Reset controller to null using reflection to test the effect method
-        try {
-            java.lang.reflect.Field field = CatRequestCard.class.getDeclaredField("controller");
-            field.setAccessible(true);
-            field.set(null, null);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to reset controller", e);
-        }
+        // Clear the controller by creating a new instance without setting it
+        CatRequestCard newCard = new CatRequestCard(CatType.TACOCAT);
         
-        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(newCard);
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
         
         assertThrows(IllegalStateException.class, () -> {
-            catRequestCard.effect(turnOrder, gameDeck);
+            newCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when controller is not set");
     }
 

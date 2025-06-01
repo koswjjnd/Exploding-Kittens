@@ -94,7 +94,8 @@ class CatCardTest {
         catch (CatCard.CatCardEffect effect) {
             assertEquals(catCard1, effect.getFirstCard());
             assertEquals(catCard2, effect.getSecondCard());
-            assertEquals(targetPlayer, effect.getTargetPlayer());
+            assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
+            assertEquals(targetPlayer.getHand(), effect.getTargetPlayerHand());
             assertEquals(0, effect.getTargetCardIndex());
         }
     }
@@ -115,7 +116,8 @@ class CatCardTest {
         catch (CatCard.CatCardEffect effect) {
             assertEquals(catCard1, effect.getFirstCard());
             assertEquals(catCard2, effect.getSecondCard());
-            assertEquals(targetPlayer, effect.getTargetPlayer());
+            assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
+            assertEquals(targetPlayer.getHand(), effect.getTargetPlayerHand());
             assertEquals(0, effect.getTargetCardIndex());
         }
     }
@@ -175,7 +177,8 @@ class CatCardTest {
         catch (CatCard.CatCardEffect effect) {
             assertEquals(catCard1, effect.getFirstCard());
             assertEquals(catCard2, effect.getSecondCard());
-            assertEquals(targetPlayer, effect.getTargetPlayer());
+            assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
+            assertEquals(targetPlayer.getHand(), effect.getTargetPlayerHand());
             assertEquals(1, effect.getTargetCardIndex());
         }
     }

@@ -162,10 +162,12 @@ public class GameController {
                 currentPlayer.removeCard(effect.getSecondCard());
                 
                 // Get and remove the target card
-                Card cardToSteal = effect.getTargetPlayer()
-                    .getHand()
-                    .get(effect.getTargetCardIndex());
-                if (effect.getTargetPlayer().removeCard(cardToSteal)) {
+                Card cardToSteal = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
+                Player targetPlayer = turnOrder.stream()
+                    .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Target player not found"));
+                if (targetPlayer.removeCard(cardToSteal)) {
                     currentPlayer.receiveCard(cardToSteal);
                 }
             }

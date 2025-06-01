@@ -1,6 +1,7 @@
 package explodingkittens.model;
 
 import explodingkittens.controller.CatCardRequestController;
+import explodingkittens.controller.CatCardRequestInputHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,8 +16,15 @@ import java.util.stream.Collectors;
  * - Two TACOCAT cards and one BEARD_CAT card cannot be used
  * - Three BEARD_CAT cards can be used to request a card
  */
-public class CatRequestCard extends CatCard {
-    private static CatCardRequestController controller;
+public final class CatRequestCard extends CatCard {
+    private static final class ControllerHolder {
+        private static volatile CatCardRequestInputHandler inputHandler;
+        
+        private ControllerHolder() {
+            // Private constructor to prevent instantiation
+        }
+    }
+
     private final CatType catType;
 
     /**
@@ -30,26 +38,28 @@ public class CatRequestCard extends CatCard {
 
     /**
      * Sets the controller for handling card requests.
-     * @param controller The controller to set
+     * @param newController The controller to set
      * @throws IllegalArgumentException if controller is null
      */
-    public static synchronized void setController(CatCardRequestController controller) {
-        if (controller == null) {
+    public static synchronized void setController(CatCardRequestController newController) {
+        if (newController == null) {
             throw new IllegalArgumentException("Controller cannot be null");
         }
-        CatRequestCard.controller = controller;
+        // Store only the input handler, which is immutable
+        ControllerHolder.inputHandler = newController.getInputHandler();
     }
 
     /**
      * Gets the controller for handling card requests.
-     * @return The controller
+     * @return A new controller instance
      * @throws IllegalStateException if controller is not set
      */
-    public static CatCardRequestController getController() {
-        if (controller == null) {
+    public static synchronized CatCardRequestController getController() {
+        if (ControllerHolder.inputHandler == null) {
             throw new IllegalStateException("Controller not set");
         }
-        return controller;
+        // Create a new controller instance with the stored input handler
+        return new CatCardRequestController(ControllerHolder.inputHandler);
     }
 
     /**
@@ -71,7 +81,7 @@ public class CatRequestCard extends CatCard {
      */
     @Override
     public void effect(List<Player> turnOrder, Deck gameDeck) {
-        if (controller == null) {
+        if (ControllerHolder.inputHandler == null) {
             throw new IllegalStateException("Controller not set");
         }
 
@@ -82,7 +92,7 @@ public class CatRequestCard extends CatCard {
 
         validateCatCards(currentPlayer);
         List<Player> availablePlayers = getAvailablePlayers(turnOrder, currentPlayer);
-        controller.handleCardRequest(currentPlayer, availablePlayers, catType);
+        getController().handleCardRequest(currentPlayer, availablePlayers, catType);
     }
 
     private void validateCatCards(Player currentPlayer) {

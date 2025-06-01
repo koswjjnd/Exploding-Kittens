@@ -34,7 +34,7 @@ public class CatCard extends Card {
         inputHandler = handler;
     }
 
-    private CatCard findFirstCatCard(List<Card> hand) {
+    protected CatCard findFirstCatCard(List<Card> hand) {
         for (Card card : hand) {
             if (card instanceof CatCard && ((CatCard) card).catType == this.catType) {
                 return (CatCard) card;
@@ -43,7 +43,7 @@ public class CatCard extends Card {
         return null;
     }
 
-    private CatCard findSecondCatCard(List<Card> hand, CatCard firstCard) {
+    protected CatCard findSecondCatCard(List<Card> hand, CatCard firstCard) {
         boolean foundFirst = false;
         for (Card card : hand) {
             if (card == firstCard) {
@@ -57,19 +57,19 @@ public class CatCard extends Card {
         return null;
     }
 
-    private List<Player> getAvailableTargets(List<Player> turnOrder, Player currentPlayer) {
+    protected List<Player> getAvailableTargets(List<Player> turnOrder, Player currentPlayer) {
         return turnOrder.stream()
             .filter(p -> p != currentPlayer && p.isAlive() && !p.getHand().isEmpty())
             .collect(Collectors.toList());
     }
 
-    private void validateInputHandler() {
+    protected void validateInputHandler() {
         if (inputHandler == null) {
             throw new IllegalStateException("Input handler not set");
         }
     }
 
-    private CatCard[] findCatCardPair(List<Card> hand) {
+    protected CatCard[] findCatCardPair(List<Card> hand) {
         CatCard firstCard = findFirstCatCard(hand);
         if (firstCard == null) {
             throw new IllegalStateException("Player must have two cat cards to use this effect");
@@ -83,7 +83,7 @@ public class CatCard extends Card {
         return new CatCard[]{firstCard, secondCard};
     }
 
-    private Player selectTargetPlayer(List<Player> turnOrder, Player currentPlayer) {
+    protected Player selectTargetPlayer(List<Player> turnOrder, Player currentPlayer) {
         List<Player> availablePlayers = getAvailableTargets(turnOrder, currentPlayer);
         if (availablePlayers.isEmpty()) {
             throw new IllegalStateException("No valid target players available");
@@ -96,12 +96,24 @@ public class CatCard extends Card {
         return targetPlayer;
     }
 
-    private int selectCardIndex(Player targetPlayer) {
+    protected int selectCardIndex(Player targetPlayer) {
         int cardIndex = inputHandler.selectCardIndex(targetPlayer.getHand().size());
         if (cardIndex < 0 || cardIndex >= targetPlayer.getHand().size()) {
             throw new IllegalArgumentException("Invalid card index selection");
         }
         return cardIndex;
+    }
+
+    protected void validatePlayerTurns(Player currentPlayer) {
+        if (currentPlayer.getLeftTurns() <= 0) {
+            throw new IllegalStateException("No turns left");
+        }
+    }
+
+    protected void validateTargetPlayer(Player targetPlayer) {
+        if (targetPlayer.getHand().isEmpty()) {
+            throw new IllegalStateException("Target player has no cards");
+        }
     }
 
     @Override
@@ -130,18 +142,6 @@ public class CatCard extends Card {
         throw new CatCardEffect(catCards[0], catCards[1], targetPlayer, cardIndex);
     }
 
-    private void validatePlayerTurns(Player currentPlayer) {
-        if (currentPlayer.getLeftTurns() <= 0) {
-            throw new IllegalStateException("No turns left");
-        }
-    }
-
-    private void validateTargetPlayer(Player targetPlayer) {
-        if (targetPlayer.getHand().isEmpty()) {
-            throw new IllegalStateException("Target player has no cards");
-        }
-    }
-
     /**
      * Plays the cat card effect for the current player.
      * @param currentPlayer The player playing the card
@@ -154,10 +154,11 @@ public class CatCard extends Card {
     /**
      * Result of a cat card effect, containing the cards to be removed and the target information.
      */
-    public static class CatCardEffect extends RuntimeException {
+    public static final class CatCardEffect extends RuntimeException {
         private final CatCard firstCard;
         private final CatCard secondCard;
-        private final Player targetPlayer;
+        private final String targetPlayerName;
+        private final List<Card> targetPlayerHand;
         private final int targetCardIndex;
 
         public CatCardEffect(CatCard firstCard, CatCard secondCard, Player targetPlayer, 
@@ -165,7 +166,9 @@ public class CatCard extends Card {
             super("Cat card effect");
             this.firstCard = firstCard;
             this.secondCard = secondCard;
-            this.targetPlayer = targetPlayer;
+            // Store immutable data instead of mutable Player object
+            this.targetPlayerName = targetPlayer.getName();
+            this.targetPlayerHand = new ArrayList<>(targetPlayer.getHand());
             this.targetCardIndex = targetCardIndex;
         }
 
@@ -186,11 +189,19 @@ public class CatCard extends Card {
         }
 
         /**
-         * Gets the target player of the effect.
-         * @return The target player
+         * Gets the target player's name.
+         * @return The target player's name
          */
-        public Player getTargetPlayer() { 
-            return targetPlayer; 
+        public String getTargetPlayerName() { 
+            return targetPlayerName;
+        }
+
+        /**
+         * Gets a copy of the target player's hand.
+         * @return A copy of the target player's hand
+         */
+        public List<Card> getTargetPlayerHand() {
+            return new ArrayList<>(targetPlayerHand);
         }
 
         /**

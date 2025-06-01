@@ -5,11 +5,13 @@ import explodingkittens.model.CatType;
 import explodingkittens.model.CatCard;
 import java.util.List;
 import java.util.Scanner;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Console-based implementation of CatCardStealInputHandler.
  */
-public class ConsoleCatCardStealInputHandler implements CatCardStealInputHandler {
+public final class ConsoleCatCardStealInputHandler implements CatCardStealInputHandler {
     private final Scanner scanner;
 
     /**

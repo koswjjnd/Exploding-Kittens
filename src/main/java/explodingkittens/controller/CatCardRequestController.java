@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Controller for handling cat card requests between players.
  */
-public class CatCardRequestController {
+public final class CatCardRequestController {
     private final CatCardRequestInputHandler inputHandler;
 
     /**
@@ -24,6 +24,14 @@ public class CatCardRequestController {
             throw new NullPointerException("Input handler cannot be null");
         }
         this.inputHandler = inputHandler;
+    }
+
+    /**
+     * Gets the input handler used by this controller.
+     * @return The input handler
+     */
+    public CatCardRequestInputHandler getInputHandler() {
+        return inputHandler;
     }
 
     /**
