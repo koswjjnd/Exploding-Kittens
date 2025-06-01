@@ -47,6 +47,18 @@ public class ExplodingKittenCardTest {
     public void testExplodingKittenCardCreation() {
         assertEquals(CardType.EXPLODING_KITTEN, explodingKittenCard.getType());
     }
-    
+
+    /**
+     * Test that the card can be cloned.
+     */
+    @Test // BVA Test Case 2: turnOrder = multiple players, current player's left turns = 0
+    public void testDefuseCardClone() {
+        Card clonedCard = defuseCard.clone();
+        assertNotNull(clonedCard);
+        assertTrue(clonedCard instanceof DefuseCard);
+        assertEquals(defuseCard.getType(), clonedCard.getType());
+    }
+
+
 
 } 
