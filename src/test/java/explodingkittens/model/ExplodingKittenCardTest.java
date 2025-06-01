@@ -102,4 +102,16 @@ public class ExplodingKittenCardTest {
         assertFalse(player1.hasDefuse());
     }
 
+     /**
+     * Test that the card can be cloned.
+     */
+    @Test // BVA Test Case 7: turnOrder = multiple players, current player's left turns = 5
+    public void testExplodingKittenCardClone() {
+        Card clonedCard = explodingKittenCard.clone();
+        assertNotNull(clonedCard);
+        assertTrue(clonedCard instanceof ExplodingKittenCard);
+        assertEquals(explodingKittenCard.getType(), clonedCard.getType());
+    }
+
+
 } 
