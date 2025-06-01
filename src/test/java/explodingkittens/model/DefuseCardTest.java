@@ -80,7 +80,31 @@ public class DefuseCardTest {
         assertEquals(defuseCard.hashCode(), anotherDefuseCard.hashCode());
     }
 
+     /**
+     * Test the interaction with ExplodingKittenCard.
+     */
+    @Test // BVA Test Case 6: turnOrder = multiple players, current player's left turns = 4
+    public void testDefuseCardWithExplodingKitten() {
+        ExplodingKittenCard explodingKitten = new ExplodingKittenCard();
+        gameDeck.addCard(explodingKitten);
+        Card drawnCard = gameDeck.drawOne();
+        assertTrue(drawnCard instanceof ExplodingKittenCard);
+        player1.receiveCard(defuseCard);
+        assertTrue(player1.hasDefuse());
+        assertTrue(player1.useDefuse());
+        assertFalse(player1.hasDefuse());
+    }
 
+    /**
+     * Test that defuse card has no effect when no exploding kitten is drawn.
+     */
+    @Test // BVA Test Case 7: turnOrder = multiple players, current player's left turns = 5
+    public void testDefuseCardWithoutExplodingKitten() {
+        player1.receiveCard(defuseCard);
+        assertTrue(player1.hasDefuse());
+        assertTrue(player1.useDefuse());
+        assertFalse(player1.hasDefuse());
+    }
 
     
 } 
