@@ -90,4 +90,48 @@ class RainbowCatCardTest {
             rainbowCatCard.effect(turnOrder, gameDeck));
     }
 
+    @Test
+    void testEffectWithTwoRainbowCatCards() {
+        RainbowCatCard card1 = new RainbowCatCard();
+        RainbowCatCard card2 = new RainbowCatCard();
+        currentPlayerHand.add(card1);
+        currentPlayerHand.add(card2);
+        
+        Card targetCard = new SkipCard();
+        targetPlayerHand.add(targetCard);
+        
+        // Mock target player's state
+        when(targetPlayer.isAlive()).thenReturn(true);
+        when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        RuntimeException effect = assertThrows(RuntimeException.class, () -> 
+            rainbowCatCard.effect(turnOrder, gameDeck));
+        
+        assertEquals("Cat card effect", effect.getMessage());
+        assertTrue(effect.getClass().getName().contains("CatCardEffect"));
+        
+        // Use reflection to access the effect's fields
+        try {
+            java.lang.reflect.Field firstCardField = effect.getClass().getDeclaredField("firstCard");
+            java.lang.reflect.Field secondCardField = effect.getClass().getDeclaredField("secondCard");
+            java.lang.reflect.Field targetPlayerNameField = effect.getClass().getDeclaredField("targetPlayerName");
+            java.lang.reflect.Field targetCardIndexField = effect.getClass().getDeclaredField("targetCardIndex");
+            
+            firstCardField.setAccessible(true);
+            secondCardField.setAccessible(true);
+            targetPlayerNameField.setAccessible(true);
+            targetCardIndexField.setAccessible(true);
+            
+            assertEquals(card1, firstCardField.get(effect));
+            assertEquals(card2, secondCardField.get(effect));
+            assertEquals(targetPlayer.getName(), targetPlayerNameField.get(effect));
+            assertEquals(0, targetCardIndexField.get(effect));
+        } catch (Exception e) {
+            fail("Failed to access effect fields: " + e.getMessage());
+        }
+    }
+
+
 } 
