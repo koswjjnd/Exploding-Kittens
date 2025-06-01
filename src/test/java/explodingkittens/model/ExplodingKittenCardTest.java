@@ -68,4 +68,16 @@ public class ExplodingKittenCardTest {
         defuseCard.effect(turnOrder, gameDeck);
     }
 
+    /**
+     * Test equals method.
+     */
+    @Test // BVA Test Case 4: turnOrder = multiple players, current player's left turns = 2
+    public void testDefuseCardEquals() {
+        DefuseCard anotherDefuseCard = new DefuseCard();
+        assertTrue(defuseCard.equals(anotherDefuseCard));
+        assertFalse(defuseCard.equals(null));
+        assertFalse(defuseCard.equals(new AttackCard()));
+    }
+
+
 } 
