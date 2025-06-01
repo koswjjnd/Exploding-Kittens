@@ -8,9 +8,15 @@ import explodingkittens.controller.CatCardStealInputHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.when;
 
 class RainbowCatCardTest {
     private RainbowCatCard rainbowCatCard;
@@ -51,6 +57,13 @@ class RainbowCatCardTest {
     }
 
     @Test
+    void testEffectWithNoInputHandler() {
+        CatCard.setInputHandler(null);
+        assertThrows(IllegalStateException.class, () -> 
+            rainbowCatCard.effect(turnOrder, gameDeck));
+    }
+
+    @Test
     void testEffectWithNoTurnsLeft() {
         when(currentPlayer.getLeftTurns()).thenReturn(0);
         assertThrows(IllegalStateException.class, () -> 
@@ -74,13 +87,6 @@ class RainbowCatCardTest {
     }
 
     @Test
-    void testEffectWithNoInputHandler() {
-        CatCard.setInputHandler(null);
-        assertThrows(IllegalStateException.class, () -> 
-            rainbowCatCard.effect(turnOrder, gameDeck));
-    }
-
-    @Test
     void testEffectWithOneRainbowCatCard() {
         currentPlayerHand.add(new RainbowCatCard());
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
@@ -92,6 +98,14 @@ class RainbowCatCardTest {
 
     @Test
     void testEffectWithTwoRainbowCatCards() {
+        setupTwoRainbowCatCards();
+        RuntimeException effect = assertThrows(RuntimeException.class, 
+            () -> rainbowCatCard.effect(turnOrder, gameDeck));
+        
+        verifyCatCardEffect(effect);
+    }
+
+    private void setupTwoRainbowCatCards() {
         RainbowCatCard card1 = new RainbowCatCard();
         RainbowCatCard card2 = new RainbowCatCard();
         currentPlayerHand.add(card1);
@@ -100,38 +114,34 @@ class RainbowCatCardTest {
         Card targetCard = new SkipCard();
         targetPlayerHand.add(targetCard);
         
-        // Mock target player's state
         when(targetPlayer.isAlive()).thenReturn(true);
         when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
-        
-        RuntimeException effect = assertThrows(RuntimeException.class, () -> 
-            rainbowCatCard.effect(turnOrder, gameDeck));
-        
+    }
+
+    private void verifyCatCardEffect(RuntimeException effect) {
         assertEquals("Cat card effect", effect.getMessage());
         assertTrue(effect.getClass().getName().contains("CatCardEffect"));
         
-        // Use reflection to access the effect's fields
         try {
-            java.lang.reflect.Field firstCardField = effect.getClass().getDeclaredField("firstCard");
-            java.lang.reflect.Field secondCardField = effect.getClass().getDeclaredField("secondCard");
-            java.lang.reflect.Field targetPlayerNameField = effect.getClass().getDeclaredField("targetPlayerName");
-            java.lang.reflect.Field targetCardIndexField = effect.getClass().getDeclaredField("targetCardIndex");
+            Field firstCardField = effect.getClass().getDeclaredField("firstCard");
+            Field secondCardField = effect.getClass().getDeclaredField("secondCard");
+            Field targetPlayerNameField = effect.getClass().getDeclaredField("targetPlayerName");
+            Field targetCardIndexField = effect.getClass().getDeclaredField("targetCardIndex");
             
             firstCardField.setAccessible(true);
             secondCardField.setAccessible(true);
             targetPlayerNameField.setAccessible(true);
             targetCardIndexField.setAccessible(true);
             
-            assertEquals(card1, firstCardField.get(effect));
-            assertEquals(card2, secondCardField.get(effect));
+            assertEquals(currentPlayerHand.get(0), firstCardField.get(effect));
+            assertEquals(currentPlayerHand.get(1), secondCardField.get(effect));
             assertEquals(targetPlayer.getName(), targetPlayerNameField.get(effect));
             assertEquals(0, targetCardIndexField.get(effect));
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             fail("Failed to access effect fields: " + e.getMessage());
         }
     }
-
-
 } 
