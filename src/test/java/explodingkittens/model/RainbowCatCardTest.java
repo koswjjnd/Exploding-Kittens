@@ -64,4 +64,13 @@ class RainbowCatCardTest {
             rainbowCatCard.effect(turnOrder, gameDeck));
     }
 
+    @Test
+    void testEffectWithNoRainbowCatCards() {
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        assertThrows(IllegalStateException.class, () -> 
+            rainbowCatCard.effect(turnOrder, gameDeck));
+    }
+
 } 
