@@ -79,5 +79,13 @@ public class ExplodingKittenCardTest {
         assertFalse(defuseCard.equals(new AttackCard()));
     }
 
+     /**
+     * Test hashCode method.
+     */
+    @Test // BVA Test Case 5: turnOrder = multiple players, current player's left turns = 3
+    public void testDefuseCardHashCode() {
+        DefuseCard anotherDefuseCard = new DefuseCard();
+        assertEquals(defuseCard.hashCode(), anotherDefuseCard.hashCode());
+    }
 
 } 
