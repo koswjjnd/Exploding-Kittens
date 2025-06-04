@@ -1,21 +1,12 @@
-package com.example.courseproject.model;
+package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import explodingkittens.controller.CatCardStealInputHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import explodingkittens.model.BeardCatCard;
-import explodingkittens.model.Card;
-import explodingkittens.model.CardType;
-import explodingkittens.model.CatType;
-import explodingkittens.model.Deck;
-import explodingkittens.model.Player;
-import explodingkittens.model.RainbowCatCard;
-import explodingkittens.model.exceptions.CatCardEffect;
-import explodingkittens.model.input.MockInputHandler;
 
 public class BeardCatCardTest {
     private BeardCatCard card;
@@ -23,6 +14,24 @@ public class BeardCatCardTest {
     private Deck gameDeck;
     private Player player1;
     private Player player2;
+
+    // Mock InputHandler for testing
+    private static class MockInputHandler implements CatCardStealInputHandler {
+        @Override
+        public Player selectTargetPlayer(List<Player> availablePlayers) {
+            return availablePlayers.get(0); // Always select the first available player
+        }
+
+        @Override
+        public int selectCardIndex(int handSize) {
+            return 0; // Always select the first card
+        }
+
+        @Override
+        public void handleCardSteal(Player currentPlayer, List<Player> turnOrder, CatType catType) {
+            // Mock implementation
+        }
+    }
 
     @BeforeEach
     void setUp() {
@@ -44,21 +53,21 @@ public class BeardCatCardTest {
     void testEffectWithTwoBeardCatCards() {
         turnOrder.add(player1);
         turnOrder.add(player2);
-        player1.addCardToHand(card);
-        player1.addCardToHand(new BeardCatCard());
-        player1.setTurnsLeft(1);
-        player2.addCardToHand(new Card(CardType.DEFUSE));
+        player1.receiveCard(card);
+        player1.receiveCard(new BeardCatCard());
+        player1.setLeftTurns(1);
+        player2.receiveCard(new DefuseCard());
         card.setInputHandler(new MockInputHandler());
-        assertThrows(CatCardEffect.class, () -> card.effect(turnOrder, gameDeck));
+        assertThrows(CatCard.CatCardEffect.class, () -> card.effect(turnOrder, gameDeck));
     }
 
     @Test
     void testEffectWithDifferentCatCards() {
         turnOrder.add(player1);
         turnOrder.add(player2);
-        player1.addCardToHand(card);
-        player1.addCardToHand(new RainbowCatCard());
-        player1.setTurnsLeft(1);
+        player1.receiveCard(card);
+        player1.receiveCard(new RainbowCatCard());
+        player1.setLeftTurns(1);
         card.setInputHandler(new MockInputHandler());
         assertThrows(IllegalStateException.class, () -> card.effect(turnOrder, gameDeck));
     }
@@ -67,10 +76,10 @@ public class BeardCatCardTest {
     void testEffectWithThreeBeardCatCards() {
         turnOrder.add(player1);
         turnOrder.add(player2);
-        player1.addCardToHand(card);
-        player1.addCardToHand(new BeardCatCard());
-        player1.addCardToHand(new BeardCatCard());
-        player1.setTurnsLeft(1);
+        player1.receiveCard(card);
+        player1.receiveCard(new BeardCatCard());
+        player1.receiveCard(new BeardCatCard());
+        player1.setLeftTurns(1);
         card.setInputHandler(new MockInputHandler());
         assertThrows(IllegalStateException.class, () -> card.effect(turnOrder, gameDeck));
     }

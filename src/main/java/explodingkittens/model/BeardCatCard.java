@@ -1,4 +1,4 @@
-package com.example.courseproject.model;
+package explodingkittens.model;
 
 import java.util.List;
 
@@ -36,6 +36,6 @@ public class BeardCatCard extends CatCard {
         int cardIndex = selectCardIndex(targetPlayer);
 
         // Throw CatCardEffect to handle the actual card stealing
-        throw new CatCardEffect(catCards[0], catCards[1], targetPlayer, cardIndex);
+        throw new CatCard.CatCardEffect(catCards[0], catCards[1], targetPlayer, cardIndex);
     }
 } 
