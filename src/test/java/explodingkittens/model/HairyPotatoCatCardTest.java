@@ -77,6 +77,15 @@ class HairyPotatoCatCardTest {
                 hairyPotatoCatCard.effect(turnOrder, gameDeck));
     }
 
+    @Test
+    void testEffectWithNoHairyPotatoCatCards() {
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+
+        assertThrows(IllegalStateException.class, () ->
+                hairyPotatoCatCard.effect(turnOrder, gameDeck));
+    }
+
     private void setupTwoHairyPotatoCatCards() {
         HairyPotatoCatCard card1 = new HairyPotatoCatCard();
         HairyPotatoCatCard card2 = new HairyPotatoCatCard();
