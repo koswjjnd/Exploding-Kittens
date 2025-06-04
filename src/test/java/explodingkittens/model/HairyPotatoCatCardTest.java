@@ -56,7 +56,12 @@ class HairyPotatoCatCardTest {
         assertEquals(CardType.CAT_CARD, hairyPotatoCatCard.getType());
     }
 
-
+    @Test
+    void testEffectWithNoInputHandler() {
+        CatCard.setInputHandler(null);
+        assertThrows(IllegalStateException.class, () ->
+                hairyPotatoCatCard.effect(turnOrder, gameDeck));
+    }
 
     private void setupTwoHairyPotatoCatCards() {
         HairyPotatoCatCard card1 = new HairyPotatoCatCard();
