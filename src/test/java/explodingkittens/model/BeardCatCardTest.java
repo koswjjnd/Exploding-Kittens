@@ -29,4 +29,16 @@ public class BeardCatCardTest {
         assertEquals(CatType.BEARD_CAT, card.getCatType());
         assertEquals(CardType.CAT_CARD, card.getType());
     }
+
+    @Test
+    void testEffectWithTwoBeardCatCards() {
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        player1.addCardToHand(card);
+        player1.addCardToHand(new BeardCatCard());
+        player1.setTurnsLeft(1);
+        player2.addCardToHand(new Card(CardType.DEFUSE));
+        card.setInputHandler(new MockInputHandler());
+        assertThrows(CatCardEffect.class, () -> card.effect(turnOrder, gameDeck));
+    }
 } 
