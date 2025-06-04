@@ -194,6 +194,18 @@ class HairyPotatoCatCardTest {
             hairyPotatoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when target player has empty hand");
     }
+
+    @Test
+    @DisplayName("Test when player has no turns left")
+    void testNoTurnsLeft() {
+        setupTwoHairyPotatoCatCards();
+        when(currentPlayer.getLeftTurns()).thenReturn(0);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has no turns left");
+    }
+
    
 
 
