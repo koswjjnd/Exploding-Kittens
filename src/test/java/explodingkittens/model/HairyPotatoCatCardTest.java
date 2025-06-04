@@ -184,6 +184,16 @@ class HairyPotatoCatCardTest {
         }, "Should throw exception when target player is dead");
     }
      
+    @Test
+    @DisplayName("Test when target player has empty hand")
+    void testEmptyTargetHand() {
+        setupTwoHairyPotatoCatCards();
+        targetPlayerHand.clear();
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when target player has empty hand");
+    }
    
 
 
