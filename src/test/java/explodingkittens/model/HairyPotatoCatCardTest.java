@@ -217,6 +217,23 @@ class HairyPotatoCatCardTest {
         }, "Should throw exception when input handler is not set");
     }
 
+    @Test
+    @DisplayName("Test with valid target player")
+    void testValidTargetPlayer() {
+        setupTwoHairyPotatoCatCards();
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        try {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            verifyCatCardEffect(effect);
+        }
+    }
+
+
    
 
 
