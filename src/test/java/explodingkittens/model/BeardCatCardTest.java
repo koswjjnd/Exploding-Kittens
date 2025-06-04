@@ -1,13 +1,21 @@
 package explodingkittens.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import explodingkittens.controller.CatCardStealInputHandler;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import explodingkittens.controller.CatCardStealInputHandler;
+
+/**
+ * Test class for BeardCatCard.
+ */
 public class BeardCatCardTest {
     private BeardCatCard card;
     private List<Player> turnOrder;
@@ -15,7 +23,9 @@ public class BeardCatCardTest {
     private Player player1;
     private Player player2;
 
-    // Mock InputHandler for testing
+    /**
+     * Mock InputHandler for testing.
+     */
     private static class MockInputHandler implements CatCardStealInputHandler {
         @Override
         public Player selectTargetPlayer(List<Player> availablePlayers) {
