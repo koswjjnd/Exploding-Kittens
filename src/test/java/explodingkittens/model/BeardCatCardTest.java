@@ -23,4 +23,10 @@ public class BeardCatCardTest {
         player2 = new Player("Player2");
     }
 
+    @Test
+    void testConstructor() {
+        assertNotNull(card);
+        assertEquals(CatType.BEARD_CAT, card.getCatType());
+        assertEquals(CardType.CAT_CARD, card.getType());
+    }
 } 
