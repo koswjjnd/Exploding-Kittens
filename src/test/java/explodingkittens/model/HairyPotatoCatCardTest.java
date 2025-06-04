@@ -105,6 +105,60 @@ class HairyPotatoCatCardTest {
         currentPlayerHand.add(card2);
     }
 
+    @Test
+    @DisplayName("Test when player has two same type cat cards")
+    void testSameCatCards() {
+        setupTwoHairyPotatoCatCards();
+        
+        try {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            verifyCatCardEffect(effect);
+        }
+    }
+
+    private void setupTwoHairyPotatoCatCards() {
+        HairyPotatoCatCard card1 = new HairyPotatoCatCard();
+        HairyPotatoCatCard card2 = new HairyPotatoCatCard();
+        currentPlayerHand.add(card1);
+        currentPlayerHand.add(card2);
+        
+        Card targetCard = new SkipCard();
+        targetPlayerHand.add(targetCard);
+        
+        when(targetPlayer.isAlive()).thenReturn(true);
+        when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+    }
+
+    private void verifyCatCardEffect(RuntimeException effect) {
+        assertEquals("Cat card effect", effect.getMessage());
+        assertTrue(effect.getClass().getName().contains("CatCardEffect"));
+        
+        try {
+            Field firstCardField = effect.getClass().getDeclaredField("firstCard");
+            Field secondCardField = effect.getClass().getDeclaredField("secondCard");
+            Field targetPlayerNameField = effect.getClass().getDeclaredField("targetPlayerName");
+            Field targetCardIndexField = effect.getClass().getDeclaredField("targetCardIndex");
+            
+            firstCardField.setAccessible(true);
+            secondCardField.setAccessible(true);
+            targetPlayerNameField.setAccessible(true);
+            targetCardIndexField.setAccessible(true);
+            
+            assertEquals(currentPlayerHand.get(0), firstCardField.get(effect));
+            assertEquals(currentPlayerHand.get(1), secondCardField.get(effect));
+            assertEquals(targetPlayer.getName(), targetPlayerNameField.get(effect));
+            assertEquals(0, targetCardIndexField.get(effect));
+        } 
+        catch (Exception e) {
+            fail("Failed to access effect fields: " + e.getMessage());
+        }
+    }
+
 }
 
     
