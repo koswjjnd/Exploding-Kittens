@@ -16,9 +16,8 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.when;
 
-
-class HairyPotatoCatCardTest {
-    private HairyPotatoCatCard hairyPotatoCatCard;
+class TacoCatCardTest {
+    private TacoCatCard tacoCatCard;
     private List<Player> turnOrder;
     @Mock private Player currentPlayer;
     @Mock private Player targetPlayer;
@@ -32,7 +31,7 @@ class HairyPotatoCatCardTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        hairyPotatoCatCard = new HairyPotatoCatCard();
+        tacoCatCard = new TacoCatCard();
         turnOrder = new ArrayList<>();
         currentPlayerHand = new ArrayList<>();
         targetPlayerHand = new ArrayList<>();
@@ -50,10 +49,10 @@ class HairyPotatoCatCardTest {
     }
 
     @Test
-    @DisplayName("Test HairyPotatoCatCard creation")
-    void testHairyPotatoCatCardCreation() {
-        Assertions.assertEquals(CatType.HAIRY_POTATO_CAT, hairyPotatoCatCard.getCatType());
-        Assertions.assertEquals(CardType.CAT_CARD, hairyPotatoCatCard.getType());
+    @DisplayName("Test TacoCatCard creation")
+    void testTacoCatCardCreation() {
+        Assertions.assertEquals(CatType.TACOCAT, tacoCatCard.getCatType());
+        Assertions.assertEquals(CardType.CAT_CARD, tacoCatCard.getType());
     }
 
     @Test
@@ -63,24 +62,24 @@ class HairyPotatoCatCardTest {
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has no cat cards");
     }
 
     @Test
     @DisplayName("Test when player has only one cat card")
     void testOneCatCard() {
-        setupOneHairyPotatoCatCard();
+        setupOneTacoCatCard();
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has only one cat card");
     }
 
-    private void setupOneHairyPotatoCatCard() {
-        HairyPotatoCatCard card = new HairyPotatoCatCard();
+    private void setupOneTacoCatCard() {
+        TacoCatCard card = new TacoCatCard();
         currentPlayerHand.add(card);
     }
 
@@ -92,13 +91,13 @@ class HairyPotatoCatCardTest {
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has two different types of cat cards");
     }
 
     private void setupDifferentCatCards() {
-        HairyPotatoCatCard card1 = new HairyPotatoCatCard();
-        CatCard card2 = new CatCard(CatType.TACOCAT);
+        TacoCatCard card1 = new TacoCatCard();
+        CatCard card2 = new CatCard(CatType.BEARD_CAT);
         currentPlayerHand.add(card1);
         currentPlayerHand.add(card2);
     }
@@ -106,10 +105,10 @@ class HairyPotatoCatCardTest {
     @Test
     @DisplayName("Test when player has two same type cat cards")
     void testSameCatCards() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         
         try {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
             Assertions.fail("Should throw CatCardEffect");
         } 
         catch (CatCard.CatCardEffect effect) {
@@ -117,9 +116,9 @@ class HairyPotatoCatCardTest {
         }
     }
 
-    private void setupTwoHairyPotatoCatCards() {
-        HairyPotatoCatCard card1 = new HairyPotatoCatCard();
-        HairyPotatoCatCard card2 = new HairyPotatoCatCard();
+    private void setupTwoTacoCatCards() {
+        TacoCatCard card1 = new TacoCatCard();
+        TacoCatCard card2 = new TacoCatCard();
         currentPlayerHand.add(card1);
         currentPlayerHand.add(card2);
         
@@ -154,75 +153,73 @@ class HairyPotatoCatCardTest {
         } 
         catch (Exception e) {
             Assertions.fail("Failed to access effect fields: " + e.getMessage());
-        }    
-        
+        }
     }
-
 
     @Test
     @DisplayName("Test when no other players are available")
     void testNoOtherPlayers() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         turnOrder.remove(targetPlayer);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when no other players are available");
     }
 
     @Test
     @DisplayName("Test when target player is dead")
     void testDeadTargetPlayer() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         when(targetPlayer.isAlive()).thenReturn(false);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when target player is dead");
     }
-     
+
     @Test
     @DisplayName("Test when target player has empty hand")
     void testEmptyTargetHand() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         targetPlayerHand.clear();
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when target player has empty hand");
     }
 
     @Test
     @DisplayName("Test when player has no turns left")
     void testNoTurnsLeft() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         when(currentPlayer.getLeftTurns()).thenReturn(0);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has no turns left");
     }
 
     @Test
     @DisplayName("Test when input handler is not set")
     void testNoInputHandler() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         CatCard.setInputHandler(null);
         
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
         }, "Should throw exception when input handler is not set");
     }
 
     @Test
     @DisplayName("Test with valid target player")
     void testValidTargetPlayer() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         
         try {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
             Assertions.fail("Should throw CatCardEffect");
         } 
         catch (CatCard.CatCardEffect effect) {
@@ -233,23 +230,18 @@ class HairyPotatoCatCardTest {
     @Test
     @DisplayName("Test with valid card index")
     void testValidCardIndex() {
-        setupTwoHairyPotatoCatCards();
+        setupTwoTacoCatCards();
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         
         try {
-            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            tacoCatCard.effect(turnOrder, gameDeck);
             Assertions.fail("Should throw CatCardEffect");
         } 
         catch (CatCard.CatCardEffect effect) {
             verifyCatCardEffect(effect);
         }
     }
-
-
-   
-
-
 }
 
     

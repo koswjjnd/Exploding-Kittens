@@ -3,14 +3,12 @@ package explodingkittens.model;
 import java.util.List;
 
 /**
- * Represents a Hairy Potato Cat card in the Exploding Kittens game.
- * Hairy Potato Cat cards can be used to steal cards from other players,
- * similar to other cat cards.
+ * A cat card that requires two cards of the same type to steal a card from another player.
  */
-public class HairyPotatoCatCard extends CatCard {
+public class TacoCatCard extends CatCard {
     
-    public HairyPotatoCatCard() {
-        super(CatType.HAIRY_POTATO_CAT);
+    public TacoCatCard() {
+        super(CatType.TACOCAT);
     }
 
     @Override
