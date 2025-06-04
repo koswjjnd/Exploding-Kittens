@@ -69,9 +69,23 @@ class HairyPotatoCatCardTest {
         }, "Should throw exception when player has no cat cards");
     }
 
+    @Test
+    @DisplayName("Test when player has only one cat card")
+    void testOneCatCard() {
+        setupOneHairyPotatoCatCard();
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has only one cat card");
+    }
 
+    private void setupOneHairyPotatoCatCard() {
+        HairyPotatoCatCard card = new HairyPotatoCatCard();
+        currentPlayerHand.add(card);
+    }
 
-    
 }
 
     
