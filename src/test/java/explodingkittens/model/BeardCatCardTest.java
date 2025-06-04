@@ -7,6 +7,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import explodingkittens.model.BeardCatCard;
+import explodingkittens.model.Card;
+import explodingkittens.model.CardType;
+import explodingkittens.model.CatType;
+import explodingkittens.model.Deck;
+import explodingkittens.model.Player;
+import explodingkittens.model.RainbowCatCard;
+import explodingkittens.model.exceptions.CatCardEffect;
+import explodingkittens.model.input.MockInputHandler;
+
 public class BeardCatCardTest {
     private BeardCatCard card;
     private List<Player> turnOrder;
