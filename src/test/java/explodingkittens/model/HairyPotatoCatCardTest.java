@@ -233,6 +233,22 @@ class HairyPotatoCatCardTest {
         }
     }
 
+    @Test
+    @DisplayName("Test with valid card index")
+    void testValidCardIndex() {
+        setupTwoHairyPotatoCatCards();
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        try {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            verifyCatCardEffect(effect);
+        }
+    }
+
 
    
 
