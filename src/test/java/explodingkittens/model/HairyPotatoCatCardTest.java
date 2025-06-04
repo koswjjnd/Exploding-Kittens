@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HairyPotatoCatCardTest {
     private HairyPotatoCatCard hairyPotatoCatCard;
@@ -156,8 +157,35 @@ class HairyPotatoCatCardTest {
         } 
         catch (Exception e) {
             fail("Failed to access effect fields: " + e.getMessage());
-        }
+        }    
+        
     }
+
+
+    @Test
+    @DisplayName("Test when no other players are available")
+    void testNoOtherPlayers() {
+        setupTwoHairyPotatoCatCards();
+        turnOrder.remove(targetPlayer);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when no other players are available");
+    }
+
+    @Test
+    @DisplayName("Test when target player is dead")
+    void testDeadTargetPlayer() {
+        setupTwoHairyPotatoCatCards();
+        when(targetPlayer.isAlive()).thenReturn(false);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when target player is dead");
+    }
+     
+   
+
 
 }
 
