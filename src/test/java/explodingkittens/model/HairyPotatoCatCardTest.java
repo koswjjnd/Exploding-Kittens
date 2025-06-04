@@ -96,6 +96,15 @@ class HairyPotatoCatCardTest {
                 hairyPotatoCatCard.effect(turnOrder, gameDeck));
     }
 
+    @Test
+    void testEffectWithTwoHairyPotatoCatCards() {
+        setupTwoHairyPotatoCatCards();
+        RuntimeException effect = assertThrows(RuntimeException.class,
+                () -> hairyPotatoCatCard.effect(turnOrder, gameDeck));
+
+        verifyCatCardEffect(effect);
+    }
+
     private void setupTwoHairyPotatoCatCards() {
         HairyPotatoCatCard card1 = new HairyPotatoCatCard();
         HairyPotatoCatCard card2 = new HairyPotatoCatCard();
