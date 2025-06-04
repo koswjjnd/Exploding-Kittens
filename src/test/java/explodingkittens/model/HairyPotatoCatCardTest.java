@@ -206,6 +206,17 @@ class HairyPotatoCatCardTest {
         }, "Should throw exception when player has no turns left");
     }
 
+    @Test
+    @DisplayName("Test when input handler is not set")
+    void testNoInputHandler() {
+        setupTwoHairyPotatoCatCards();
+        CatCard.setInputHandler(null);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when input handler is not set");
+    }
+
    
 
 
