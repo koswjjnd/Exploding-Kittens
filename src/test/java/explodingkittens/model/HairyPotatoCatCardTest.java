@@ -86,6 +86,25 @@ class HairyPotatoCatCardTest {
         currentPlayerHand.add(card);
     }
 
+    @Test
+    @DisplayName("Test when player has two different types of cat cards")
+    void testDifferentCatCards() {
+        setupDifferentCatCards();
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+        
+        assertThrows(IllegalStateException.class, () -> {
+            hairyPotatoCatCard.effect(turnOrder, gameDeck);
+        }, "Should throw exception when player has two different types of cat cards");
+    }
+
+    private void setupDifferentCatCards() {
+        HairyPotatoCatCard card1 = new HairyPotatoCatCard();
+        CatCard card2 = new CatCard(CatType.TACOCAT);
+        currentPlayerHand.add(card1);
+        currentPlayerHand.add(card2);
+    }
+
 }
 
     
