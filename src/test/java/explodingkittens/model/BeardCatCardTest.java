@@ -52,4 +52,16 @@ public class BeardCatCardTest {
         card.setInputHandler(new MockInputHandler());
         assertThrows(IllegalStateException.class, () -> card.effect(turnOrder, gameDeck));
     }
+
+    @Test
+    void testEffectWithThreeBeardCatCards() {
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        player1.addCardToHand(card);
+        player1.addCardToHand(new BeardCatCard());
+        player1.addCardToHand(new BeardCatCard());
+        player1.setTurnsLeft(1);
+        card.setInputHandler(new MockInputHandler());
+        assertThrows(IllegalStateException.class, () -> card.effect(turnOrder, gameDeck));
+    }
 } 
