@@ -81,7 +81,7 @@ spotbugs {
     //omitVisitors = listOf("FindNonShortCircuit")
     reportsDir = file("spotbugs")
     //includeFilter = file("include.xml")
-    //excludeFilter = file("exclude.xml")
+    excludeFilter = file("excludeFilter.xml")
     //onlyAnalyze = listOf("com.foobar.MyClass", "com.foobar.mypkg.*")
     maxHeapSize = "1g"
     extraArgs = listOf("-nested:false")

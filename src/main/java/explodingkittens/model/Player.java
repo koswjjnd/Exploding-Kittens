@@ -121,6 +121,19 @@ public class Player {
     }
 
     /**
+     * Removes a card from the player's hand.
+     * @param card the card to remove
+     * @return true if the card was removed, false if the card was not in the hand
+     * @throws IllegalArgumentException if card is null
+     */
+    public boolean removeCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        return hand.remove(card);
+    }
+
+    /**
      * Checks if the player is still alive in the game.
      * @return true if the player is alive, false otherwise
      */
