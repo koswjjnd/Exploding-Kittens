@@ -103,4 +103,11 @@ class WatermelonCatCardTest {
         assertThrows(IllegalStateException.class, () ->
                 watermelonCatCard.effect(turnOrder, gameDeck));
     }
+    @Test
+    void testEffectWithNoTurnsLeft() {
+        when(currentPlayer.getLeftTurns()).thenReturn(0);
+        assertThrows(IllegalStateException.class, () ->
+                watermelonCatCard.effect(turnOrder, gameDeck));
+    }
+    
 } 
