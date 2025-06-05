@@ -134,4 +134,13 @@ class WatermelonCatCardTest {
         assertThrows(IllegalStateException.class, () ->
                 watermelonCatCard.effect(turnOrder, gameDeck));
     }
+
+    @Test
+    void testEffectWithTwoWatermelonCatCards() {
+        setupTwoWatermelonCatCards();
+        RuntimeException effect = assertThrows(RuntimeException.class,
+                () -> watermelonCatCard.effect(turnOrder, gameDeck));
+
+        verifyCatCardEffect(effect);
+    }
 } 
