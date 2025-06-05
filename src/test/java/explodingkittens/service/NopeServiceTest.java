@@ -5,10 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import explodingkittens.model.BasicCard;
 import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
+import explodingkittens.view.ConsoleGameView;
+import explodingkittens.view.GameView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +52,8 @@ public class NopeServiceTest {
      */
     @BeforeEach
     void setUp() {
-        nopeService = new NopeService();
+        GameView view = mock(ConsoleGameView.class);
+        NopeService nopeService = new NopeService(view);
         player1 = new Player("Player1");
         nopeCard = new BasicCard(CardType.NOPE);
         skipCard = new BasicCard(CardType.SKIP);

@@ -53,7 +53,7 @@ class CardEffectServiceTest {
     @Test
     void testNullCardAndNullContext() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> 
-            cardEffectService.handleCardEffect(null, null));
+            cardEffectService.applyEffect(null, null));
     }
     
     /**
@@ -63,7 +63,7 @@ class CardEffectServiceTest {
     @Test
     void testNullCard() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> 
-            cardEffectService.handleCardEffect(null, GameContext.class));
+            cardEffectService.applyEffect(null, player1));
     }
     
     /**
@@ -73,7 +73,7 @@ class CardEffectServiceTest {
     @Test
     void testNullContext() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            cardEffectService.handleCardEffect(mockCard, null);
+            cardEffectService.applyEffect(mockCard, null);
         });
     }
 
@@ -87,7 +87,7 @@ class CardEffectServiceTest {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
             
-            cardEffectService.handleCardEffect(mockCard, GameContext.class);
+            cardEffectService.applyEffect(mockCard, player1);
             
             Mockito.verify(mockCard, Mockito.times(1)).effect(turnOrder, gameDeck);
         }

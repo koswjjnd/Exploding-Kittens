@@ -14,38 +14,25 @@ import java.util.List;
 public class CardEffectService {
     
     /**
-     * Handles the effect of a card when it is played.
+     * Execute the effect of a played card.
      *
-     * @param card The card to handle the effect for
-     * @param ctx The game context class
-     * @throws IllegalArgumentException if either card or ctx is null
-     * @throws IllegalStateException if the game context is not properly initialized
+     * @param card   the card being played
+     * @param player the player who played it
+     * @throws IllegalArgumentException if card or player is null
+     * @throws IllegalStateException if game context is not properly initialized
      */
-    public void handleCardEffect(Card card, Class<GameContext> ctx) {
-        if (card == null || ctx == null) {
-            throw new IllegalArgumentException("Card and GameContext cannot be null");
+    public void applyEffect(Card card, Player player) {
+        if (card == null || player == null) {
+            throw new IllegalArgumentException("Card and player must not be null");
         }
 
         List<Player> turnOrder = GameContext.getTurnOrder();
-        Deck gameDeck = GameContext.getGameDeck();
+        Deck deck = GameContext.getGameDeck();
 
-        if (turnOrder == null || gameDeck == null) {
-            throw new IllegalStateException("Game context is not properly initialized");
+        if (turnOrder == null || deck == null) {
+            throw new IllegalStateException("Game context not initialized properly");
         }
 
-        card.effect(turnOrder, gameDeck);
-    }
-
-    /**
-     * Handles the effect of a card when it is played.
-     *
-     * @param card The card to handle the effect for
-     * @param player The player who played the card
-     * @param ctx The game context class
-     * @throws IllegalArgumentException if either card or ctx is null
-     * @throws IllegalStateException if the game context is not properly initialized
-     */
-    public void executeCardEffect(Card card, Player player, GameContext ctx) {
-       
+        card.effect(turnOrder, deck);
     }
 }

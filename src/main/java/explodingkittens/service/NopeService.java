@@ -1,63 +1,71 @@
 package explodingkittens.service;
 
-import explodingkittens.model.Card;
 import explodingkittens.model.BasicCard;
+import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
+import explodingkittens.controller.GameContext;
+import explodingkittens.view.GameView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service class that handles the "Nope" card functionality in the game.
- * A Nope card can negate the effect of another card, but if multiple Nope cards
- * are played in response, they cancel each other out.
- * 
- * This service implements the game rule where:
- * - An odd number of Nope cards negates the effect of the target card
- * - An even number of Nope cards (including zero) allows the effect to proceed
- * - Multiple Nope cards can be played in response to each other
+ * Service for handling Nope card logic.
  */
 public class NopeService {
-    
+
+    private final GameView view;
+
+    public NopeService(GameView view) {
+        this.view = view;
+    }
+
     /**
-     * Determines if a card's effect is negated based on the number of Nope cards played.
-     * This method implements the core Nope card game mechanic where:
-     * - Each Nope card cancels out the effect of the previous Nope card
-     * - The final result depends on whether there is an odd or even number of Nope cards
-     * 
-     * @param player The player who played the card being potentially negated.
-     *              This parameter is used for validation and future extensibility.
-     *              Must not be null.
-     * 
-     * @param nopeCards The list of Nope cards played in response to the target card.
-     *                 The order of cards in the list represents the sequence in which
-     *                 they were played. Must not be null, but can be empty.
-     *                 Can contain any type of Card, but only BasicCard instances with
-     *                 type NOPE are counted.
-     * 
-     * @return true if the effect is negated (odd number of Nope cards), false otherwise.
-     *         - Returns true when there is an odd number of valid Nope cards
-     *         - Returns false when there is an even number of valid Nope cards (including zero)
-     * 
-     * @throws IllegalArgumentException if player is null
-     * @throws IllegalArgumentException if nopeCards is null
+     * Determines if a card's effect is negated by the players.
+     * @param targetCard The card whose effect is being checked for negation
+     * @return true if the card's effect is negated, false otherwise
+     */
+    public boolean isNegatedByPlayers(Card targetCard) {
+        List<Card> playedNopeCards = new ArrayList<>();
+
+        for (Player p : GameContext.getTurnOrder()) {
+            if (!p.isAlive()) continue;
+
+            if (p.hasCardOfType(CardType.NOPE)) {
+                boolean playNope = view.promptPlayNope(p, targetCard);
+                if (playNope) {
+                    Card nope = p.removeFirstCardOfType(CardType.NOPE);
+                    playedNopeCards.add(nope);
+                    view.displayPlayedNope(p);
+                }
+            }
+        }
+
+        return isNegated(GameContext.getCurrentPlayer(), playedNopeCards);
+    }
+
+    /**
+     * Core logic: odd = negated, even = allowed.
+     * @param player The player whose card effect is being checked
+     * @param nopeCards The list of Nope cards played
+     * @return true if the effect is negated (odd number of Nope cards), false otherwise
+     * @throws IllegalArgumentException if player or nopeCards is null
      */
     public boolean isNegated(Player player, List<? extends Card> nopeCards) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
         if (nopeCards == null) {
-            throw new IllegalArgumentException("Nope cards list cannot be null");
+            throw new IllegalArgumentException("Nope cards cannot be null");
         }
-        
-        // Count the number of Nope cards
-        int nopeCount = 0;
+
+        int count = 0;
         for (Card card : nopeCards) {
-            if (card instanceof BasicCard && CardType.NOPE.equals(((BasicCard) card).getType())) {
-                nopeCount++;
+            if (card instanceof BasicCard && ((BasicCard) card).getType() == CardType.NOPE) {
+                count++;
             }
         }
-        
-        // If there's an odd number of Nope cards, the effect is negated
-        return nopeCount % 2 != 0;
+        return count % 2 != 0;
     }
-} 
+}
