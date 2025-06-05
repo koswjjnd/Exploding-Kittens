@@ -30,17 +30,32 @@ public class DeckTest {
         Deck deck = new Deck();
         deck.initializeBaseDeck(2);
         Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(3, cardCounts.get("DefuseCard"));
-        assertEquals(3, cardCounts.get("AttackCard"));
-        assertEquals(3, cardCounts.get("SkipCard"));
-        assertEquals(4, cardCounts.get("ShuffleCard"));
-        assertEquals(4, cardCounts.get("SeeTheFutureCard"));
+
+        assertEquals(3, cardCounts.get("DefuseCard"));  // 5 - 2
+        assertEquals(2, cardCounts.get("AttackCard"));
+        assertEquals(2, cardCounts.get("SkipCard"));
+        assertEquals(2, cardCounts.get("ShuffleCard"));
+        assertEquals(2, cardCounts.get("See_the_futureCard"));
         assertEquals(4, cardCounts.get("NopeCard"));
-        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
+
+        
+        assertEquals(5, cardCounts.get("CatCard_WATERMELON_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(5, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_HAIRY_POTATO_CAT"));
+
+
+        assertEquals(1, cardCounts.get("SnatchCard"));
+        assertEquals(1, cardCounts.get("Switch_deck_by_halfCard"));
+        assertEquals(1, cardCounts.get("Time_rewindCard"));
+        assertEquals(1, cardCounts.get("FavorCard"));
+        assertEquals(2, cardCounts.get("Draw_from_bottomCard"));
+        assertEquals(2, cardCounts.get("ReverseCard"));
+        assertEquals(2, cardCounts.get("Super_skipCard"));
+        assertEquals(2, cardCounts.get("Double_skipCard"));
     }
+
 
     /**
      * Tests that initializing a deck with 4 players creates the correct number of cards.
@@ -50,16 +65,29 @@ public class DeckTest {
         Deck deck = new Deck();
         deck.initializeBaseDeck(4);
         Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.get("DefuseCard"));
-        assertEquals(3, cardCounts.get("AttackCard"));
-        assertEquals(3, cardCounts.get("SkipCard"));
-        assertEquals(4, cardCounts.get("ShuffleCard"));
-        assertEquals(4, cardCounts.get("SeeTheFutureCard"));
+        assertEquals(1, cardCounts.get("DefuseCard")); 
+        assertEquals(2, cardCounts.get("AttackCard"));
+        assertEquals(2, cardCounts.get("SkipCard"));
+        assertEquals(2, cardCounts.get("ShuffleCard"));
+        assertEquals(2, cardCounts.get("See_the_futureCard"));
         assertEquals(4, cardCounts.get("NopeCard"));
-        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
+
+        
+        assertEquals(5, cardCounts.get("CatCard_WATERMELON_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_TACOCAT"));
+        assertEquals(5, cardCounts.get("CatCard_BEARD_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(5, cardCounts.get("CatCard_HAIRY_POTATO_CAT"));
+
+
+        assertEquals(1, cardCounts.get("SnatchCard"));
+        assertEquals(1, cardCounts.get("Switch_deck_by_halfCard"));
+        assertEquals(1, cardCounts.get("Time_rewindCard"));
+        assertEquals(1, cardCounts.get("FavorCard"));
+        assertEquals(2, cardCounts.get("Draw_from_bottomCard"));
+        assertEquals(2, cardCounts.get("ReverseCard"));
+        assertEquals(2, cardCounts.get("Super_skipCard"));
+        assertEquals(2, cardCounts.get("Double_skipCard"));
     }
 
     /**
@@ -105,23 +133,15 @@ public class DeckTest {
         deck.addCards(new DefuseCard(), 1);
         deck.addCards(new SeeTheFutureCard(), 1);
         deck.addCards(new NopeCard(), 1);
-        deck.addCards(new CatCard(CatType.TACOCAT), 1);
-        deck.addCard(new CatCard(CatType.BEARD_CAT));
-        deck.addCard(new CatCard(CatType.CATTERMELON));
-        deck.addCard(new CatCard(CatType.RAINBOW_CAT));
         
         Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(7, cardCounts.size());
+        assertEquals(6, cardCounts.size());
         assertEquals(1, cardCounts.get("SkipCard"));
         assertEquals(1, cardCounts.get("ShuffleCard"));
         assertEquals(1, cardCounts.get("AttackCard"));
         assertEquals(1, cardCounts.get("DefuseCard"));
-        assertEquals(1, cardCounts.get("SeeTheFutureCard"));
+        assertEquals(1, cardCounts.get("See_the_futureCard"));
         assertEquals(1, cardCounts.get("NopeCard"));
-        assertEquals(null, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(null, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(null, cardCounts.get("CatCard_CATTERMELON"));
-        assertEquals(null, cardCounts.get("CatCard_RAINBOW_CAT"));
     }
 
     /**
@@ -156,6 +176,6 @@ public class DeckTest {
         deck.addCards(new SeeTheFutureCard(), 2);
         Map<String, Integer> cardCounts = deck.getCardCounts();
         assertEquals(1, cardCounts.size());
-        assertEquals(2, cardCounts.get("SeeTheFutureCard"));
+        assertEquals(2, cardCounts.get("See_the_futureCard"));
     }
 }
