@@ -97,4 +97,10 @@ class WatermelonCatCardTest {
             fail("Failed to access effect fields: " + e.getMessage());
         }
     }
+    @Test
+    void testEffectWithNoInputHandler() {
+        CatCard.setInputHandler(null);
+        assertThrows(IllegalStateException.class, () ->
+                watermelonCatCard.effect(turnOrder, gameDeck));
+    }
 } 
