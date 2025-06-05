@@ -124,4 +124,14 @@ class WatermelonCatCardTest {
         assertThrows(IllegalStateException.class, () ->
                 watermelonCatCard.effect(turnOrder, gameDeck));
     }
+    
+    @Test
+    void testEffectWithOneWatermelonCatCard() {
+        currentPlayerHand.add(new WatermelonCatCard());
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
+
+        assertThrows(IllegalStateException.class, () ->
+                watermelonCatCard.effect(turnOrder, gameDeck));
+    }
 } 
