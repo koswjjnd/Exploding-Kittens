@@ -53,7 +53,7 @@ public class NopeServiceTest {
     @BeforeEach
     void setUp() {
         GameView view = mock(ConsoleGameView.class);
-        NopeService nopeService = new NopeService(view);
+        nopeService = new NopeService(view);
         player1 = new Player("Player1");
         nopeCard = new BasicCard(CardType.NOPE);
         skipCard = new BasicCard(CardType.SKIP);

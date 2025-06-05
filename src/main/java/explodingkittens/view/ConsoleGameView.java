@@ -5,12 +5,13 @@ import explodingkittens.model.Card;
 import explodingkittens.controller.GameContext;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 public class ConsoleGameView implements GameView {
     private final Scanner scanner;
 
     public ConsoleGameView() {
-        this.scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     }
 
     @Override
