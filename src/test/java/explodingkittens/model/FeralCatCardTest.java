@@ -52,5 +52,15 @@ class FeralCatCardTest {
         assertEquals(CardType.CAT_CARD, feralCatCard.getType());
     }
 
+    @Test
+    void testFindCatCardPairWithValidCards() {
+        // Add a TacoCat and a FeralCat to the hand
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+
+        CatCard[] pair = feralCatCard.findCatCardPair(currentPlayerHand);
+        assertTrue(pair[0] instanceof TacoCatCard);
+        assertTrue(pair[1] instanceof FeralCatCard);
+    }
     
 } 

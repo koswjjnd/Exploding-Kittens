@@ -49,10 +49,3 @@ The Feral Cat card is a special cat card that can be paired with any other cat c
 4. Player attempts to use Feral Cat when it's not their turn
 5. Player attempts to use Feral Cat with invalid input handler
 
-## Test Coverage
-The test suite should achieve:
-- 100% method coverage
-- 100% branch coverage
-- 100% statement coverage
-- All boundary conditions tested
-- All error conditions tested 
