@@ -63,4 +63,16 @@ class FeralCatCardTest {
         assertTrue(pair[1] instanceof FeralCatCard);
     }
     
+    @Test
+    void testFindCatCardPairWithNoOtherCatCard() {
+        // Add only FeralCat cards
+        currentPlayerHand.add(new FeralCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+
+        assertThrows(IllegalStateException.class, () -> {
+            feralCatCard.findCatCardPair(currentPlayerHand);
+        });
+    }
+
+    
 } 
