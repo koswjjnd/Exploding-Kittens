@@ -85,7 +85,14 @@ class FeralCatCardTest {
         });
     }
 
+    @Test
+    void testFindCatCardPairWithEmptyHand() {
+        assertThrows(IllegalStateException.class, () -> {
+            feralCatCard.findCatCardPair(currentPlayerHand);
+        });
+    }
+} 
+
     
 
 
-} 
