@@ -133,15 +133,25 @@ public class Deck {
         
         this.cards.clear();
         this.addCards(new DefuseCard(), 5-playerCount);
-        this.addCards(new AttackCard(), 3);
-        this.addCards(new SkipCard(), 3);
-        this.addCards(new ShuffleCard(), 4);
-        this.addCards(new SeeTheFutureCard(), 4);
+        this.addCards(new AttackCard(), 2);
+        this.addCards(new SkipCard(), 2);
+        this.addCards(new ShuffleCard(), 2);
+        this.addCards(new SeeTheFutureCard(), 2);
         this.addCards(new NopeCard(), 4);
-        
-        for (CatType type : CatType.values()) {
-            this.addCards(new CatCard(type), 4);
-        }
+        this.addCards(new WatermelonCatCard(), 5);
+        this.addCards(new BeardCatCard(), 5);
+        this.addCards(new HairyPotatoCatCard(), 5);
+        this.addCards(new RainbowCatCard(), 5);
+        this.addCards(new TacoCatCard(), 5);
+        this.addCards(new SnatchCard(), 1);
+        this.addCards(new SwitchDeckByHalfCard(), 1);
+        this.addCards(new TimeRewindCard(), 1);
+        this.addCards(new FavorCard(), 1);
+        this.addCards(new DrawFromBottomCard(), 2);
+        this.addCards(new ReverseCard(), 2);
+        this.addCards(new SuperSkipCard(), 2);
+        this.addCards(new DoubleSkipCard(), 2);
+
     }
     
     /**
@@ -180,13 +190,22 @@ public class Deck {
      */
     public Map<String, Integer> getCardCounts() {
         Map<String, Integer> counts = new HashMap<>();
-        
         for (Card card : cards) {
-            String key = getCardTypeKey(card);
+            String key;
+            if (card instanceof CatCard) {
+                key = "CatCard_" + ((CatCard) card).getCatType().name();  // e.g., CatCard_TACOCAT
+            } 
+            else {
+                // e.g., CardType.DEFUSE -> DefuseCard
+                String base = card.getType().name().toLowerCase();
+                key = Character.toUpperCase(base.charAt(0)) + base.substring(1) + "Card";
+            }
+    
             counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
         return counts;
     }
+    
 
     /**
      * Determines the type key for a card.
