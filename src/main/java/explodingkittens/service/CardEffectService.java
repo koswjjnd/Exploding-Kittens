@@ -4,6 +4,8 @@ import explodingkittens.model.Card;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Deck;
 import explodingkittens.model.Player;
+import explodingkittens.model.SeeTheFutureCard;
+import explodingkittens.view.SeeTheFutureView;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  * This service is responsible for executing the effects of cards when they are played.
  */
 public class CardEffectService {
+    private final SeeTheFutureView seeTheFutureView = new SeeTheFutureView();
     
     /**
      * Execute the effect of a played card.
@@ -31,6 +34,11 @@ public class CardEffectService {
 
         if (turnOrder == null || deck == null) {
             throw new IllegalStateException("Game context not initialized properly");
+        }
+
+        // 注入 SeeTheFutureView
+        if (card instanceof SeeTheFutureCard) {
+            ((SeeTheFutureCard) card).setView(seeTheFutureView);
         }
 
         card.effect(turnOrder, deck);

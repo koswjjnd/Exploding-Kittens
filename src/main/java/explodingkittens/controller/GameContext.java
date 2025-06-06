@@ -61,6 +61,29 @@ public class GameContext {
 	}
 
 	/**
+	 * Moves a player to the end of the turn order.
+	 * @param player The player to move
+	 * @throws IllegalArgumentException if the player is null or not in the turn order
+	 */
+	public static void movePlayerToEnd(Player player) {
+		if (player == null) {
+			throw new IllegalArgumentException("Player cannot be null");
+		}
+		if (turnOrder == null || !turnOrder.contains(player)) {
+			throw new IllegalArgumentException("Player is not in the turn order");
+		}
+		
+		// Remove player from current position and add to end
+		turnOrder.remove(player);
+		turnOrder.add(player);
+		
+		// Adjust current player index if needed
+		if (currentPlayerIndex >= turnOrder.size()) {
+			currentPlayerIndex = 0;
+		}
+	}
+
+	/**
 	 * Sets the game deck.
 	 * @param deck the deck to set
 	 * @throws IllegalArgumentException if the provided deck is null
@@ -74,13 +97,13 @@ public class GameContext {
 
 	/**
 	 * Gets the game deck.
-	 * @return a copy of the current game deck
+	 * @return the current game deck
 	 */
 	public static Deck getGameDeck() {
 		if (gameDeck == null) {
 			return null;
 		}
-		return new Deck(gameDeck); // Return a copy
+		return gameDeck; // Return the actual game deck
 	}
 
 	/**
@@ -129,11 +152,7 @@ public class GameContext {
 		if (turnOrder == null || !turnOrder.contains(player)) {
 			throw new IllegalArgumentException("Player is not in the game");
 		}
-
-		int playerIndex = turnOrder.indexOf(player);
-		turnOrder.remove(playerIndex);
-		
-		// Adjust current player index if needed
+		turnOrder.remove(player);
 		if (currentPlayerIndex >= turnOrder.size()) {
 			currentPlayerIndex = 0;
 		}

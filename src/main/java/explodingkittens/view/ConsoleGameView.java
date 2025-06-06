@@ -9,9 +9,11 @@ import java.nio.charset.StandardCharsets;
 
 public class ConsoleGameView implements GameView {
     private final Scanner scanner;
+    private final HandView handView;
 
     public ConsoleGameView() {
         this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
+        this.handView = new HandView();
     }
 
     @Override
@@ -21,11 +23,17 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public void displayPlayerHand(Player player) {
-        System.out.println("\nYour hand:");
-        List<Card> hand = player.getHand();
-        for (int i = 0; i < hand.size(); i++) {
-            System.out.println((i + 1) + ". " + hand.get(i));
-        }
+        handView.displayHandWithIndices(player.getName(), player.getHand());
+    }
+
+    @Override
+    public void displayOtherPlayerHand(Player player) {
+        handView.displayHandWithoutIndices(player.getName(), player.getHand());
+    }
+
+    @Override
+    public void displayHandForSelection(Player player, List<Card> hand) {
+        handView.displayHandWithIndices(player.getName(), hand);
     }
 
     @Override
@@ -65,9 +73,9 @@ public class ConsoleGameView implements GameView {
     }
 
     @Override
-    public Card promptPlayCard(List<Card> hand) {
-        System.out.println("\nChoose a card to play "
-            + "(enter number, or 0 to end turn): ");
+    public Card promptPlayCard(Player player, List<Card> hand) {
+        handView.displayHandWithIndices("Player: " + player.getName(), hand);
+        System.out.println("\nChoose a card to play (enter number, or 0 to end turn): ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
         return choice == 0 ? null : hand.get(choice - 1);
     }
@@ -79,7 +87,7 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public Card selectCardToPlay(Player player, List<Card> hand) {
-        return promptPlayCard(hand);
+        return promptPlayCard(player, hand);
     }
 
     @Override

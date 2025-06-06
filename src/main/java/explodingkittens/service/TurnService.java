@@ -43,9 +43,32 @@ public class TurnService {
             throw new IllegalArgumentException("Player cannot be null");
         }
 
-        playCardsPhase(player);    // ① play cards (can be multiple)
-        drawPhase(player);         // ② draw card/exploding kitten
-        player.decrementLeftTurns(); // ③ end of sub-turn
+        // Display player's hand before their turn
+        view.displayPlayerHand(player);
+
+        // First, let player choose to play cards or draw
+        String action = view.promptPlayerAction(player);
+        if (action.equals("play")) {
+            playCardsPhase(player);    // ① play cards (can be multiple)
+        }
+
+        // Then, draw cards based on leftTurns
+        int drawsLeft = player.getLeftTurns();
+        for (int i = 0; i < drawsLeft; i++) {
+            drawPhase(player);         // ② draw card/exploding kitten
+            if (GameContext.isGameOver()) {
+                break;
+            }
+        }
+        
+        // Finally, end the sub-turn and adjust player order
+        player.setLeftTurns(1);  // Reset leftTurns to 1
+        GameContext.movePlayerToEnd(player); // Move current player to end of turn order
+        
+        // Move to next player's turn
+        if (!GameContext.isGameOver()) {
+            GameContext.nextTurn();
+        }
     }
 
     /* ===================== ① 出牌阶段 ==================================== */
@@ -58,19 +81,15 @@ public class TurnService {
         if (player == null) {
             throw new IllegalArgumentException("Player must not be null");
         }
-        List<Card> hand = player.getHand();
-        if (hand.isEmpty()) {
-            return;
-        }
-
         while (true) {
-            Card chosen = view.selectCardToPlay(player, hand);   // null ⇒ end of play cards
+            Card chosen = view.selectCardToPlay(player, player.getHand());   // 用最新手牌
             if (chosen == null) {
                 break;
             }
 
             try {
                 playCard(player, chosen);
+                view.displayPlayerHand(player); // 出牌后刷新手牌显示
             } 
             catch (InvalidCardException ice) {
                 view.showError(ice.getMessage());
@@ -98,7 +117,7 @@ public class TurnService {
         boolean noped = nopeService.isNegatedByPlayers(card);
         if (noped) {
             view.showCardNoped(player, card);
-            player.getHand().remove(card);  // the card is played but the effect is invalid
+            player.removeCard(card);  // the card is played but the effect is invalid
             return;
         }
 
@@ -106,7 +125,7 @@ public class TurnService {
         cardEffectService.applyEffect(card, player);
 
         /* —— remove card from hand —— */
-        player.getHand().remove(card);
+        player.removeCard(card);
     }
 
     /* ===================== ② 抽牌阶段 ==================================== */

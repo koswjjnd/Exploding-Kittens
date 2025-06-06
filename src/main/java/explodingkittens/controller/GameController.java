@@ -38,26 +38,36 @@ public class GameController {
         try {
             // Main game loop
             while (!GameContext.isGameOver()) {
-                Player current = GameContext.getCurrentPlayer();
-                view.displayCurrentPlayer(current);
+                try {
+                    Player current = GameContext.getCurrentPlayer();
+                    view.displayCurrentPlayer(current);
 
-                // --- 多子回合循环 ---
-                while (current.getLeftTurns() > 0 && !GameContext.isGameOver()) {
-                    turnService.takeTurn(current);   // 执行一次子回合
+                    // Execute the current player's turn
+                    turnService.takeTurn(current);
+
+                    // Check if game is over after the turn
+                    if (GameContext.isGameOver()) {
+                        break;
+                    }
+
+                    // Move to next player's turn
+                    GameContext.nextTurn();
+                } catch (Exception e) {
+                    System.err.println("Error in main game loop: " + e.getMessage());
+                    e.printStackTrace();
+                    throw e;
                 }
-
-                // 轮到下一位玩家
-                GameContext.nextTurn();
             }
             
             // Game over - determine and display winner
             handleGameOver();
         } 
         catch (Exception e) {
+            System.err.println("Fatal error in game: " + e.getMessage());
+            e.printStackTrace();
             throw new GameOverException("Game ended unexpectedly: " + e.getMessage(), e);
         }
     }
-
 
     /**
      * Handles the end of the game.
@@ -70,37 +80,4 @@ public class GameController {
             view.displayGameOver();
         }
     }
-
-    // /**
-    //  * Handles the effect of a cat card.
-    //  * @param card The cat card to handle
-    //  * @param turnOrder The current turn order
-    //  * @param gameDeck The game deck
-    //  */
-    // private void handleCatCard(CatCard card, List<Player> turnOrder, Deck gameDeck) {
-    //     try {
-    //         card.effect(turnOrder, gameDeck);
-    //     } 
-    //     catch (CatCardEffect effect) {
-    //         // Check for Nope cards
-    //         if (!checkForNope(turnOrder)) {
-    //             // No Nope cards played, execute the effect
-    //             Player currentPlayer = turnOrder.get(0);
-                
-    //             // Remove the cat card pair
-    //             currentPlayer.removeCard(effect.getFirstCard());
-    //             currentPlayer.removeCard(effect.getSecondCard());
-                
-    //             // Get and remove the target card
-    //             Card cardToSteal = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
-    //             Player targetPlayer = turnOrder.stream()
-    //                 .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
-    //                 .findFirst()
-    //                 .orElseThrow(() -> new IllegalStateException("Target player not found"));
-    //             if (targetPlayer.removeCard(cardToSteal)) {
-    //                 currentPlayer.receiveCard(cardToSteal);
-    //             }
-    //         }
-    //     }
-    // }
 }

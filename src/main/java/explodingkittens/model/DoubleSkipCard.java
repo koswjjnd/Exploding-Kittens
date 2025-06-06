@@ -1,6 +1,7 @@
 package explodingkittens.model;
 
 import java.util.List;
+import explodingkittens.controller.GameContext;
 
 public class DoubleSkipCard extends Card {
     public DoubleSkipCard() {
@@ -25,8 +26,7 @@ public class DoubleSkipCard extends Card {
         
         // Only move player to end if they have no turns left
         if (newLeftTurns == 0) {
-            turnOrder.remove(0);
-            turnOrder.add(currentPlayer);
+            GameContext.movePlayerToEnd(currentPlayer);
         }
     }
 } 

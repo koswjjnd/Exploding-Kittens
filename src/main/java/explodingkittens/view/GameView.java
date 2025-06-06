@@ -21,6 +21,19 @@ public interface GameView {
     void displayPlayerHand(Player player);
 
     /**
+     * Displays a player's hand without card indices (for other players' hands).
+     * @param player the player whose hand to display
+     */
+    void displayOtherPlayerHand(Player player);
+
+    /**
+     * Displays a player's hand for card selection.
+     * @param player the player whose hand to display
+     * @param hand the list of cards to display
+     */
+    void displayHandForSelection(Player player, List<Card> hand);
+
+    /**
      * Prompts the player for their action.
      * @param player the current player
      * @return the action chosen by the player ("draw" or "play")
@@ -62,7 +75,7 @@ public interface GameView {
      * @param hand the player's hand
      * @return the card chosen by the player
      */
-    Card promptPlayCard(List<Card> hand);
+    Card promptPlayCard(Player player, List<Card> hand);
 
     /**
      * Displays when a player plays a card.
