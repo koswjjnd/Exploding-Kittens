@@ -6,5 +6,6 @@ public enum CatType {
     CATTERMELON,
     RAINBOW_CAT,
     HAIRY_POTATO_CAT,
-    WATERMELON_CAT
+    WATERMELON_CAT,
+    FERAL_CAT
 } 
