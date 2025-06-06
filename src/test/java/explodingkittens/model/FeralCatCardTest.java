@@ -74,5 +74,18 @@ class FeralCatCardTest {
         });
     }
 
+    @Test
+    void testFindCatCardPairWithNoFeralCatCard() {
+        // Add only other cat cards
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new TacoCatCard());
+
+        assertThrows(IllegalStateException.class, () -> {
+            feralCatCard.findCatCardPair(currentPlayerHand);
+        });
+    }
+
     
+
+
 } 
