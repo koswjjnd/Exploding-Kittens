@@ -148,4 +148,31 @@ public class Player {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
+
+    /**
+     * Checks if the player has a card of the specified type.
+     * @param type the type of card to check for
+     * @return true if the player has at least one card of the specified type
+     */
+    public boolean hasCardOfType(CardType type) {
+        return hand.stream()
+                .anyMatch(card -> card.getType() == type);
+    }
+
+    /**
+     * Removes and returns the first card of the specified type from the player's hand.
+     * @param type the type of card to remove
+     * @return the removed card, or null if no card of that type was found
+     */
+    public Card removeFirstCardOfType(CardType type) {
+        Optional<Card> card = hand.stream()
+                .filter(c -> c.getType() == type)
+                .findFirst();
+        
+        if (card.isPresent()) {
+            hand.remove(card.get());
+            return card.get();
+        }
+        return null;
+    }
 } 

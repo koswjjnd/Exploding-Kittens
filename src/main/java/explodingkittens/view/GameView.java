@@ -123,9 +123,10 @@ public interface GameView {
 
     /**
      * Prompts the player to select a position to insert the exploding kitten.
+     * @param deckSize the size of the deck
      * @return The selected position (0-based)
      */
-    int selectExplodingKittenPosition();
+    int selectExplodingKittenPosition(int deckSize);
 
     /**
      * Displays when a player uses a defuse card.
@@ -139,4 +140,18 @@ public interface GameView {
      * @param position the position where the exploding kitten was inserted
      */
     void displayDefuseSuccess(Player player, int position);
+
+    /**
+     * Prompts the player to play a Nope card.
+     * @param player The player who played the card
+     * @param card The card that was played
+     * @return true if a Nope card was played, false otherwise
+     */
+    boolean promptPlayNope(Player player, Card card);
+    
+    /**
+     * Displays when a Nope card was played.
+     * @param player The player who played the Nope card
+     */
+    void displayPlayedNope(Player player);
 } 
