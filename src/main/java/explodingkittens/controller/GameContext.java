@@ -164,7 +164,7 @@ public class GameContext {
 		boolean foundAlivePlayer = false;
 		
 		do {
-			currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+		currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
 			if (turnOrder.get(currentPlayerIndex).isAlive()) {
 				foundAlivePlayer = true;
 				break;

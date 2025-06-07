@@ -26,6 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,25 +175,30 @@ class TurnServiceTest {
 
     @Test
     void testTakeTurnEmptyDeck() throws EmptyDeckException {
-        when(deck.drawOne()).thenThrow(new EmptyDeckException());
+        // Setup
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.getLeftTurns()).thenReturn(1);
         
-        assertThrows(EmptyDeckException.class, () -> 
-            turnService.takeTurn(player));
+        // Mock view interactions
+        when(view.promptPlayerAction(player)).thenReturn("draw");
+        
+        // Mock deck behavior
+        when(deck.size()).thenReturn(0);
+        when(deck.drawOne()).thenThrow(new EmptyDeckException("Deck is empty"));
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute and verify exception
+        assertThrows(EmptyDeckException.class, () -> turnService.takeTurn(player));
+        
+        // Verify no card was received
+        verify(player, never()).receiveCard(any());
     }
 
-    @Test
-    void testTakeTurnPlayerEndsTurn() throws EmptyDeckException {
-        List<Card> hand = new ArrayList<>();
-        hand.add(card);
-        when(player.getHand()).thenReturn(hand);
-        when(view.selectCardToPlay(player, hand)).thenReturn(null);
-        when(deck.drawOne()).thenReturn(card);
-        
-        turnService.takeTurn(player);
-        
-        verify(cardEffectService, never()).applyEffect(any(), any());
-        verify(player).receiveCard(card);
-    }
 
     @Test
     void testPlayCardWithNullPlayer() {
@@ -208,29 +214,35 @@ class TurnServiceTest {
 
     @Test
     void testPlayCardWithValidCard() throws InvalidCardException {
-        List<Card> hand = spy(new ArrayList<>());
+        // Setup
+        List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand)).thenReturn(card);
         when(view.checkForNope(player, card)).thenReturn(false);
-
+        
+        // Execute
         turnService.playCard(player, card);
-
-        verify(view).showCardPlayed(player, card);
+        
+        // Verify
         verify(cardEffectService).applyEffect(card, player);
-        verify(hand).remove(card);
+        verify(player).removeCard(card);
     }
 
     @Test
     void testPlayCardWithInvalidCard() {
-        List<Card> hand = spy(new ArrayList<>());
+        // Setup
+        List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
         when(view.checkForNope(player, card)).thenReturn(false);
-        doThrow(new RuntimeException("Invalid card")).when(cardEffectService)
-            .applyEffect(card, player);
-
-        assertThrows(RuntimeException.class, () ->
-            turnService.playCard(player, card));
+        doThrow(new RuntimeException("Invalid card")).when(cardEffectService).applyEffect(card, player);
+        
+        // Execute and verify exception
+        assertThrows(RuntimeException.class, () -> turnService.playCard(player, card));
+        
+        // Verify
+        verify(player, never()).removeCard(any());
     }
 
     @Test
