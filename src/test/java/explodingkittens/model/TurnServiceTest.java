@@ -109,7 +109,6 @@ class TurnServiceTest {
         verify(player).receiveCard(card);
         verify(view, never()).selectCardToPlay(any(), any());
     }
-
     @Test
     void testTakeTurnWithCards() throws EmptyDeckException, InvalidCardException {
         // Setup player with cards
@@ -140,19 +139,37 @@ class TurnServiceTest {
         verify(cardEffectService).applyEffect(card, player);
         verify(player).receiveCard(card);
     }
-
     @Test
     void testTakeTurnDrawsExplodingKitten() throws EmptyDeckException {
+        // Setup
         ExplodingKittenCard explodingKitten = mock(ExplodingKittenCard.class);
-        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.getLeftTurns()).thenReturn(1);
         when(player.hasDefuse()).thenReturn(true);
+        
+        // Mock view interactions
+        when(view.promptPlayerAction(player)).thenReturn("draw");
         when(view.confirmDefuse(player)).thenReturn(true);
         when(view.selectExplodingKittenPosition(deck.size())).thenReturn(0);
         
+        // Mock deck behavior
+        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(deck.size()).thenReturn(10);
+        doNothing().when(deck).insertAt(any(), anyInt());
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
         turnService.takeTurn(player);
         
+        // Verify
         verify(player).useDefuse();
         verify(deck).insertAt(explodingKitten, 0);
+        verify(player).setLeftTurns(1);
     }
 
     @Test
