@@ -130,13 +130,22 @@ public class GameContext {
 		if (!currentPlayer.isAlive()) {
 			// If current player is eliminated, find next alive player
 			int startIndex = currentPlayerIndex;
+			boolean foundAlivePlayer = false;
+			
 			do {
 				currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
 				currentPlayer = turnOrder.get(currentPlayerIndex);
 				if (currentPlayer.isAlive()) {
+					foundAlivePlayer = true;
 					break;
 				}
 			} while (currentPlayerIndex != startIndex);
+			
+			// If no alive player is found, end the game
+			if (!foundAlivePlayer) {
+				endGame();
+				throw new IllegalStateException("No alive players found");
+			}
 		}
 		return currentPlayer;
 	}
@@ -152,12 +161,21 @@ public class GameContext {
 		
 		// Find the next alive player
 		int startIndex = currentPlayerIndex;
+		boolean foundAlivePlayer = false;
+		
 		do {
 			currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
 			if (turnOrder.get(currentPlayerIndex).isAlive()) {
+				foundAlivePlayer = true;
 				break;
 			}
 		} while (currentPlayerIndex != startIndex);
+		
+		// If no alive player is found, end the game
+		if (!foundAlivePlayer) {
+			endGame();
+			throw new IllegalStateException("No alive players found");
+		}
 	}
 
 	/**
@@ -221,17 +239,49 @@ public class GameContext {
 		if (index < 0 || index >= turnOrder.size()) {
 			throw new IllegalArgumentException("Invalid player index");
 		}
-		currentPlayerIndex = index;
 		
-		// If the selected player is eliminated, find the next alive player
-		if (!turnOrder.get(currentPlayerIndex).isAlive()) {
-			int startIndex = currentPlayerIndex;
+		// First, check if the selected player is alive
+		if (!turnOrder.get(index).isAlive()) {
+			// If not alive, find the next alive player
+			int startIndex = index;
+			boolean foundAlivePlayer = false;
+			
 			do {
-				currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
-				if (turnOrder.get(currentPlayerIndex).isAlive()) {
+				index = (index + 1) % turnOrder.size();
+				if (turnOrder.get(index).isAlive()) {
+					foundAlivePlayer = true;
 					break;
 				}
-			} while (currentPlayerIndex != startIndex);
+			} while (index != startIndex);
+			
+			// If no alive player is found, end the game
+			if (!foundAlivePlayer) {
+				endGame();
+				throw new IllegalStateException("No alive players found");
+			}
+		}
+		
+		// Set the current player index
+		currentPlayerIndex = index;
+	}
+
+	/**
+	 * Ends the game.
+	 */
+	private static void endGame() {
+		gameOver = true;
+		// Find the last surviving player
+		Player winner = null;
+		for (Player player : turnOrder) {
+			if (player.isAlive()) {
+				winner = player;
+				break;
+			}
+		}
+		if (winner != null) {
+			System.out.println("\nGame Over! " + winner.getName() + " wins!");
+		} else {
+			System.out.println("\nGame Over! No players survived!");
 		}
 	}
 }

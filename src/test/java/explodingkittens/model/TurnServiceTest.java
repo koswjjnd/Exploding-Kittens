@@ -18,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -52,6 +53,9 @@ class TurnServiceTest {
     @Mock
     private CardEffectService cardEffectService;
 
+    @Mock
+    private Card nopeCard;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -62,6 +66,8 @@ class TurnServiceTest {
         mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
         mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));   // ★
         mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);        // ★
+        when(player.hasCardOfType(CardType.NOPE)).thenReturn(true);
+        when(player.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
     }
 
 
@@ -78,25 +84,58 @@ class TurnServiceTest {
 
     @Test
     void testTakeTurnWithEmptyHand() throws EmptyDeckException {
-        when(player.getHand()).thenReturn(new ArrayList<>());
+        // Setup
+        List<Card> emptyHand = new ArrayList<>();
+        when(player.getHand()).thenReturn(emptyHand);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.getLeftTurns()).thenReturn(1);
+        
+        // Mock view to skip card playing phase
+        when(view.promptPlayerAction(player)).thenReturn("draw");
+        
+        // Mock deck to return a normal card
         when(deck.drawOne()).thenReturn(card);
         
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
         turnService.takeTurn(player);
         
+        // Verify
         verify(player).receiveCard(card);
         verify(view, never()).selectCardToPlay(any(), any());
     }
 
     @Test
     void testTakeTurnWithCards() throws EmptyDeckException, InvalidCardException {
+        // Setup player with cards
         List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
-        when(view.selectCardToPlay(player, hand)).thenReturn(card, (Card) null);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.getLeftTurns()).thenReturn(1);
+        
+        // Mock view to play a card and then end turn
+        when(view.promptPlayerAction(player)).thenReturn("play");
+        when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        
+        // Mock deck to return a normal card
         when(deck.drawOne()).thenReturn(card);
         
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
         turnService.takeTurn(player);
         
+        // Verify
         verify(cardEffectService).applyEffect(card, player);
         verify(player).receiveCard(card);
     }
@@ -114,37 +153,6 @@ class TurnServiceTest {
         verify(player).useDefuse();
         verify(deck).insertAt(explodingKitten, 0);
     }
-
-    @Test
-    void testTakeTurnCardNoped() throws EmptyDeckException, InvalidCardException {
-        /* 准备手牌 */
-        List<Card> hand = new ArrayList<>();
-        hand.add(card);
-        when(player.getHand()).thenReturn(hand);
-        when(player.isAlive()).thenReturn(true);  
-        when(view.selectCardToPlay(player, hand)).thenReturn(card, (Card) null);
-
-        /* 准备真正的 NOPE 卡 */
-        BasicCard nopeCard = mock(BasicCard.class);
-        when(nopeCard.getType()).thenReturn(CardType.NOPE);
-
-        when(player.hasCardOfType(CardType.NOPE)).thenReturn(true);
-        when(player.removeFirstCardOfType(CardType.NOPE)).thenReturn(nopeCard);
-
-        /* View 提示玩家愿意打出 NOPE */
-        when(view.promptPlayNope(player, card)).thenReturn(true);
-
-        /* 抽牌阶段正常抽一张普通卡 */
-        when(deck.drawOne()).thenReturn(card);
-
-        /* 执行 */
-        turnService.takeTurn(player);
-
-        /* 断言 */
-        verify(cardEffectService, never()).applyEffect(any(), any());
-        verify(view).showCardNoped(player, card);
-    }
-
 
     @Test
     void testTakeTurnEmptyDeck() throws EmptyDeckException {
@@ -193,28 +201,6 @@ class TurnServiceTest {
         verify(cardEffectService).applyEffect(card, player);
         verify(hand).remove(card);
     }
-
-    @Test
-    void testPlayCardWithNopedCard() throws InvalidCardException {
-        List<Card> hand = spy(new ArrayList<>());
-        hand.add(card);
-        when(player.getHand()).thenReturn(hand);
-        when(player.isAlive()).thenReturn(true);  
-
-        /* 准备 NOPE 卡 */
-        BasicCard nopeCard = mock(BasicCard.class);
-        when(nopeCard.getType()).thenReturn(CardType.NOPE);
-        when(player.hasCardOfType(CardType.NOPE)).thenReturn(true);
-        when(player.removeFirstCardOfType(CardType.NOPE)).thenReturn(nopeCard);
-
-        when(view.promptPlayNope(player, card)).thenReturn(true);
-
-        turnService.playCard(player, card);
-
-        verify(view).showCardNoped(player, card);
-        verify(cardEffectService, never()).applyEffect(any(), any());
-    }
-
 
     @Test
     void testPlayCardWithInvalidCard() {

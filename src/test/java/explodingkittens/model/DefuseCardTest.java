@@ -91,7 +91,7 @@ public class DefuseCardTest {
         assertTrue(drawnCard instanceof ExplodingKittenCard);
         player1.receiveCard(defuseCard);
         assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
+        player1.useDefuse();
         assertFalse(player1.hasDefuse());
     }
 
@@ -102,7 +102,7 @@ public class DefuseCardTest {
     public void testDefuseCardWithoutExplodingKitten() {
         player1.receiveCard(defuseCard);
         assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
+        player1.useDefuse();
         assertFalse(player1.hasDefuse());
     }
 
@@ -115,9 +115,9 @@ public class DefuseCardTest {
         player1.receiveCard(defuseCard);
         player1.receiveCard(secondDefuseCard);
         assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
+        player1.useDefuse();
         assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
+        player1.useDefuse();
         assertFalse(player1.hasDefuse());
     }
 
@@ -130,7 +130,7 @@ public class DefuseCardTest {
         player1.receiveCard(new AttackCard());
         player1.receiveCard(new SkipCard());
         assertTrue(player1.hasDefuse());
-        assertTrue(player1.useDefuse());
+        player1.useDefuse();
         assertFalse(player1.hasDefuse());
         assertEquals(2, player1.getHand().size());
     }

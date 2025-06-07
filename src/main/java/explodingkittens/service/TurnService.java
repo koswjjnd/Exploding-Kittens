@@ -49,13 +49,13 @@ public class TurnService {
         // First, let player choose to play cards or draw
         String action = view.promptPlayerAction(player);
         if (action.equals("play")) {
-            playCardsPhase(player);    // ① play cards (can be multiple)
+        playCardsPhase(player);    // ① play cards (can be multiple)
         }
 
         // Then, draw cards based on leftTurns
         int drawsLeft = player.getLeftTurns();
         for (int i = 0; i < drawsLeft; i++) {
-            drawPhase(player);         // ② draw card/exploding kitten
+        drawPhase(player);         // ② draw card/exploding kitten
             if (GameContext.isGameOver()) {
                 break;
             }
@@ -94,7 +94,11 @@ public class TurnService {
             
             // Print the next player
             Player nextPlayer = GameContext.getCurrentPlayer();
-            System.out.println("Next player will be: " + nextPlayer.getName() + "\n");
+            if (nextPlayer != null) {
+                System.out.println("Next player will be: " + nextPlayer.getName() + "\n");
+            } else {
+                System.out.println("No next player found - game may be over\n");
+            }
         }
     }
 

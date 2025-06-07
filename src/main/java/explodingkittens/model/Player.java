@@ -103,8 +103,12 @@ public class Player {
     /**
      * Receives a card and adds it to the player's hand.
      * @param card the card to receive
+     * @throws IllegalArgumentException if card is null
      */
     public void receiveCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
         hand.add(card);
     }
 
@@ -149,11 +153,10 @@ public class Player {
      * @param type the type of card to remove
      * @return the removed card, or null if no card of that type was found
      */
-    public Card removeFirstCardOfType(CardType type) {
+    public Card removeCardOfType(CardType type) {
         Optional<Card> card = hand.stream()
                 .filter(c -> c.getType() == type)
                 .findFirst();
-        
         if (card.isPresent()) {
             hand.remove(card.get());
             return card.get();
