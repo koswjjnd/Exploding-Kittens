@@ -35,7 +35,7 @@ public class NopeService {
             if (p.hasCardOfType(CardType.NOPE)) {
                 boolean playNope = view.promptPlayNope(p, targetCard);
                 if (playNope) {
-                    Card nope = p.removeFirstCardOfType(CardType.NOPE);
+                    Card nope = p.removeCardOfType(CardType.NOPE);
                     if (nope != null) {
                         playedNopeCards.add(nope);
                         view.displayPlayedNope(p);

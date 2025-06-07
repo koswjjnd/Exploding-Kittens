@@ -123,6 +123,7 @@ class TurnServiceTest {
         // Mock view to play a card and then end turn
         when(view.promptPlayerAction(player)).thenReturn("play");
         when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        when(view.checkForNope(player, card)).thenReturn(false);
         
         // Mock deck to return a normal card
         when(deck.drawOne()).thenReturn(card);
