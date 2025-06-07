@@ -62,12 +62,39 @@ public class TurnService {
         }
         
         // Finally, end the sub-turn and adjust player order
-        player.setLeftTurns(1);  // Reset leftTurns to 1
-        GameContext.movePlayerToEnd(player); // Move current player to end of turn order
-        
-        // Move to next player's turn
         if (!GameContext.isGameOver()) {
-            GameContext.nextTurn();
+            // Reset leftTurns to 1 for next turn
+            player.setLeftTurns(1);
+            
+            // Print the current turn order before moving player
+            List<Player> turnOrder = GameContext.getTurnOrder();
+            System.out.println("\nCurrent turn order:");
+            for (int i = 0; i < turnOrder.size(); i++) {
+                Player p = turnOrder.get(i);
+                System.out.println((i + 1) + ". " + p.getName() + 
+                    (p.isAlive() ? "" : " (Eliminated)"));
+            }
+            System.out.println();
+            
+            // Move current player to end of turn order
+            GameContext.movePlayerToEnd(player);
+            
+            // Print the new turn order
+            turnOrder = GameContext.getTurnOrder();
+            System.out.println("\nTurn order after player " + player.getName() + "'s turn:");
+            for (int i = 0; i < turnOrder.size(); i++) {
+                Player p = turnOrder.get(i);
+                System.out.println((i + 1) + ". " + p.getName() + 
+                    (p.isAlive() ? "" : " (Eliminated)"));
+            }
+            System.out.println();
+            
+            // Set the next player to be the first player in the new order
+            GameContext.setCurrentPlayerIndex(0);
+            
+            // Print the next player
+            Player nextPlayer = GameContext.getCurrentPlayer();
+            System.out.println("Next player will be: " + nextPlayer.getName() + "\n");
         }
     }
 
@@ -152,6 +179,17 @@ public class TurnService {
             else {
                 player.receiveCard(drawn);
             }
+            
+            // Print current player order after drawing
+            List<Player> turnOrder = GameContext.getTurnOrder();
+            System.out.println("\nCurrent player order after drawing:");
+            for (int i = 0; i < turnOrder.size(); i++) {
+                Player p = turnOrder.get(i);
+                System.out.println((i + 1) + ". " + p.getName() + 
+                    (p == player ? " (Current)" : "") + 
+                    (p.isAlive() ? "" : " (Eliminated)"));
+            }
+            System.out.println();
         } 
         catch (EmptyDeckException ede) {
             // 按官方规则：抽完牌堆其实游戏就结束；这里抛给上层即可
@@ -178,5 +216,16 @@ public class TurnService {
             player.setAlive(false);
             view.displayPlayerEliminated(player);
         }
+        
+        // Print current player order after handling exploding kitten
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        System.out.println("\nCurrent player order after handling exploding kitten:");
+        for (int i = 0; i < turnOrder.size(); i++) {
+            Player p = turnOrder.get(i);
+            System.out.println((i + 1) + ". " + p.getName() + 
+                (p == player ? " (Current)" : "") + 
+                (p.isAlive() ? "" : " (Eliminated)"));
+        }
+        System.out.println();
     }
 }

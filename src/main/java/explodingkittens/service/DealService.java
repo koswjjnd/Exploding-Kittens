@@ -36,13 +36,7 @@ public class DealService {
         }
 
         for (Player player : players) {
-            Card card = deck.removeTopCard();
-            if (card instanceof DefuseCard) {
-                player.receiveCard(card);
-            }
-            else {
-                throw new InvalidDeckException();
-            }
+            player.receiveCard(new DefuseCard());
         }
     }
 

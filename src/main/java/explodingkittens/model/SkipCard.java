@@ -15,7 +15,10 @@ public class SkipCard extends Card {
         int currentLeftTurns = currentPlayer.getLeftTurns();
         
         if (currentLeftTurns <= 0) {
-            throw new IllegalStateException("Cannot use Skip card when leftTurns is 0 or negative");
+            throw new IllegalStateException(
+                "Cannot use Skip card when you have no turns left. " +
+                "You must draw a card first."
+            );
         }
         
         // Reduce by 1

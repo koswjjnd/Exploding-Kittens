@@ -36,8 +36,11 @@ public class NopeService {
                 boolean playNope = view.promptPlayNope(p, targetCard);
                 if (playNope) {
                     Card nope = p.removeFirstCardOfType(CardType.NOPE);
-                    playedNopeCards.add(nope);
-                    view.displayPlayedNope(p);
+                    if (nope != null) {
+                        playedNopeCards.add(nope);
+                        view.displayPlayedNope(p);
+                        view.displayPlayerHand(p);
+                    }
                 }
             }
         }

@@ -126,7 +126,19 @@ public class GameContext {
 		if (turnOrder == null || turnOrder.isEmpty()) {
 			throw new IllegalStateException("Game is not properly initialized");
 		}
-		return turnOrder.get(currentPlayerIndex);
+		Player currentPlayer = turnOrder.get(currentPlayerIndex);
+		if (!currentPlayer.isAlive()) {
+			// If current player is eliminated, find next alive player
+			int startIndex = currentPlayerIndex;
+			do {
+				currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+				currentPlayer = turnOrder.get(currentPlayerIndex);
+				if (currentPlayer.isAlive()) {
+					break;
+				}
+			} while (currentPlayerIndex != startIndex);
+		}
+		return currentPlayer;
 	}
 
 	/**
@@ -137,7 +149,15 @@ public class GameContext {
 		if (turnOrder == null || turnOrder.isEmpty()) {
 			throw new IllegalStateException("Game is not properly initialized");
 		}
-		currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+		
+		// Find the next alive player
+		int startIndex = currentPlayerIndex;
+		do {
+			currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+			if (turnOrder.get(currentPlayerIndex).isAlive()) {
+				break;
+			}
+		} while (currentPlayerIndex != startIndex);
 	}
 
 	/**
@@ -187,5 +207,31 @@ public class GameContext {
 		gameDeck = null;
 		currentPlayerIndex = 0;
 		gameOver = false;
+	}
+
+	/**
+	 * Sets the current player index.
+	 * @param index The index to set
+	 * @throws IllegalArgumentException if the index is invalid
+	 */
+	public static void setCurrentPlayerIndex(int index) {
+		if (turnOrder == null || turnOrder.isEmpty()) {
+			throw new IllegalStateException("Game is not properly initialized");
+		}
+		if (index < 0 || index >= turnOrder.size()) {
+			throw new IllegalArgumentException("Invalid player index");
+		}
+		currentPlayerIndex = index;
+		
+		// If the selected player is eliminated, find the next alive player
+		if (!turnOrder.get(currentPlayerIndex).isAlive()) {
+			int startIndex = currentPlayerIndex;
+			do {
+				currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+				if (turnOrder.get(currentPlayerIndex).isAlive()) {
+					break;
+				}
+			} while (currentPlayerIndex != startIndex);
+		}
 	}
 }

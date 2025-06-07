@@ -9,6 +9,7 @@ import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.view.GameView;
 import explodingkittens.exceptions.GameOverException;
 import java.util.List;
+import java.util.stream.Collectors;
 import explodingkittens.service.TurnService;
 import explodingkittens.service.CardEffectService;
 import explodingkittens.controller.GameContext;
@@ -36,48 +37,28 @@ public class GameController {
      */
     public void start() throws GameOverException {
         try {
-            // Main game loop
-            while (!GameContext.isGameOver()) {
-                try {
-                    Player current = GameContext.getCurrentPlayer();
-                    view.displayCurrentPlayer(current);
-
-                    // Execute the current player's turn
-                    turnService.takeTurn(current);
-
-                    // Check if game is over after the turn
-                    if (GameContext.isGameOver()) {
-                        break;
-                    }
-
-                    // Move to next player's turn
-                    GameContext.nextTurn();
-                } catch (Exception e) {
-                    System.err.println("Error in main game loop: " + e.getMessage());
-                    e.printStackTrace();
-                    throw e;
+            while (true) {
+                Player currentPlayer = GameContext.getCurrentPlayer();
+                if (currentPlayer == null) {
+                    throw new GameOverException("No current player found");
                 }
-            }
-            
-            // Game over - determine and display winner
-            handleGameOver();
-        } 
-        catch (Exception e) {
-            System.err.println("Fatal error in game: " + e.getMessage());
-            e.printStackTrace();
-            throw new GameOverException("Game ended unexpectedly: " + e.getMessage(), e);
+
+                view.displayCurrentPlayer(currentPlayer);
+                turnService.takeTurn(currentPlayer);
+                
+                // 检查是否只剩一名玩家
+                List<Player> alivePlayers = GameContext.getTurnOrder().stream()
+                    .filter(Player::isAlive)
+                    .collect(Collectors.toList());
+                
+                if (alivePlayers.size() == 1) {
+                    Player winner = alivePlayers.get(0);
+                    view.displayWinner(winner);
+                    return;
         }
     }
-
-    /**
-     * Handles the end of the game.
-     */
-    private void handleGameOver() {
-        if (GameContext.getTurnOrder().size() == 1) {
-            view.displayWinner(GameContext.getTurnOrder().get(0));
-        } 
-        else {
-            view.displayGameOver();
+        } catch (Exception e) {
+            throw new GameOverException("Game ended unexpectedly: " + e.getMessage());
         }
     }
 }
