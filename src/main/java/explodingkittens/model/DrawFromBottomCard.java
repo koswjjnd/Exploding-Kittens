@@ -1,6 +1,7 @@
 package explodingkittens.model;
 
 import java.util.List;
+import explodingkittens.controller.GameContext;
 
 /**
  * Represents the Draw From Bottom card.
@@ -38,5 +39,11 @@ public class DrawFromBottomCard extends Card {
         int lastIndex = deck.getCards().size() - 1;
         Card bottomCard = deck.getCards().remove(lastIndex);
         currentPlayer.receiveCard(bottomCard);
+        
+        // End current player's turn
+        currentPlayer.setLeftTurns(0);
+        
+        // Update GameContext's current player index
+        GameContext.nextTurn();
     }
 }

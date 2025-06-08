@@ -132,7 +132,7 @@ class PlayerTest {
     @Test
     void testUseDefuseNoDefuseCard() {
         // Test Case 15: Player with no defuse card
-        assertFalse(player.useDefuse());
+        player.useDefuse();
         assertEquals(0, player.getHand().size());
     }
     
@@ -140,7 +140,7 @@ class PlayerTest {
     void testUseDefuseOneDefuseCard() {
         // Test Case 16: Player with one defuse card
         player.receiveCard(defuseCard);
-        assertTrue(player.useDefuse());
+        player.useDefuse();
         assertEquals(0, player.getHand().size());
     }
 
@@ -149,7 +149,7 @@ class PlayerTest {
         // Test Case 17: Player with multiple defuse cards
         player.receiveCard(defuseCard);
         player.receiveCard(defuseCard);
-        assertTrue(player.useDefuse());
+        player.useDefuse();
         assertEquals(1, player.getHand().size());
     }
 
@@ -158,7 +158,7 @@ class PlayerTest {
         // Test Case 18: Player with only non-defuse cards
         player.receiveCard(nonDefuseCard);
         player.receiveCard(nonDefuseCard);
-        assertFalse(player.useDefuse());
+        player.useDefuse();
         assertEquals(2, player.getHand().size());
     }
 
@@ -168,7 +168,7 @@ class PlayerTest {
         player.receiveCard(nonDefuseCard);
         player.receiveCard(defuseCard);
         player.receiveCard(nonDefuseCard);
-        assertTrue(player.useDefuse());
+        player.useDefuse();
         assertEquals(2, player.getHand().size());
     }
 

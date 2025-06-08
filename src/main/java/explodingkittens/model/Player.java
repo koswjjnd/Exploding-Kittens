@@ -83,26 +83,26 @@ public class Player {
                 .anyMatch(card -> card.getType() == CardType.DEFUSE);
     }
 
-     /**
-     * Attempts to use a defuse card from the player's hand.
-     * If successful, removes one defuse card from the hand.
-     * @return true if a defuse card was successfully used, false otherwise
-     */
-    public boolean useDefuse() {
-        Optional<Card> defuseCard = hand.stream()
-                .filter(card -> card.getType() == CardType.DEFUSE)
-                .findFirst();
-        
-        if (defuseCard.isPresent()) {
-            hand.remove(defuseCard.get());
-            return true;
-        }
-        return false;
-    }
-    
     /**
-     * Adds a card to the player's hand.
-     * @param card the card to add
+     * Gets the player's hand.
+     * @return a copy of the player's hand
+     */
+    public List<Card> getHand() {
+        return new ArrayList<>(hand);
+    }
+
+    /**
+     * Removes a card from the player's hand.
+     * @param card the card to remove
+     * @return true if the card was removed, false otherwise
+     */
+    public boolean removeCard(Card card) {
+        return hand.remove(card);
+    }
+
+    /**
+     * Receives a card and adds it to the player's hand.
+     * @param card the card to receive
      * @throws IllegalArgumentException if card is null
      */
     public void receiveCard(Card card) {
@@ -113,28 +113,7 @@ public class Player {
     }
 
     /**
-     * Returns an unmodifiable view of the player's hand.
-     * @return the player's hand
-     */
-    public List<Card> getHand() {
-        return List.copyOf(hand);
-    }
-
-    /**
-     * Removes a card from the player's hand.
-     * @param card the card to remove
-     * @return true if the card was removed, false if the card was not in the hand
-     * @throws IllegalArgumentException if card is null
-     */
-    public boolean removeCard(Card card) {
-        if (card == null) {
-            throw new IllegalArgumentException("Card cannot be null");
-        }
-        return hand.remove(card);
-    }
-
-    /**
-     * Checks if the player is still alive in the game.
+     * Checks if the player is alive.
      * @return true if the player is alive, false otherwise
      */
     public boolean isAlive() {
@@ -143,10 +122,20 @@ public class Player {
 
     /**
      * Sets the player's alive status.
-     * @param alive true if the player is alive, false if eliminated
+     * @param alive true if the player is alive, false otherwise
      */
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    /**
+     * Uses a defuse card.
+     */
+    public void useDefuse() {
+        Optional<Card> defuse = hand.stream()
+                .filter(card -> card.getType() == CardType.DEFUSE)
+                .findFirst();
+        defuse.ifPresent(hand::remove);
     }
 
     /**
@@ -164,11 +153,10 @@ public class Player {
      * @param type the type of card to remove
      * @return the removed card, or null if no card of that type was found
      */
-    public Card removeFirstCardOfType(CardType type) {
+    public Card removeCardOfType(CardType type) {
         Optional<Card> card = hand.stream()
                 .filter(c -> c.getType() == type)
                 .findFirst();
-        
         if (card.isPresent()) {
             hand.remove(card.get());
             return card.get();

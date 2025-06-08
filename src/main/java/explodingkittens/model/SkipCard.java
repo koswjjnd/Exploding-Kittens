@@ -1,6 +1,7 @@
 package explodingkittens.model;
 
 import java.util.List;
+import explodingkittens.controller.GameContext;
 
 public class SkipCard extends Card {
     public SkipCard() {
@@ -14,7 +15,10 @@ public class SkipCard extends Card {
         int currentLeftTurns = currentPlayer.getLeftTurns();
         
         if (currentLeftTurns <= 0) {
-            throw new IllegalStateException("Cannot use Skip card when leftTurns is 0 or negative");
+            throw new IllegalStateException(
+                "Cannot use Skip card when you have no turns left. " +
+                "You must draw a card first."
+            );
         }
         
         // Reduce by 1
@@ -23,8 +27,7 @@ public class SkipCard extends Card {
         
         // Only move player to end if they have no turns left
         if (newLeftTurns == 0) {
-            turnOrder.remove(0);
-            turnOrder.add(currentPlayer);
+            GameContext.movePlayerToEnd(currentPlayer);
         }
     }
 } 

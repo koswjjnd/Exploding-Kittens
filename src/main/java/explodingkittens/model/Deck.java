@@ -151,7 +151,6 @@ public class Deck {
         this.addCards(new ReverseCard(), 2);
         this.addCards(new SuperSkipCard(), 2);
         this.addCards(new DoubleSkipCard(), 2);
-
     }
     
     /**
