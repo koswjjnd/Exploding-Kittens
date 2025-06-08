@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="explodingkittens.service.TurnService"/>
+        <Method name="takeTurn"/>
+        <BugPattern name="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Match>
+    <Match>
+        <Class name="explodingkittens.controller.GameContext"/>
+        <Method name="getGameDeck"/>
+        <BugPattern name="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="explodingkittens.controller.GameContext"/>
+        <Field name="gameDeck"/>
+        <BugPattern name="MS_MUTABLE_COLLECTION"/>
+    </Match>
+    <Match>
+        <Class name="explodingkittens.controller.GameContext"/>
+        <Field name="gameDeck"/>
+        <BugPattern name="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="explodingkittens.controller.GameContext"/>
+        <BugPattern name="MS_EXPOSE_REP"/>
+    </Match>
+</FindBugsFilter> 
