@@ -28,7 +28,8 @@ public class HandView {
             String cardName = getCardDisplayName(hand.get(i));
             if (showIndices) {
                 System.out.printf("%d. %s%n", i + 1, cardName);
-            } else {
+            } 
+            else {
                 System.out.println(cardName);
             }
         }

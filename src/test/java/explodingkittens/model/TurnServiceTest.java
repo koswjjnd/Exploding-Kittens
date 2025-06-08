@@ -65,8 +65,8 @@ class TurnServiceTest {
 
         mockedGameContext = mockStatic(GameContext.class);
         mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
-        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));   // ★
-        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);        // ★
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));  
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);  
         when(player.hasCardOfType(CardType.NOPE)).thenReturn(true);
         when(player.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
     }
@@ -122,7 +122,7 @@ class TurnServiceTest {
         
         // Mock view to play a card and then end turn
         when(view.promptPlayerAction(player)).thenReturn("play");
-        when(view.selectCardToPlay(player, hand)).thenReturn(card, null);
+        when(view.selectCardToPlay(player, hand)).thenReturn(card).thenReturn(null);
         when(view.checkForNope(player, card)).thenReturn(false);
         
         // Mock deck to return a normal card
@@ -236,7 +236,8 @@ class TurnServiceTest {
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
         when(view.checkForNope(player, card)).thenReturn(false);
-        doThrow(new RuntimeException("Invalid card")).when(cardEffectService).applyEffect(card, player);
+        doThrow(new RuntimeException("Invalid card")
+        ).when(cardEffectService).applyEffect(card, player);
         
         // Execute and verify exception
         assertThrows(RuntimeException.class, () -> turnService.playCard(player, card));
@@ -312,15 +313,26 @@ class TurnServiceTest {
 
     @Test
     void testTakeTurnUpdatesTurnOrderWhenPlayerAlive() throws EmptyDeckException {
-        List<Player> turnOrder = new ArrayList<>();
-        turnOrder.add(player);
-        when(gameContext.getTurnOrder()).thenReturn(turnOrder);
+        // Setup
         when(player.isAlive()).thenReturn(true);
-        when(player.getHand()).thenReturn(new ArrayList<>());
-        when(deck.drawOne()).thenReturn(card);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.getLeftTurns()).thenReturn(1);
+        
+        // Mock view to end turn
+        when(view.promptPlayerAction(player)).thenReturn("end");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getGameDeck).thenReturn(deck);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
         turnService.takeTurn(player);
-        assertEquals(1, turnOrder.size());
-        assertEquals(player, turnOrder.get(0));
+        
+        // Verify
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(player));
+        mockedGameContext.verify(() -> GameContext.setCurrentPlayerIndex(0));
     }
 
 } 
+ 

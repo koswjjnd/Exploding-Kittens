@@ -55,9 +55,10 @@ public class GameController {
                     Player winner = alivePlayers.get(0);
                     view.displayWinner(winner);
                     return;
-        }
-    }
-        } catch (Exception e) {
+                }
+            }
+        } 
+        catch (Exception e) {
             throw new GameOverException("Game ended unexpectedly: " + e.getMessage());
         }
     }

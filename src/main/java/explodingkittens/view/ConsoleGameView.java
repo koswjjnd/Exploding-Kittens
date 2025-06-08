@@ -152,4 +152,9 @@ public class ConsoleGameView implements GameView {
     public void displayPlayedNope(Player player) {
         System.out.println("\n" + player.getName() + " played a Nope card!");
     }
+
+    @Override
+    public void showCurrentPlayerTurn(Player player) {
+        System.out.println("\nIt's " + player.getName() + "'s turn.");
+    }
 } 

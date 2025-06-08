@@ -97,13 +97,13 @@ public class GameContext {
 
 	/**
 	 * Gets the game deck.
-	 * @return the current game deck
+	 * @return a copy of the current game deck
 	 */
 	public static Deck getGameDeck() {
 		if (gameDeck == null) {
 			return null;
 		}
-		return gameDeck; // Return the actual game deck
+		return new Deck(gameDeck); // Return a copy of the deck
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class GameContext {
 		boolean foundAlivePlayer = false;
 		
 		do {
-		currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
+			currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
 			if (turnOrder.get(currentPlayerIndex).isAlive()) {
 				foundAlivePlayer = true;
 				break;
@@ -231,6 +231,8 @@ public class GameContext {
 	 * Sets the current player index.
 	 * @param index The index to set
 	 * @throws IllegalArgumentException if the index is invalid
+	 * @throws IllegalStateException if the game is not properly initialized
+	 * or no alive players found
 	 */
 	public static void setCurrentPlayerIndex(int index) {
 		if (turnOrder == null || turnOrder.isEmpty()) {
@@ -239,13 +241,10 @@ public class GameContext {
 		if (index < 0 || index >= turnOrder.size()) {
 			throw new IllegalArgumentException("Invalid player index");
 		}
-		
 		// First, check if the selected player is alive
 		if (!turnOrder.get(index).isAlive()) {
-			// If not alive, find the next alive player
 			int startIndex = index;
 			boolean foundAlivePlayer = false;
-			
 			do {
 				index = (index + 1) % turnOrder.size();
 				if (turnOrder.get(index).isAlive()) {
@@ -253,15 +252,11 @@ public class GameContext {
 					break;
 				}
 			} while (index != startIndex);
-			
-			// If no alive player is found, end the game
 			if (!foundAlivePlayer) {
 				endGame();
 				throw new IllegalStateException("No alive players found");
 			}
 		}
-		
-		// Set the current player index
 		currentPlayerIndex = index;
 	}
 
@@ -280,7 +275,8 @@ public class GameContext {
 		}
 		if (winner != null) {
 			System.out.println("\nGame Over! " + winner.getName() + " wins!");
-		} else {
+		} 
+		else {
 			System.out.println("\nGame Over! No players survived!");
 		}
 	}

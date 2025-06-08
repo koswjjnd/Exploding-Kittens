@@ -72,6 +72,7 @@ public interface GameView {
 
     /**
      * Prompts the player to choose a card to play.
+     * @param player the player
      * @param hand the player's hand
      * @return the card chosen by the player
      */
@@ -167,4 +168,10 @@ public interface GameView {
      * @param player The player who played the Nope card
      */
     void displayPlayedNope(Player player);
+
+    /**
+     * Displays the current player's turn.
+     * @param player the player whose turn it is
+     */
+    void showCurrentPlayerTurn(Player player);
 } 

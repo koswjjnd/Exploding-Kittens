@@ -63,7 +63,8 @@ public class ReverseCard extends Card {
                     (p.isAlive() ? "" : " (Eliminated)"));
             }
             System.out.println();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             // If something goes wrong during reverse, try to recover
             System.out.println("\nError during reverse operation: " + e.getMessage());
             System.out.println("Attempting to recover...");
@@ -72,7 +73,8 @@ public class ReverseCard extends Card {
             for (int i = 0; i < turnOrder.size(); i++) {
                 if (turnOrder.get(i).isAlive()) {
                     GameContext.setCurrentPlayerIndex(i);
-                    System.out.println("Recovered: Next player will be " + turnOrder.get(i).getName());
+                    System.out.println("Recovered: Next player will be " 
+                        + turnOrder.get(i).getName());
                     return;
                 }
             }

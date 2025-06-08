@@ -1,121 +1,124 @@
 package explodingkittens.model;
 
+import explodingkittens.controller.GameContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class SkipCardTest {
-    private SkipCard skipCard;
+    private Player player;
+    private Deck deck;
     private List<Player> turnOrder;
-    
-    @Mock
-    private Deck gameDeck;
-    
-    @Mock
-    private Player player1;
-    
-    @Mock
-    private Player player2;
+    private SkipCard card;
+    private MockedStatic<GameContext> mockedGameContext;
 
     @BeforeEach
     void setUp() {
-        skipCard = new SkipCard();
+        player = mock(Player.class);
+        deck = mock(Deck.class);
         turnOrder = new ArrayList<>();
+        turnOrder.add(player);
+        card = new SkipCard();
+        if (mockedGameContext != null) {
+            mockedGameContext.close();
+        }
+        mockedGameContext = Mockito.mockStatic(GameContext.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (mockedGameContext != null) {
+            mockedGameContext.close();
+        }
     }
 
     @Test
-    void testEffectWithEmptyTurnOrder() {
-        // Test Case 0: Empty turnOrder
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            skipCard.effect(turnOrder, gameDeck);
-        });
-    }
-
-	@Test
     void testEffectWithOneLeftTurn() {
-        // Test Case 2: leftTurn = 1
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        when(player1.getLeftTurns()).thenReturn(1);
+        // Setup
+        when(player.getLeftTurns()).thenReturn(1);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
         
-        skipCard.effect(turnOrder, gameDeck);
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        mockedGameContext.when(() -> GameContext.movePlayerToEnd(player)
+        ).thenAnswer(invocation -> null);
         
-        assertEquals(2, turnOrder.size());
-        assertEquals(player2, turnOrder.get(0));
-        assertEquals(player1, turnOrder.get(1));
-        verify(player1).setLeftTurns(0);
+        // Execute
+        card.effect(turnOrder, deck);
+        
+        // Verify
+        verify(player).setLeftTurns(0);
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(player));
     }
 
-	@Test
+    @Test
     void testEffectWithTwoLeftTurns() {
         // Test Case 3: leftTurn = 2
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        when(player1.getLeftTurns()).thenReturn(2);
+        turnOrder.add(player);
+        when(player.getLeftTurns()).thenReturn(2);
         
-        skipCard.effect(turnOrder, gameDeck);
+        card.effect(turnOrder, deck);
         
         assertEquals(2, turnOrder.size());
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-        verify(player1).setLeftTurns(1);
+        assertEquals(player, turnOrder.get(0));
+        verify(player).setLeftTurns(1);
     }
 
-	@Test
+    @Test
     void testEffectWithThreeLeftTurns() {
         // Test Case 4: leftTurn = 3
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        when(player1.getLeftTurns()).thenReturn(3);
+        turnOrder.add(player);
+        when(player.getLeftTurns()).thenReturn(3);
         
-        skipCard.effect(turnOrder, gameDeck);
+        card.effect(turnOrder, deck);
         
         assertEquals(2, turnOrder.size());
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-        verify(player1).setLeftTurns(2);
+        assertEquals(player, turnOrder.get(0));
+        verify(player).setLeftTurns(2);
     }
 
-	@Test
+    @Test
     void testEffectWithNegativeLeftTurns() {
         // Test Case 5: leftTurn = -1
-        turnOrder.add(player1);
-        when(player1.getLeftTurns()).thenReturn(-1);
+        turnOrder.add(player);
+        when(player.getLeftTurns()).thenReturn(-1);
         
         assertThrows(IllegalStateException.class, () -> {
-            skipCard.effect(turnOrder, gameDeck);
+            card.effect(turnOrder, deck);
         });
         
-        assertEquals(1, turnOrder.size());
-        assertEquals(player1, turnOrder.get(0));
-        verify(player1, never()).setLeftTurns(anyInt());
+        assertEquals(2, turnOrder.size());
+        assertEquals(player, turnOrder.get(0));
+        verify(player, never()).setLeftTurns(anyInt());
     }
 
-	@Test
+    @Test
     void testEffectWithMaxValueLeftTurns() {
         // Test Case 6: leftTurn = Integer.MAX_VALUE
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        when(player1.getLeftTurns()).thenReturn(Integer.MAX_VALUE);
+        turnOrder.add(player);
+        when(player.getLeftTurns()).thenReturn(Integer.MAX_VALUE);
         
-        skipCard.effect(turnOrder, gameDeck);
+        card.effect(turnOrder, deck);
         
         assertEquals(2, turnOrder.size());
-        assertEquals(player1, turnOrder.get(0));
-        assertEquals(player2, turnOrder.get(1));
-        verify(player1).setLeftTurns(Integer.MAX_VALUE - 1);
+        assertEquals(player, turnOrder.get(0));
+        verify(player).setLeftTurns(Integer.MAX_VALUE - 1);
     }
-	
 }

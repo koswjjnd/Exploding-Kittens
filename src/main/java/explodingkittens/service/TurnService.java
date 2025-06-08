@@ -8,6 +8,7 @@ import explodingkittens.model.CardType;
 import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.model.Player;
 import explodingkittens.view.GameView;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class TurnService {
      * @param player The player taking the turn
      * @throws IllegalArgumentException if player is null
      */
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", 
+                       justification = 
+                       "Keeping the null check for defensive programming and better error messages")
     public void takeTurn(Player player) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
@@ -49,13 +53,13 @@ public class TurnService {
         // First, let player choose to play cards or draw
         String action = view.promptPlayerAction(player);
         if (action.equals("play")) {
-        playCardsPhase(player);    // ① play cards (can be multiple)
+            playCardsPhase(player);    // ① play cards (can be multiple)
         }
 
         // Then, draw cards based on leftTurns
         int drawsLeft = player.getLeftTurns();
         for (int i = 0; i < drawsLeft; i++) {
-        drawPhase(player);         // ② draw card/exploding kitten
+            drawPhase(player);         // ② draw card/exploding kitten
             if (GameContext.isGameOver()) {
                 break;
             }
@@ -96,7 +100,8 @@ public class TurnService {
             Player nextPlayer = GameContext.getCurrentPlayer();
             if (nextPlayer != null) {
                 System.out.println("Next player will be: " + nextPlayer.getName() + "\n");
-            } else {
+            } 
+            else {
                 System.out.println("No next player found - game may be over\n");
             }
         }
