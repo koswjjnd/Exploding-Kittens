@@ -351,4 +351,13 @@ public class Deck {
             cards.addAll(topHalf);
         }
     }
+
+    /**
+     * Returns an unmodifiable view of the cards in the deck.
+     * 
+     * @return An unmodifiable list of cards in the deck
+     */
+    public List<Card> getUnmodifiableCards() {
+        return Collections.unmodifiableList(cards);
+    }
 }

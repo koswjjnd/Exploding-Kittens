@@ -3,9 +3,9 @@ package explodingkittens.controller;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
-
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * GameContext is a singleton class that manages the global state of the game.
@@ -97,13 +97,14 @@ public class GameContext {
 
 	/**
 	 * Gets the game deck.
-	 * @return a copy of the current game deck
+	 * @return the current game deck
 	 */
+	@SuppressFBWarnings("MS_EXPOSE_REP")
 	public static Deck getGameDeck() {
 		if (gameDeck == null) {
 			return null;
 		}
-		return new Deck(gameDeck); // Return a copy of the deck
+		return gameDeck;
 	}
 
 	/**
