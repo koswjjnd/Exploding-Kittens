@@ -51,7 +51,8 @@ public class CardEffectService {
 
         try {
             card.effect(turnOrder, deck);
-        } catch (CatCard.CatCardEffect effect) {
+        } 
+        catch (CatCard.CatCardEffect effect) {
             // 处理猫卡效果
             Player currentPlayer = turnOrder.get(0);
             
@@ -83,10 +84,12 @@ public class CardEffectService {
                     targetPlayer.removeCard(requestedCard);
                     currentPlayer.receiveCard(requestedCard);
                     view.displayCardRequested(currentPlayer, targetPlayer, requestedCard);
-                } else {
+                } 
+                else {
                     view.showError("Target player does not have the requested card type.");
                 }
-            } else {
+            } 
+            else {
                 // 处理两张猫牌偷牌的情况
                 Player targetPlayer = turnOrder.stream()
                     .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
@@ -113,5 +116,93 @@ public class CardEffectService {
         }
         
         return view.selectTargetPlayer(availablePlayers);
+    }
+
+    /**
+     * Handles a card effect.
+     * @param card The card to handle
+     * @param turnOrder The current turn order
+     * @param gameDeck The game deck
+     */
+    public void handleCardEffect(Card card, List<Player> turnOrder, Deck gameDeck) {
+        if (card == null) {
+            return;
+        }
+        try {
+            card.effect(turnOrder, gameDeck);
+        } 
+        catch (CatCard.CatCardEffect e) {
+            handleCatCardEffect(e, turnOrder);
+        }
+    }
+
+    /**
+     * Handles the effect of a cat card.
+     * @param effect The cat card effect to handle
+     * @param turnOrder The current turn order
+     */
+    private void handleCatCardEffect(CatCard.CatCardEffect effect, List<Player> turnOrder) {
+        Player sourcePlayer = turnOrder.get(0);
+        Player targetPlayer = turnOrder.stream()
+            .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Target player not found"));
+        
+        if (effect.getThirdCard() == null) {
+            handleStealEffect(sourcePlayer, targetPlayer, effect);
+        } 
+        else {
+            handleRequestEffect(sourcePlayer, targetPlayer, effect);
+        }
+    }
+
+    /**
+     * Handles the steal effect of a cat card.
+     * @param sourcePlayer The player who played the cat card
+     * @param targetPlayer The player who is being stolen from
+     * @param effect The cat card effect
+     */
+    private void handleStealEffect(Player sourcePlayer, Player targetPlayer, 
+            CatCard.CatCardEffect effect) {
+        // Remove the two cat cards used for the effect
+        sourcePlayer.removeCard(effect.getFirstCard());
+        sourcePlayer.removeCard(effect.getSecondCard());
+        
+        // Steal the card from the target player
+        Card stolenCard = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
+        targetPlayer.removeCard(stolenCard);
+        sourcePlayer.receiveCard(stolenCard);
+        
+        view.displayCardStolen(sourcePlayer, targetPlayer, stolenCard);
+    }
+
+    /**
+     * Handles the request effect of a cat card.
+     * @param sourcePlayer The player who played the cat card
+     * @param targetPlayer The player who is being requested from
+     * @param effect The cat card effect
+     */
+    private void handleRequestEffect(Player sourcePlayer, Player targetPlayer, 
+            CatCard.CatCardEffect effect) {
+        // Remove the three cat cards used for the effect
+        sourcePlayer.removeCard(effect.getFirstCard());
+        sourcePlayer.removeCard(effect.getSecondCard());
+        sourcePlayer.removeCard(effect.getThirdCard());
+        
+        // Check if target player has the requested card type
+        CardType requestedType = effect.getRequestedCardType();
+        List<Card> targetHand = targetPlayer.getHand();
+        for (int i = 0; i < targetHand.size(); i++) {
+            Card card = targetHand.get(i);
+            if (card.getType() == requestedType) {
+                targetPlayer.removeCard(card);
+                sourcePlayer.receiveCard(card);
+                view.displayCardRequested(sourcePlayer, targetPlayer, card);
+                return;
+            }
+        }
+        
+        // If we get here, the target player didn't have the requested card
+        view.displayCardRequested(sourcePlayer, targetPlayer, null);
     }
 }
