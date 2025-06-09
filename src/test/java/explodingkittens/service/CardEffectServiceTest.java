@@ -11,6 +11,7 @@ import explodingkittens.model.DefuseCard;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
+import explodingkittens.view.GameView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,6 +36,8 @@ class CardEffectServiceTest {
     private Deck gameDeck;
     @Mock
     private Card mockCard;
+    @Mock
+    private GameView mockGameView;
     
     private CardEffectService cardEffectService;
     private List<Player> turnOrder;
@@ -42,7 +45,7 @@ class CardEffectServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        cardEffectService = new CardEffectService();
+        cardEffectService = new CardEffectService(mockGameView);
         turnOrder = Arrays.asList(player1, player2);
     }
     

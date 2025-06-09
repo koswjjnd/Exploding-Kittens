@@ -157,19 +157,35 @@ public class CatCard extends Card {
     public static final class CatCardEffect extends RuntimeException {
         private final CatCard firstCard;
         private final CatCard secondCard;
+        private final CatCard thirdCard;
         private final String targetPlayerName;
         private final List<Card> targetPlayerHand;
         private final int targetCardIndex;
+        private final CardType requestedCardType;
 
         public CatCardEffect(CatCard firstCard, CatCard secondCard, Player targetPlayer, 
                 int targetCardIndex) {
             super("Cat card effect");
             this.firstCard = firstCard;
             this.secondCard = secondCard;
+            this.thirdCard = null;
+            this.requestedCardType = null;
             // Store immutable data instead of mutable Player object
             this.targetPlayerName = targetPlayer.getName();
             this.targetPlayerHand = new ArrayList<>(targetPlayer.getHand());
             this.targetCardIndex = targetCardIndex;
+        }
+
+        public CatCardEffect(CatCard firstCard, CatCard secondCard, CatCard thirdCard,
+                String currentPlayerName, CardType requestedCardType) {
+            super("Cat card effect");
+            this.firstCard = firstCard;
+            this.secondCard = secondCard;
+            this.thirdCard = thirdCard;
+            this.requestedCardType = requestedCardType;
+            this.targetPlayerName = currentPlayerName;
+            this.targetPlayerHand = null;
+            this.targetCardIndex = -1;
         }
 
         /**
@@ -189,6 +205,14 @@ public class CatCard extends Card {
         }
 
         /**
+         * Gets the third cat card involved in the effect.
+         * @return The third cat card
+         */
+        public CatCard getThirdCard() {
+            return thirdCard;
+        }
+
+        /**
          * Gets the target player's name.
          * @return The target player's name
          */
@@ -201,7 +225,7 @@ public class CatCard extends Card {
          * @return A copy of the target player's hand
          */
         public List<Card> getTargetPlayerHand() {
-            return new ArrayList<>(targetPlayerHand);
+            return targetPlayerHand != null ? new ArrayList<>(targetPlayerHand) : null;
         }
 
         /**
@@ -210,6 +234,14 @@ public class CatCard extends Card {
          */
         public int getTargetCardIndex() { 
             return targetCardIndex; 
+        }
+
+        /**
+         * Gets the requested card type for the effect.
+         * @return The requested card type
+         */
+        public CardType getRequestedCardType() {
+            return requestedCardType;
         }
     }
 } 

@@ -174,4 +174,43 @@ public interface GameView {
      * @param player the player whose turn it is
      */
     void showCurrentPlayerTurn(Player player);
+
+    /**
+     * 显示猫卡效果
+     * @param effectType 效果类型（"steal" 或 "request"）
+     * @param sourcePlayer 源玩家
+     * @param targetPlayer 目标玩家
+     */
+    void displayCatCardEffect(String effectType, Player sourcePlayer, Player targetPlayer);
+
+    /**
+     * 显示卡牌被偷取
+     * @param sourcePlayer 偷取卡牌的玩家
+     * @param targetPlayer 被偷取卡牌的玩家
+     * @param card 被偷取的卡牌
+     */
+    void displayCardStolen(Player sourcePlayer, Player targetPlayer, Card card);
+
+    /**
+     * 显示卡牌被请求
+     * @param sourcePlayer 请求卡牌的玩家
+     * @param targetPlayer 被请求卡牌的玩家
+     * @param card 被请求的卡牌
+     */
+    void displayCardRequested(Player sourcePlayer, Player targetPlayer, Card card);
+
+    /**
+     * 选择目标玩家
+     * @param availablePlayers 可用的目标玩家列表
+     * @return 选择的目标玩家
+     */
+    Player selectTargetPlayer(List<Player> availablePlayers);
+
+    /**
+     * 从玩家手牌中选择一张卡牌
+     * @param targetPlayer 目标玩家
+     * @param hand 手牌列表
+     * @return 选择的卡牌
+     */
+    Card selectCardFromPlayer(Player targetPlayer, List<Card> hand);
 } 

@@ -85,4 +85,8 @@ public final class ConsoleCatCardRequestInputHandler implements CatCardRequestIn
         CardType type = card.getType();
         return type != CardType.CAT_CARD && type != CardType.EXPLODING_KITTEN;
     }
+
+    private boolean isRequestableCardType(CardType type) {
+        return type != CardType.CAT_CARD && type != CardType.EXPLODING_KITTEN;
+    }
 } 
