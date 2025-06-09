@@ -160,11 +160,22 @@ public class ConsoleGameView implements GameView {
                     return promptPlayCard(player, hand);
                 }
 
-                // 创建一个特殊的卡牌来标记这是一个请求卡牌的效果
-                Card requestCard = new Card(requestedCardType) {
+                // 创建一个 CatCard 对象来触发请求效果
+                CatCard requestCard = new CatCard(catType) {
                     @Override
                     public void effect(List<Player> turnOrder, Deck gameDeck) {
-                        // 这个效果会在 CatCardRequestController 中处理
+                        throw new CatCard.CatCardEffect(
+                            (CatCard)hand.get(selectedIndices.get(0)),
+                            (CatCard)hand.get(selectedIndices.get(1)),
+                            (CatCard)hand.get(selectedIndices.get(2)),
+                            turnOrder.get(0).getName(),
+                            requestedCardType
+                        );
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Request Card (" + catType + ")";
                     }
                 };
                 return requestCard;
