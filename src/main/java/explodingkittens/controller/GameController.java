@@ -28,7 +28,7 @@ public class GameController {
      */
     public GameController(GameView view) {
         this.view = view;
-        this.turnService = new TurnService(view, new CardEffectService());
+        this.turnService = new TurnService(view, new CardEffectService(view));
     }
 
     /**

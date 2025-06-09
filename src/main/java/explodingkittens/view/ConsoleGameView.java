@@ -2,10 +2,15 @@ package explodingkittens.view;
 
 import explodingkittens.model.Player;
 import explodingkittens.model.Card;
+import explodingkittens.model.CardType;
+import explodingkittens.model.CatCard;
+import explodingkittens.model.CatType;
+import explodingkittens.model.Deck;
 import explodingkittens.controller.GameContext;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class ConsoleGameView implements GameView {
     private final Scanner scanner;
@@ -75,9 +80,150 @@ public class ConsoleGameView implements GameView {
     @Override
     public Card promptPlayCard(Player player, List<Card> hand) {
         handView.displayHandWithIndices("Player: " + player.getName(), hand);
-        System.out.println("\nChoose a card to play (enter number, or 0 to end turn): ");
+        System.out.println("\nChoose an action:");
+        System.out.println("1. Play a single card (non-cat card)");
+        System.out.println("2. Play a cat card combo");
+        System.out.println("0. End turn");
+        System.out.print("Choice (0-2): ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
-        return choice == 0 ? null : hand.get(choice - 1);
+        
+        if (choice == 0) {
+            return null;
+        } else if (choice == 1) {
+            System.out.println("\nChoose a card to play (enter number): ");
+            int cardChoice = Integer.parseInt(scanner.nextLine().trim());
+            if (cardChoice == 0) return null;
+            Card selectedCard = hand.get(cardChoice - 1);
+            if (selectedCard.getType() == CardType.CAT_CARD) {
+                showError("Cannot play a single cat card. Use combo option instead.");
+                return promptPlayCard(player, hand);
+            }
+            return selectedCard;
+        } else if (choice == 2) {
+            int comboType = promptComboType();
+            if (comboType == 0) {
+                return promptPlayCard(player, hand);
+            }
+            
+            if (comboType == 1) {
+                // 2张猫牌偷牌
+                List<Integer> selectedIndices = promptCatCardSelection(2, hand);
+                if (selectedIndices == null || selectedIndices.size() != 2) {
+                    showError("Invalid selection. Please try again.");
+                    return promptPlayCard(player, hand);
+                }
+                
+                // 验证选择的卡牌是否都是相同类型的猫牌
+                Card firstCard = hand.get(selectedIndices.get(0));
+                if (!(firstCard instanceof CatCard)) {
+                    showError("Selected cards must be cat cards.");
+                    return promptPlayCard(player, hand);
+                }
+                
+                CatType catType = ((CatCard) firstCard).getCatType();
+                for (int i = 1; i < selectedIndices.size(); i++) {
+                    Card card = hand.get(selectedIndices.get(i));
+                    if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
+                        showError("All selected cards must be the same type of cat card.");
+                        return promptPlayCard(player, hand);
+                    }
+                }
+                
+                return firstCard;
+            } else {
+                // 3张猫牌请求卡牌
+                List<Integer> selectedIndices = promptCatCardSelection(3, hand);
+                if (selectedIndices == null || selectedIndices.size() != 3) {
+                    showError("Invalid selection. Please try again.");
+                    return promptPlayCard(player, hand);
+                }
+                
+                // 验证选择的卡牌是否都是相同类型的猫牌
+                Card firstCard = hand.get(selectedIndices.get(0));
+                if (!(firstCard instanceof CatCard)) {
+                    showError("Selected cards must be cat cards.");
+                    return promptPlayCard(player, hand);
+                }
+                
+                CatType catType = ((CatCard) firstCard).getCatType();
+                for (int i = 1; i < selectedIndices.size(); i++) {
+                    Card card = hand.get(selectedIndices.get(i));
+                    if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
+                        showError("All selected cards must be the same type of cat card.");
+                        return promptPlayCard(player, hand);
+                    }
+                }
+
+                // 选择要请求的卡牌类型
+                CardType requestedCardType = promptRequestedCardType();
+                if (requestedCardType == null) {
+                    return promptPlayCard(player, hand);
+                }
+
+                // 创建一个特殊的卡牌来标记这是一个请求卡牌的效果
+                Card requestCard = new Card(requestedCardType) {
+                    @Override
+                    public void effect(List<Player> turnOrder, Deck gameDeck) {
+                        // 这个效果会在 CatCardRequestController 中处理
+                    }
+                };
+                return requestCard;
+            }
+        }
+        return null;
+    }
+
+    private int promptComboType() {
+        System.out.println("\nChoose combo type:");
+        System.out.println("1. Steal a card (2 same cat cards)");
+        System.out.println("2. Request a card (3 same cat cards)");
+        System.out.println("0. Cancel");
+        System.out.print("Choice (0-2): ");
+        return Integer.parseInt(scanner.nextLine().trim());
+    }
+
+    private List<Integer> promptCatCardSelection(int count, List<Card> hand) {
+        System.out.println("\nSelect " + count + " same cat cards (enter numbers, separated by space): ");
+        String[] cardChoices = scanner.nextLine().trim().split(" ");
+        if (cardChoices.length != count) {
+            return null;
+        }
+        
+        List<Integer> selectedIndices = new ArrayList<>();
+        try {
+            for (String choice : cardChoices) {
+                int index = Integer.parseInt(choice) - 1;
+                if (index < 0 || index >= hand.size()) {
+                    return null;
+                }
+                selectedIndices.add(index);
+            }
+            return selectedIndices;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private CardType promptRequestedCardType() {
+        System.out.println("\nChoose card type to request:");
+        System.out.println("1. Attack");
+        System.out.println("2. Skip");
+        System.out.println("3. See the Future");
+        System.out.println("4. Shuffle");
+        System.out.println("5. Cat Card");
+        System.out.println("0. Cancel");
+        System.out.print("Choice (0-5): ");
+        
+        int choice = Integer.parseInt(scanner.nextLine().trim());
+        switch (choice) {
+            case 1: return CardType.ATTACK;
+            case 2: return CardType.SKIP;
+            case 3: return CardType.SEE_THE_FUTURE;
+            case 4: return CardType.SHUFFLE;
+            case 5: return CardType.CAT_CARD;
+            case 0: return null;
+            default: return null;
+        }
     }
 
     @Override
@@ -156,5 +302,43 @@ public class ConsoleGameView implements GameView {
     @Override
     public void showCurrentPlayerTurn(Player player) {
         System.out.println("\nIt's " + player.getName() + "'s turn.");
+    }
+
+    @Override
+    public Player selectTargetPlayer(List<Player> availablePlayers) {
+        System.out.println("Available players:");
+        for (int i = 0; i < availablePlayers.size(); i++) {
+            System.out.println((i + 1) + ". " + availablePlayers.get(i).getName());
+        }
+        System.out.print("Select a player (1-" + availablePlayers.size() + "): ");
+        int choice = Integer.parseInt(scanner.nextLine().trim());
+        return availablePlayers.get(choice - 1);
+    }
+
+    @Override
+    public Card selectCardFromPlayer(Player targetPlayer, List<Card> hand) {
+        handView.displayHandWithIndices(targetPlayer.getName(), hand);
+        System.out.print("Select a card (1-" + hand.size() + "): ");
+        int choice = Integer.parseInt(scanner.nextLine().trim());
+        return hand.get(choice - 1);
+    }
+
+    @Override
+    public void displayCatCardEffect(String effectType, Player sourcePlayer, Player targetPlayer) {
+        if (effectType.equals("steal")) {
+            System.out.println("\n" + sourcePlayer.getName() + " is stealing a card from " + targetPlayer.getName());
+        } else if (effectType.equals("request")) {
+            System.out.println("\n" + sourcePlayer.getName() + " is requesting a card from " + targetPlayer.getName());
+        }
+    }
+
+    @Override
+    public void displayCardStolen(Player sourcePlayer, Player targetPlayer, Card card) {
+        System.out.println("\n" + sourcePlayer.getName() + " stole " + card + " from " + targetPlayer.getName());
+    }
+
+    @Override
+    public void displayCardRequested(Player sourcePlayer, Player targetPlayer, Card card) {
+        System.out.println("\n" + sourcePlayer.getName() + " received " + card + " from " + targetPlayer.getName());
     }
 } 
