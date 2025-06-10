@@ -229,6 +229,20 @@ public class GameLoopSteps {
         assert containsCard : "Deck should contain " + cardType;
     }
 
+    @Then("^player \"([^\"]*)\" should be eliminated$")
+    public void playerShouldBeEliminated(String playerName) {
+        Player player = findPlayerByName(playerName);
+        assert !player.isAlive() : "Player " + playerName + " should be eliminated";
+    }
+
+    @Then("^player \"([^\"]*)\" should not be in turn order$")
+    public void playerShouldNotBeInTurnOrder(String playerName) {
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        boolean playerInTurnOrder = turnOrder.stream()
+            .anyMatch(p -> p.getName().equals(playerName) && p.isAlive());
+        assert !playerInTurnOrder : "Player " + playerName + " should not be in turn order";
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":

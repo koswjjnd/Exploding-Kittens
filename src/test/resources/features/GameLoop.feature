@@ -33,4 +33,19 @@ Feature: Game Loop Integration Tests
     And player "P1" should have no "Defuse" cards
     And the deck should contain "ExplodingKitten"
     And the turn should end
+    And the next player should be "P2"
+
+  @IT-TURN-03
+  Scenario: Draw exploding kitten without defuse
+    Given the game loop is initialized with players having hands:
+      | Player | Hand  |
+      | P1     | Skip  |
+      | P2     | Skip  |
+    And the deck is stacked with cards:
+      | Card             |
+      | ExplodingKitten  |
+    When player "P1" chooses to draw a card
+    Then player "P1" should be eliminated
+    And player "P1" should not be in turn order
+    And the turn should end
     And the next player should be "P2" 
