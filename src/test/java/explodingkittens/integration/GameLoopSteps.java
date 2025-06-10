@@ -215,15 +215,42 @@ public class GameLoopSteps {
             "Expected next player to be " + playerName + " but was " + nextPlayer.getName();
     }
 
+    @Then("^player \"([^\"]*)\" should be alive$")
+    public void playerShouldBeAlive(String playerName) {
+        Player player = findPlayerByName(playerName);
+        assert player.isAlive() : "Player " + playerName + " should be alive";
+    }
+
+    @Then("^the deck should contain \"([^\"]*)\"$")
+    public void deckShouldContainCard(String cardType) {
+        Deck deck = GameContext.getGameDeck();
+        boolean containsCard = deck.getCards().stream()
+            .anyMatch(card -> card.getClass().getSimpleName().equals(cardType + "Card"));
+        assert containsCard : "Deck should contain " + cardType;
+    }
+
     private Card createCardFromType(String cardType) {
-        switch (cardType) {
-            case "Skip": return new SkipCard();
-            case "Favor": return new FavorCard();
-            case "Attack": return new AttackCard();
-            case "Defuse": return new DefuseCard();
-            case "ExplodingKitten": return new ExplodingKittenCard();
-            case "CatCard": return new CatCard(CatType.TACOCAT);
-            default: return null;
+        switch (cardType.toUpperCase()) {
+            case "ATTACK":
+                return new AttackCard();
+            case "SKIP":
+                return new SkipCard();
+            case "FAVOR":
+                return new FavorCard();
+            case "CATCARD":
+                return new CatCard(CatType.TACOCAT);
+            case "DEFUSE":
+                return new DefuseCard();
+            case "NOPE":
+                return new NopeCard();
+            case "SHUFFLE":
+                return new ShuffleCard();
+            case "SEE_THE_FUTURE":
+                return new SeeTheFutureCard();
+            case "EXPLODINGKITTEN":
+                return new ExplodingKittenCard();
+            default:
+                return null;
         }
     }
 
