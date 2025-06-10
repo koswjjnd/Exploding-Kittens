@@ -123,14 +123,10 @@ public class GameSetupSteps {
             try {
                 List<Map<String, String>> players = dataTable.asMaps();
                 Mockito.when(view.promptPlayerCount()).thenReturn(players.size());
-                
-                // Set player names
                 for (int i = 0; i < players.size(); i++) {
                     Mockito.when(view.promptNickname(i + 1))
                         .thenReturn(players.get(i).get("Player"));
                 }
-                
-                // Check for invalid card types
                 for (Map<String, String> player : players) {
                     String[] cards = player.get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -141,19 +137,13 @@ public class GameSetupSteps {
                 }
                 
                 controller.setupGame();
-                
-                // Get player list from game context
                 List<Player> playerList = GameContext.getTurnOrder();
-                
-                // Clear each player's hand
                 for (Player player : playerList) {
                     List<Card> hand = player.getHand();
                     for (Card card : hand) {
                         player.removeCard(card);
                     }
                 }
-                
-                // Add specified cards to each player and supplement to 6 cards
                 for (int i = 0; i < players.size(); i++) {
                     String[] cards = players.get(i).get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -162,8 +152,6 @@ public class GameSetupSteps {
                             playerList.get(i).receiveCard(card);
                         }
                     }
-                    
-                    // Supplement to 6 cards
                     while (playerList.get(i).getHand().size() < 6) {
                         playerList.get(i).receiveCard(new SkipCard());
                     }
@@ -222,17 +210,11 @@ public class GameSetupSteps {
     public void defaultParametersShouldBeCorrect(DataTable expectedParams) {
         Map<String, String> params = expectedParams.asMap(String.class, String.class);
         List<Player> players = GameContext.getTurnOrder();
-        
-        // Verify player count
         Assertions.assertEquals(3, players.size());
-            
-        // Verify initial turns
         for (Player player : players) {
             Assertions.assertEquals(Integer.parseInt(params.get("Initial Turns")), 
                 player.getLeftTurns());
         }
-        
-        // Verify initial hand size
         for (Player player : players) {
             Assertions.assertEquals(Integer.parseInt(params.get("Initial Hand")), 
                 player.getHand().size());
@@ -543,8 +525,6 @@ public class GameSetupSteps {
             try {
                 List<Map<String, String>> players = dataTable.asMaps();
                 Mockito.when(view.promptPlayerCount()).thenReturn(players.size());
-                
-                // Check for duplicate player names
                 Set<String> names = new HashSet<>();
                 for (Map<String, String> player : players) {
                     String name = player.get("Player");
@@ -588,20 +568,17 @@ public class GameSetupSteps {
         }
     }
 
+    /**
+     * Verifies that the next player is P2.
+     */
     @Then("^the next player should be P2$")
-    public void the_next_player_should_be_p2() {
+    public void verifyNextPlayerIsP2() {
         List<Player> turnOrder = GameContext.getTurnOrder();
         Player currentPlayer = GameContext.getCurrentPlayer();
-        
-        // 验证当前玩家是P1
         assertEquals("P1", currentPlayer.getName(), 
             "Current player should be P1 before verifying next player");
-            
-        // 获取下一个玩家
         int currentIndex = turnOrder.indexOf(currentPlayer);
         Player nextPlayer = turnOrder.get((currentIndex + 1) % turnOrder.size());
-        
-        // 验证下一个玩家是P2
         assertEquals("P2", nextPlayer.getName(), 
             "Expected next player to be P2, but was " + nextPlayer.getName());
     }
