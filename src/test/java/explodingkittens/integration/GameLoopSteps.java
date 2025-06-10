@@ -300,6 +300,21 @@ public class GameLoopSteps {
             "Player " + playerName + " should have " + expectedCount + " cards, but has " + player.getHand().size();
     }
 
+    @Then("^player \"([^\"]*)\" should give a card to player \"([^\"]*)\"$")
+    public void playerShouldGiveCardToPlayer(String fromPlayerName, String toPlayerName) {
+        Player fromPlayer = findPlayerByName(fromPlayerName);
+        Player toPlayer = findPlayerByName(toPlayerName);
+        
+        // 模拟玩家选择要给出的牌
+        Card cardToGive = fromPlayer.getHand().get(0);  // 选择第一张牌
+        Mockito.when(view.selectCardFromPlayer(Mockito.eq(fromPlayer), Mockito.anyList()))
+            .thenReturn(cardToGive);
+            
+        // 执行给牌操作
+        fromPlayer.removeCard(cardToGive);
+        toPlayer.receiveCard(cardToGive);
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":
