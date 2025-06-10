@@ -169,7 +169,8 @@ public class GameSetupSteps {
                 }
                 
                 gameInitialized = true;
-            } catch (InvalidPlayerCountException | InvalidDeckException e) {
+            }
+            catch (InvalidPlayerCountException | InvalidDeckException e) {
                 thrownException = e;
             }
         }
