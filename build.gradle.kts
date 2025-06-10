@@ -18,7 +18,7 @@ repositories {
 }
 
 application {
-    mainClass = "ui.Main"
+    mainClass = "explodingkittens.Main"
 }
 
 dependencies {
