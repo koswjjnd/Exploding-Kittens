@@ -1,6 +1,7 @@
 package explodingkittens.integration;
 
 import explodingkittens.controller.GameContext;
+import explodingkittens.exceptions.InvalidCardException;
 import explodingkittens.model.*;
 import explodingkittens.controller.GameController;
 import explodingkittens.controller.GameSetupController;
@@ -170,7 +171,30 @@ public class GameLoopSteps {
             // 模拟玩家选择出牌
             Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("play");
             Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(card);
+            
+            // 如果是Favor牌，模拟其他玩家可能出Nope
+            if (cardType.equals("Favor")) {
+                Mockito.when(view.checkForNope(Mockito.any(), Mockito.eq(card))).thenReturn(true);
+            }
+            
             turnService.takeTurn(player);
+        }
+    }
+
+    @When("^player \"([^\"]*)\" counters with \"([^\"]*)\"$")
+    public void playerCountersWithCard(String playerName, String cardType) {
+        if (cardType.equals("Nope")) {
+            Player player = findPlayerByName(playerName);
+            Card card = findCardInHand(player, cardType);
+            if (card != null) {
+                Mockito.when(view.promptPlayNope(Mockito.eq(player), Mockito.any())).thenReturn(true);
+                Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(card);
+
+                try {
+                    turnService.playCard(player, card);
+                } catch (explodingkittens.exceptions.InvalidCardException e) {
+                }
+            }
         }
     }
 

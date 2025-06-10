@@ -72,4 +72,17 @@ Feature: Game Loop Integration Tests
     Then player "P1" should have 1 card in hand
     And player "P2" should have 1 card in hand
     And the turn should end
+    And the next player should be "P2"
+
+  @IT-TURN-06
+  Scenario: Nope card countering Favor
+    Given the game loop is initialized with players having hands:
+      | Player | Hand  |
+      | P1     | Favor |
+      | P2     | Nope  |
+    When player "P1" plays "Favor"
+    And player "P2" counters with "Nope"
+    Then player "P1" should have no "Favor" cards
+    And player "P2" should have no "Nope" cards
+    And the turn should end
     And the next player should be "P2" 
