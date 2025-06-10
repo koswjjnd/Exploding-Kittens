@@ -138,6 +138,10 @@ public class GameSetupSteps {
                 
                 controller.setupGame();
                 List<Player> playerList = GameContext.getTurnOrder();
+                
+                // Get player list from game context
+                List<Player> playerList = GameContext.getTurnOrder();
+                
                 for (Player player : playerList) {
                     List<Card> hand = player.getHand();
                     for (Card card : hand) {
@@ -211,6 +215,11 @@ public class GameSetupSteps {
         Map<String, String> params = expectedParams.asMap(String.class, String.class);
         List<Player> players = GameContext.getTurnOrder();
         Assertions.assertEquals(3, players.size());
+        
+        // Verify player count
+        Assertions.assertEquals(3, players.size());
+            
+        // Verify initial turns
         for (Player player : players) {
             Assertions.assertEquals(Integer.parseInt(params.get("Initial Turns")), 
                 player.getLeftTurns());
