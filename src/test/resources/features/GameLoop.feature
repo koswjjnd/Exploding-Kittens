@@ -122,4 +122,24 @@ Feature: Game Loop Integration Tests
       | P2     | Skip  |
     When the game is marked as over
     Then the game should be over
-    And player "P1" should be the winner 
+    And player "P1" should be the winner
+
+  @IT-TURN-10
+  Scenario: Consecutive card plays with Attack and Skip
+    Given the game loop is initialized with players having hands:
+      | Player | Hand        |
+      | P1     | Attack      |
+      | P2     | Skip, Skip  |
+      | P3     | Skip        |
+    And the deck is stacked with cards:
+      | Card     |
+      | Favor    |
+      | Skip     |
+      | CatCard  |
+    When player "P1" plays "Attack"
+    And player "P2" plays "Skip"
+    And player "P2" plays "Skip"
+    Then player "P1" should be at the end of turn order
+    And player "P2" should have no "Skip" cards
+    And player "P2" should have 0 turns left
+    And the next player should be "P3" 

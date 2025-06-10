@@ -276,10 +276,10 @@ public class GameLoopSteps {
 
     @Then("^player \"([^\"]*)\" should be at the end of turn order$")
     public void playerShouldBeAtEndOfTurnOrder(String playerName) {
+        Player player = findPlayerByName(playerName);
         List<Player> turnOrder = GameContext.getTurnOrder();
-        Player lastPlayer = turnOrder.get(turnOrder.size() - 1);
-        assert lastPlayer.getName().equals(playerName) : 
-            "Player " + playerName + " should be at the end of turn order, but " + lastPlayer.getName() + " is";
+        assert turnOrder.get(turnOrder.size() - 1) == player : 
+            "Player " + playerName + " should be at the end of turn order";
     }
 
     @When("^player \"([^\"]*)\" gives a card to player \"([^\"]*)\"$")
