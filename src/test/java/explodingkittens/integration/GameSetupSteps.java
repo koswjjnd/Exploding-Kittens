@@ -138,12 +138,16 @@ public class GameSetupSteps {
                 
                 controller.setupGame();
                 List<Player> playerList = GameContext.getTurnOrder();
+                
+                // Clear all players' hands
                 for (Player player : playerList) {
                     List<Card> hand = player.getHand();
                     for (Card card : hand) {
                         player.removeCard(card);
                     }
                 }
+                
+                // Set specified cards for each player
                 for (int i = 0; i < players.size(); i++) {
                     String[] cards = players.get(i).get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -152,6 +156,7 @@ public class GameSetupSteps {
                             playerList.get(i).receiveCard(card);
                         }
                     }
+                    // Ensure each player has at least 6 cards
                     while (playerList.get(i).getHand().size() < 6) {
                         playerList.get(i).receiveCard(new SkipCard());
                     }
