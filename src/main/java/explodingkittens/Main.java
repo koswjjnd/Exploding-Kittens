@@ -7,6 +7,7 @@ import explodingkittens.service.DealService;
 import explodingkittens.model.PlayerService;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.view.ConsoleGameView;
+import explodingkittens.util.I18nUtil;
 
 public class Main {
     /**
@@ -17,6 +18,10 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
+            // Initialize internationalization
+            I18nUtil.initialize();
+            System.out.println(I18nUtil.getMessage("ui.welcome"));
+
             /* ---------- Step 1 : 游戏初始化 ---------- */
             GameSetupView setupView   = new GameSetupView();
             PlayerService playerSvc   = new PlayerService();
@@ -32,10 +37,10 @@ public class Main {
 
         } 
         catch (GameOverException ge) {
-            System.out.println("Game ended abnormally: " + ge.getMessage());
+            System.out.println(I18nUtil.getMessage("game.end") + ": " + ge.getMessage());
         } 
         catch (Exception e) {
-            System.out.println("Fatal error: " + e.getMessage());
+            System.out.println(I18nUtil.getMessage("error.fatal") + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
