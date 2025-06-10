@@ -315,6 +315,37 @@ public class GameLoopSteps {
         toPlayer.receiveCard(cardToGive);
     }
 
+    @Given("^the deck is empty$")
+    public void theDeckIsEmpty() {
+        // 清空牌堆
+        GameContext.getGameDeck().clear();
+    }
+
+    @Then("^the game should be over$")
+    public void theGameShouldBeOver() {
+        assert GameContext.isGameOver() : "Game should be over";
+    }
+
+    @Then("^player \"([^\"]*)\" should be the winner$")
+    public void playerShouldBeTheWinner(String playerName) {
+        Player player = findPlayerByName(playerName);
+        assert player.isAlive() : "Player " + playerName + " should be alive";
+        assert GameContext.getTurnOrder().size() == 1 : "Should only be one player left";
+        assert GameContext.getTurnOrder().get(0) == player : "Player " + playerName + " should be the last player";
+    }
+
+    @When("^player \"([^\"]*)\" is eliminated$")
+    public void playerIsEliminated(String playerName) {
+        Player player = findPlayerByName(playerName);
+        player.setAlive(false);
+        GameContext.removePlayer(player);
+    }
+
+    @When("^the game is marked as over$")
+    public void theGameIsMarkedAsOver() {
+        GameContext.setGameOver(true);
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":

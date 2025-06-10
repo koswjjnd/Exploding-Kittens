@@ -102,4 +102,24 @@ Feature: Game Loop Integration Tests
     And player "P3" should have no "Nope" cards
     And player "P2" should give a card to player "P1"
     And the turn should end
-    And the next player should be "P2" 
+    And the next player should be "P2"
+
+  @IT-TURN-08
+  Scenario: Game over when only one player remains
+    Given the game loop is initialized with players having hands:
+      | Player | Hand  |
+      | P1     | Skip  |
+      | P2     | Skip  |
+    When player "P2" is eliminated
+    Then the game should be over
+    And player "P1" should be the winner
+
+  @IT-TURN-09
+  Scenario: Game over when gameOver flag is set
+    Given the game loop is initialized with players having hands:
+      | Player | Hand  |
+      | P1     | Skip  |
+      | P2     | Skip  |
+    When the game is marked as over
+    Then the game should be over
+    And player "P1" should be the winner 
