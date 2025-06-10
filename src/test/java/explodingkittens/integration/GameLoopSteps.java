@@ -258,6 +258,24 @@ public class GameLoopSteps {
             "Player " + playerName + " should be at the end of turn order, but " + lastPlayer.getName() + " is";
     }
 
+    @When("^player \"([^\"]*)\" gives a card to player \"([^\"]*)\"$")
+    public void playerGivesCardToPlayer(String fromPlayerName, String toPlayerName) {
+        Player fromPlayer = findPlayerByName(fromPlayerName);
+        Player toPlayer = findPlayerByName(toPlayerName);
+        
+        // 模拟玩家选择要给出的牌
+        Card cardToGive = fromPlayer.getHand().get(0);  // 选择第一张牌
+        Mockito.when(view.selectCardFromPlayer(Mockito.eq(fromPlayer), Mockito.anyList()))
+            .thenReturn(cardToGive);
+    }
+
+    @Then("^player \"([^\"]*)\" should have (\\d+) card in hand$")
+    public void playerShouldHaveCardsInHand(String playerName, int expectedCount) {
+        Player player = findPlayerByName(playerName);
+        assert player.getHand().size() == expectedCount : 
+            "Player " + playerName + " should have " + expectedCount + " cards, but has " + player.getHand().size();
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":
