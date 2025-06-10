@@ -146,21 +146,11 @@ public class GameLoopSteps {
      */
     @Given("^the deck is stacked with cards:$")
     public void deckIsStackedWithCards(DataTable dataTable) {
-        List<Map<String, String>> cards = dataTable.asMaps();
-        deckCards.clear();
-        
-        for (Map<String, String> card : cards) {
-            Card newCard = createCardFromType(card.get("Card"));
-            if (newCard != null) {
-                deckCards.add(newCard);
-            }
-        }
         Deck deck = GameContext.getGameDeck();
         if (deck == null) {
             throw new IllegalStateException(
                 "Game deck is not initialized. Make sure to initialize the game first.");
         }
-        List<Card> originalCards = new ArrayList<>(deck.getCards());
         deck.clear();
         for (Card card : deckCards) {
             deck.addCard(card);
@@ -279,7 +269,6 @@ public class GameLoopSteps {
      */
     @When("^player \"([^\"]*)\" places the exploding kitten at position \"([^\"]*)\"$")
     public void playerPlacesExplodingKitten(String playerName, String position) {
-        Player player = findPlayerByName(playerName);
         Mockito.when(view.selectExplodingKittenPosition(Mockito.anyInt()))
             .thenReturn(Integer.parseInt(position));
     }

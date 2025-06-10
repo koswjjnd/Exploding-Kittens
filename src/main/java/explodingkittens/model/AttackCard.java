@@ -47,6 +47,15 @@ public class AttackCard extends Card {
         }
 
         Player currentPlayer = turnOrder.get(0);
+        
+        // Check if the attack is negated by a Nope card
+        if (nopeService != null && nopeService.isNegatedByPlayers(this)) {
+            if (view != null) {
+                view.showCardNoped(currentPlayer, this);
+            }
+            return;
+        }
+
         Player nextPlayer = turnOrder.get(1);
         
         // Get current player's left turns and add 2
