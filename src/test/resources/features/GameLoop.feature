@@ -48,4 +48,15 @@ Feature: Game Loop Integration Tests
     Then player "P1" should be eliminated
     And player "P1" should not be in turn order
     And the turn should end
+    And the next player should be "P2"
+
+  @IT-TURN-04
+  Scenario: Attack card effect
+    Given the game loop is initialized with players having hands:
+      | Player | Hand        |
+      | P1     | Attack      |
+      | P2     | Skip, Skip  |
+    When player "P1" plays "Attack"
+    Then player "P2" should have 2 turns left
+    And player "P1" should be at the end of turn order
     And the next player should be "P2" 

@@ -243,6 +243,21 @@ public class GameLoopSteps {
         assert !playerInTurnOrder : "Player " + playerName + " should not be in turn order";
     }
 
+    @Then("^player \"([^\"]*)\" should have (\\d+) turns left$")
+    public void playerShouldHaveTurnsLeft(String playerName, int expectedTurns) {
+        Player player = findPlayerByName(playerName);
+        assert player.getLeftTurns() == expectedTurns : 
+            "Player " + playerName + " should have " + expectedTurns + " turns left, but has " + player.getLeftTurns();
+    }
+
+    @Then("^player \"([^\"]*)\" should be at the end of turn order$")
+    public void playerShouldBeAtEndOfTurnOrder(String playerName) {
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Player lastPlayer = turnOrder.get(turnOrder.size() - 1);
+        assert lastPlayer.getName().equals(playerName) : 
+            "Player " + playerName + " should be at the end of turn order, but " + lastPlayer.getName() + " is";
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":
