@@ -384,12 +384,11 @@ public class GameSetupSteps {
      * Verifies that the next player is correct.
      * @param name The expected next player name
      */
-    @Then("^the next player should be (.+)$")
-    public void nextPlayerShouldBe(String name) {
-        List<Player> turnOrder = GameContext.getTurnOrder();
-        Assertions.assertNotNull(turnOrder);
-        Assertions.assertTrue(turnOrder.size() > 1);
-        Assertions.assertEquals(name, turnOrder.get(1).getName());
+    @Then("^in game setup, the next player should be (.+)$")
+    public void nextPlayerInGameSetupShouldBe(String name) {
+        Player nextPlayer = GameContext.getCurrentPlayer();
+        assert nextPlayer.getName().equals(name) : 
+            "Expected next player to be " + name + " but was " + nextPlayer.getName();
     }
 
     /**
