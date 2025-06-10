@@ -43,7 +43,8 @@ public class I18nUtil {
     public static String getMessage(String key) {
         try {
             return messages.getString(key);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return key; // Return the key if translation is not found
         }
     }
@@ -58,7 +59,8 @@ public class I18nUtil {
         try {
             String message = messages.getString(key);
             return String.format(message, params);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return key; // Return the key if translation is not found
         }
     }
@@ -69,7 +71,8 @@ public class I18nUtil {
     public static void toggleLanguage() {
         if (currentLocale.equals(Locale.ENGLISH)) {
             setLocale(Locale.CHINESE);
-        } else {
+        }
+        else {
             setLocale(Locale.ENGLISH);
         }
     }

@@ -8,6 +8,9 @@ import explodingkittens.model.PlayerService;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.view.ConsoleGameView;
 import explodingkittens.util.I18nUtil;
+import java.util.Locale;
+import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
     /**
@@ -18,8 +21,19 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            // Initialize internationalization
-            I18nUtil.initialize();
+            // Language selection
+            System.out.println(I18nUtil.getMessage("select.language"));
+            System.out.println("1. English");
+            System.out.println("2. 中文");
+            Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
+            String langChoice = scanner.nextLine();
+            if ("2".equals(langChoice)) {
+                I18nUtil.setLocale(Locale.CHINESE);
+            }
+            else {
+                I18nUtil.setLocale(Locale.ENGLISH);
+            }
+
             System.out.println(I18nUtil.getMessage("ui.welcome"));
 
             /* ---------- Step 1 : 游戏初始化 ---------- */
