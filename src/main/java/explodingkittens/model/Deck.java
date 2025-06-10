@@ -80,7 +80,7 @@ public class Deck {
      * Shuffles the deck.
      */
     public void shuffle() {
-        Collections.shuffle(cards);
+        Collections.shuffle(cards, new Random());
     }
 
     /**
