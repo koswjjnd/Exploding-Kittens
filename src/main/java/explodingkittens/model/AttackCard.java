@@ -46,16 +46,13 @@ public class AttackCard extends Card {
             throw new IllegalArgumentException("Turn order cannot be empty");
         }
 
-        Player currentPlayer = turnOrder.get(0);
-        
-        // Check if the attack is negated by a Nope card
-        if (nopeService != null && nopeService.isNegatedByPlayers(this)) {
-            if (view != null) {
-                view.showCardNoped(currentPlayer, this);
-            }
+        // Check for Nope cards before modifying turn order
+        if (nopeService != null && view != null && nopeService.isNegatedByPlayers(this)) {
+            view.showCardNoped(turnOrder.get(0), this);
             return;
         }
 
+        Player currentPlayer = turnOrder.get(0);
         Player nextPlayer = turnOrder.get(1);
         
         // Get current player's left turns and add 2

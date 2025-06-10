@@ -24,18 +24,19 @@ public class FavorCard extends Card {
 
     /**
      * Gets the view for testing purposes.
-     * @return The view
+     * @return A copy of the view
      */
     public FavorCardView getView() {
-        return view;
+        return new FavorCardView();
     }
 
     /**
-     * Sets the view for testing purposes.
+     * Creates a new Favor card with a specific view (for testing purposes).
      * @param view The view to use
      */
-    void setView(FavorCardView view) {
-        this.view = view;
+    protected FavorCard(FavorCardView view) {
+        super(CardType.FAVOR);
+        this.view = new FavorCardView();
     }
 
     /**
