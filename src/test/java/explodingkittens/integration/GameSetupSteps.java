@@ -139,13 +139,7 @@ public class GameSetupSteps {
                 controller.setupGame();
                 List<Player> playerList = GameContext.getTurnOrder();
                 
-<<<<<<< HEAD
                 // Clear all players' hands
-=======
-                // Get player list from game context
-                List<Player> playerList = GameContext.getTurnOrder();
-                
->>>>>>> 1eb43fed592daadb70e081f79bfd9a6e90635d90
                 for (Player player : playerList) {
                     List<Card> hand = player.getHand();
                     for (Card card : hand) {
