@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Step definitions for game setup integration tests.
@@ -585,5 +586,23 @@ public class GameSetupSteps {
                 thrownException = e;
             }
         }
+    }
+
+    @Then("^the next player should be P2$")
+    public void the_next_player_should_be_p2() {
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Player currentPlayer = GameContext.getCurrentPlayer();
+        
+        // 验证当前玩家是P1
+        assertEquals("P1", currentPlayer.getName(), 
+            "Current player should be P1 before verifying next player");
+            
+        // 获取下一个玩家
+        int currentIndex = turnOrder.indexOf(currentPlayer);
+        Player nextPlayer = turnOrder.get((currentIndex + 1) % turnOrder.size());
+        
+        // 验证下一个玩家是P2
+        assertEquals("P2", nextPlayer.getName(), 
+            "Expected next player to be P2, but was " + nextPlayer.getName());
     }
 } 

@@ -12,7 +12,7 @@ import java.util.List;
  * When played, the current player can take a card from another player's hand.
  */
 public class FavorCard extends Card {
-    private final FavorCardView view;
+    private FavorCardView view;
 
     /**
      * Creates a new Favor card.
@@ -20,6 +20,22 @@ public class FavorCard extends Card {
     public FavorCard() {
         super(CardType.FAVOR);
         this.view = new FavorCardView();
+    }
+
+    /**
+     * Gets the view for testing purposes.
+     * @return The view
+     */
+    public FavorCardView getView() {
+        return view;
+    }
+
+    /**
+     * Sets the view for testing purposes.
+     * @param view The view to use
+     */
+    void setView(FavorCardView view) {
+        this.view = view;
     }
 
     /**

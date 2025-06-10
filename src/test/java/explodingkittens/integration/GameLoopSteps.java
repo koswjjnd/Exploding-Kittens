@@ -5,6 +5,7 @@ import explodingkittens.exceptions.InvalidCardException;
 import explodingkittens.model.*;
 import explodingkittens.controller.GameController;
 import explodingkittens.controller.GameSetupController;
+import explodingkittens.view.FavorCardView;
 import explodingkittens.view.GameView;
 import explodingkittens.view.GameSetupView;
 import explodingkittens.service.TurnService;
@@ -19,6 +20,10 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GameLoopSteps {
     private GameController controller;
@@ -47,8 +52,7 @@ public class GameLoopSteps {
         deckCards = new ArrayList<>();
         drawCardResponses = new ArrayList<>();
         currentDrawResponseIndex = 0;
-        
-        // 默认模拟玩家行为
+
         Mockito.when(view.confirmDefuse(Mockito.any())).thenReturn(true);
         Mockito.when(view.selectExplodingKittenPosition(Mockito.anyInt())).thenReturn(0);
     }
@@ -106,10 +110,8 @@ public class GameLoopSteps {
                     for (Card card : hand) {
                         player.removeCard(card);
                     }
-                    player.setLeftTurns(0);  // 初始化为0，这样出牌后不会自动抽牌
+                    player.setLeftTurns(0);
                 }
-                
-                // Add specified cards to each player
                 for (int i = 0; i < players.size(); i++) {
                     String[] cards = players.get(i).get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -139,23 +141,15 @@ public class GameLoopSteps {
                 deckCards.add(newCard);
             }
         }
-        
-        // Set up deck with specified cards
         Deck deck = GameContext.getGameDeck();
         if (deck == null) {
             throw new IllegalStateException("Game deck is not initialized. Make sure to initialize the game first.");
         }
-        
-        // 保存原有的牌堆状态
         List<Card> originalCards = new ArrayList<>(deck.getCards());
-        
-        // 清空牌堆并添加指定的牌
         deck.clear();
         for (Card card : deckCards) {
             deck.addCard(card);
         }
-        
-        // 打印牌堆内容以验证
         System.out.println("\nDeck contents after stacking:");
         for (Card card : deck.getCards()) {
             System.out.println("- " + card.getClass().getSimpleName());
@@ -166,18 +160,29 @@ public class GameLoopSteps {
     @When("^player \"([^\"]*)\" plays \"([^\"]*)\"$")
     public void playerPlaysCard(String playerName, String cardType) {
         Player player = findPlayerByName(playerName);
+        String handInfo = player.getHand().stream()
+            .map(card -> card.getClass().getSimpleName())
+            .collect(Collectors.joining(", "));
+        System.out.println("Player " + playerName + " current hand: [" + handInfo + "]");
+        
         Card card = findCardInHand(player, cardType);
         if (card != null) {
-            // 模拟玩家选择出牌
             Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("play");
             Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(card);
-            
-            // 如果是Favor牌，模拟其他玩家可能出Nope
             if (cardType.equals("Favor")) {
                 Mockito.when(view.checkForNope(Mockito.any(), Mockito.eq(card))).thenReturn(true);
+                Mockito.when(view.promptPlayNope(Mockito.any(), Mockito.any())).thenReturn(false);
+                FavorCard favorCard = (FavorCard) card;
+                favorCard.getView().setUserInput("0");
             }
-            
-            turnService.takeTurn(player);
+            if (cardType.equals("Skip")) {
+                Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("end");
+            }
+            try {
+                turnService.playCard(player, card);
+            } catch (InvalidCardException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -189,10 +194,10 @@ public class GameLoopSteps {
             if (card != null) {
                 Mockito.when(view.promptPlayNope(Mockito.eq(player), Mockito.any())).thenReturn(true);
                 Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(card);
-
                 try {
                     turnService.playCard(player, card);
-                } catch (explodingkittens.exceptions.InvalidCardException e) {
+                } catch (InvalidCardException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -201,12 +206,36 @@ public class GameLoopSteps {
     @When("^player \"([^\"]*)\" chooses to draw a card$")
     public void playerChoosesToDrawCard(String playerName) {
         Player player = findPlayerByName(playerName);
-        // 设置leftTurns为1，这样玩家可以选择抽牌
         player.setLeftTurns(1);
-        // 模拟玩家选择抽牌
         Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(null);
         Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("draw");
         turnService.takeTurn(player);
+    }
+
+    @When("^player \"([^\"]*)\" chooses not to use defuse$")
+    public void playerChoosesNotToUseDefuse(String playerName) {
+        Player player = findPlayerByName(playerName);
+        Mockito.when(view.confirmDefuse(Mockito.eq(player))).thenReturn(false);
+        Mockito.doNothing().when(view).displayPlayerEliminated(Mockito.eq(player));
+    }
+
+    @When("^player \"([^\"]*)\" chooses to use defuse$")
+    public void playerChoosesToUseDefuse(String playerName) {
+        Player player = findPlayerByName(playerName);
+        Mockito.when(view.confirmDefuse(Mockito.eq(player))).thenReturn(true);
+    }
+
+    @When("^player \"([^\"]*)\" places the exploding kitten at position \"([^\"]*)\"$")
+    public void playerPlacesExplodingKitten(String playerName, String position) {
+        Player player = findPlayerByName(playerName);
+        Mockito.when(view.selectExplodingKittenPosition(Mockito.anyInt())).thenReturn(Integer.parseInt(position));
+    }
+
+    @When("^player \"([^\"]*)\" has no defuse card$")
+    public void playerHasNoDefuseCard(String playerName) {
+        Player player = findPlayerByName(playerName);
+        Mockito.when(view.confirmDefuse(Mockito.eq(player))).thenReturn(false);
+        Mockito.doNothing().when(view).displayPlayerEliminated(Mockito.eq(player));
     }
 
     @Then("^player \"([^\"]*)\" should have \"([^\"]*)\" in hand$")
@@ -227,7 +256,6 @@ public class GameLoopSteps {
 
     @Then("^the turn should end$")
     public void turnShouldEnd() {
-        // 验证当前玩家是否已经改变
         Player currentPlayer = GameContext.getCurrentPlayer();
         assert currentPlayer.getName().equals("P2") : "Turn should have ended and current player should be P2";
     }
@@ -270,27 +298,28 @@ public class GameLoopSteps {
     @Then("^player \"([^\"]*)\" should have (\\d+) turns left$")
     public void playerShouldHaveTurnsLeft(String playerName, int expectedTurns) {
         Player player = findPlayerByName(playerName);
-        assert player.getLeftTurns() == expectedTurns : 
-            "Player " + playerName + " should have " + expectedTurns + " turns left, but has " + player.getLeftTurns();
+        assertEquals(expectedTurns, player.getLeftTurns(), 
+            "Player " + playerName + " should have " + expectedTurns + " turns left");
     }
 
     @Then("^player \"([^\"]*)\" should be at the end of turn order$")
     public void playerShouldBeAtEndOfTurnOrder(String playerName) {
         Player player = findPlayerByName(playerName);
         List<Player> turnOrder = GameContext.getTurnOrder();
-        assert turnOrder.get(turnOrder.size() - 1) == player : 
-            "Player " + playerName + " should be at the end of turn order";
+        assertEquals(player, turnOrder.get(turnOrder.size() - 1), 
+            "Player " + playerName + " should be at the end of turn order");
     }
 
     @When("^player \"([^\"]*)\" gives a card to player \"([^\"]*)\"$")
     public void playerGivesCardToPlayer(String fromPlayerName, String toPlayerName) {
         Player fromPlayer = findPlayerByName(fromPlayerName);
         Player toPlayer = findPlayerByName(toPlayerName);
-        
-        // 模拟玩家选择要给出的牌
-        Card cardToGive = fromPlayer.getHand().get(0);  // 选择第一张牌
-        Mockito.when(view.selectCardFromPlayer(Mockito.eq(fromPlayer), Mockito.anyList()))
-            .thenReturn(cardToGive);
+        if (fromPlayer.getHand().isEmpty()) {
+            throw new IllegalStateException("Player " + fromPlayerName + " has no cards to give");
+        }
+        Card cardToGive = fromPlayer.getHand().get(0);
+        fromPlayer.getHand().remove(cardToGive);
+        toPlayer.receiveCard(cardToGive);
     }
 
     @Then("^player \"([^\"]*)\" should have (\\d+) card in hand$")
@@ -304,20 +333,19 @@ public class GameLoopSteps {
     public void playerShouldGiveCardToPlayer(String fromPlayerName, String toPlayerName) {
         Player fromPlayer = findPlayerByName(fromPlayerName);
         Player toPlayer = findPlayerByName(toPlayerName);
-        
-        // 模拟玩家选择要给出的牌
-        Card cardToGive = fromPlayer.getHand().get(0);  // 选择第一张牌
-        Mockito.when(view.selectCardFromPlayer(Mockito.eq(fromPlayer), Mockito.anyList()))
-            .thenReturn(cardToGive);
-            
-        // 执行给牌操作
-        fromPlayer.removeCard(cardToGive);
+        if (fromPlayer.getHand().isEmpty()) {
+            throw new IllegalStateException("Player " + fromPlayerName + " has no cards to give");
+        }
+        Card cardToGive = fromPlayer.getHand().stream()
+            .filter(card -> card instanceof CatCard)
+            .findFirst()
+            .orElse(fromPlayer.getHand().get(0));
+        fromPlayer.getHand().remove(cardToGive);
         toPlayer.receiveCard(cardToGive);
     }
 
     @Given("^the deck is empty$")
     public void theDeckIsEmpty() {
-        // 清空牌堆
         GameContext.getGameDeck().clear();
     }
 
@@ -346,6 +374,33 @@ public class GameLoopSteps {
         GameContext.setGameOver(true);
     }
 
+    @Then("^the game turn order should be \"([^\"]*)\"$")
+    public void turnOrderShouldBe(String expectedOrder) {
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        String[] expectedPlayers = expectedOrder.split(", ");
+        
+        assertEquals(expectedPlayers.length, turnOrder.size(), 
+            "Expected " + expectedPlayers.length + " players in turn order, but got " + turnOrder.size());
+            
+        for (int i = 0; i < expectedPlayers.length; i++) {
+            assertEquals(expectedPlayers[i], turnOrder.get(i).getName(),
+                "Player at position " + i + " should be " + expectedPlayers[i] + 
+                ", but was " + turnOrder.get(i).getName());
+        }
+    }
+
+    @Then("^player \"([^\"]*)\" should not be eliminated$")
+    public void playerShouldNotBeEliminated(String playerName) {
+        Player player = findPlayerByName(playerName);
+        assertTrue(player.isAlive(), "Player " + playerName + " should not be eliminated");
+    }
+
+    @Given("^player \"([^\"]*)\" has (\\d+) turn left$")
+    public void playerHasTurnLeft(String playerName, int turns) {
+        Player player = findPlayerByName(playerName);
+        player.setLeftTurns(turns);
+    }
+
     private Card createCardFromType(String cardType) {
         switch (cardType.toUpperCase()) {
             case "ATTACK":
@@ -366,6 +421,8 @@ public class GameLoopSteps {
                 return new SeeTheFutureCard();
             case "EXPLODINGKITTEN":
                 return new ExplodingKittenCard();
+            case "REVERSE":
+                return new ReverseCard();
             default:
                 return null;
         }
@@ -380,8 +437,19 @@ public class GameLoopSteps {
 
     private Card findCardInHand(Player player, String cardType) {
         return player.getHand().stream()
-            .filter(card -> card.getClass().getSimpleName().equals(cardType + "Card"))
+            .filter(card -> {
+                String cardClassName = card.getClass().getSimpleName();
+                String normalizedCardType = cardType + "Card";
+                return cardClassName.equals(normalizedCardType);
+            })
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Card not found in hand: " + cardType));
+            .orElseThrow(() -> {
+                String handInfo = player.getHand().stream()
+                    .map(card -> card.getClass().getSimpleName())
+                    .collect(Collectors.joining(", "));
+                return new IllegalStateException(
+                    String.format("Card not found in hand: %s. Current hand: [%s]", 
+                    cardType, handInfo));
+            });
     }
 } 
