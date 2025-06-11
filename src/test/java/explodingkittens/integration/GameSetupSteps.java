@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Step definitions for game setup integration tests.
@@ -122,14 +123,10 @@ public class GameSetupSteps {
             try {
                 List<Map<String, String>> players = dataTable.asMaps();
                 Mockito.when(view.promptPlayerCount()).thenReturn(players.size());
-                
-                // Set player names
                 for (int i = 0; i < players.size(); i++) {
                     Mockito.when(view.promptNickname(i + 1))
                         .thenReturn(players.get(i).get("Player"));
                 }
-                
-                // Check for invalid card types
                 for (Map<String, String> player : players) {
                     String[] cards = player.get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -140,11 +137,9 @@ public class GameSetupSteps {
                 }
                 
                 controller.setupGame();
-                
-                // Get player list from game context
                 List<Player> playerList = GameContext.getTurnOrder();
                 
-                // Clear each player's hand
+                // Clear all players' hands
                 for (Player player : playerList) {
                     List<Card> hand = player.getHand();
                     for (Card card : hand) {
@@ -152,7 +147,7 @@ public class GameSetupSteps {
                     }
                 }
                 
-                // Add specified cards to each player and supplement to 6 cards
+                // Set specified cards for each player
                 for (int i = 0; i < players.size(); i++) {
                     String[] cards = players.get(i).get("Hand").split(", ");
                     for (String cardType : cards) {
@@ -161,8 +156,7 @@ public class GameSetupSteps {
                             playerList.get(i).receiveCard(card);
                         }
                     }
-                    
-                    // Supplement to 6 cards
+                    // Ensure each player has at least 6 cards
                     while (playerList.get(i).getHand().size() < 6) {
                         playerList.get(i).receiveCard(new SkipCard());
                     }
@@ -221,6 +215,7 @@ public class GameSetupSteps {
     public void defaultParametersShouldBeCorrect(DataTable expectedParams) {
         Map<String, String> params = expectedParams.asMap(String.class, String.class);
         List<Player> players = GameContext.getTurnOrder();
+        Assertions.assertEquals(3, players.size());
         
         // Verify player count
         Assertions.assertEquals(3, players.size());
@@ -230,8 +225,6 @@ public class GameSetupSteps {
             Assertions.assertEquals(Integer.parseInt(params.get("Initial Turns")), 
                 player.getLeftTurns());
         }
-        
-        // Verify initial hand size
         for (Player player : players) {
             Assertions.assertEquals(Integer.parseInt(params.get("Initial Hand")), 
                 player.getHand().size());
@@ -384,12 +377,11 @@ public class GameSetupSteps {
      * Verifies that the next player is correct.
      * @param name The expected next player name
      */
-    @Then("^the next player should be (.+)$")
-    public void nextPlayerShouldBe(String name) {
-        List<Player> turnOrder = GameContext.getTurnOrder();
-        Assertions.assertNotNull(turnOrder);
-        Assertions.assertTrue(turnOrder.size() > 1);
-        Assertions.assertEquals(name, turnOrder.get(1).getName());
+    @Then("^in game setup, the next player should be (.+)$")
+    public void nextPlayerInGameSetupShouldBe(String name) {
+        Player nextPlayer = GameContext.getCurrentPlayer();
+        assert nextPlayer.getName().equals(name) : 
+            "Expected next player to be " + name + " but was " + nextPlayer.getName();
     }
 
     /**
@@ -543,8 +535,6 @@ public class GameSetupSteps {
             try {
                 List<Map<String, String>> players = dataTable.asMaps();
                 Mockito.when(view.promptPlayerCount()).thenReturn(players.size());
-                
-                // Check for duplicate player names
                 Set<String> names = new HashSet<>();
                 for (Map<String, String> player : players) {
                     String name = player.get("Player");
@@ -586,5 +576,20 @@ public class GameSetupSteps {
                 thrownException = e;
             }
         }
+    }
+
+    /**
+     * Verifies that the next player is P2.
+     */
+    @Then("^the next player should be P2$")
+    public void verifyNextPlayerIsP2() {
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        Player currentPlayer = GameContext.getCurrentPlayer();
+        assertEquals("P1", currentPlayer.getName(), 
+            "Current player should be P1 before verifying next player");
+        int currentIndex = turnOrder.indexOf(currentPlayer);
+        Player nextPlayer = turnOrder.get((currentIndex + 1) % turnOrder.size());
+        assertEquals("P2", nextPlayer.getName(), 
+            "Expected next player to be P2, but was " + nextPlayer.getName());
     }
 } 

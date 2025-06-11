@@ -360,4 +360,15 @@ public class Deck {
     public List<Card> getUnmodifiableCards() {
         return Collections.unmodifiableList(cards);
     }
+
+    /**
+     * Clears all cards from the deck.
+     * @throws IllegalStateException if the deck is not initialized
+     */
+    public void clear() {
+        if (cards == null) {
+            throw new IllegalStateException("Deck is not initialized");
+        }
+        cards.clear();
+    }
 }

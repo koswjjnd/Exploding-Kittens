@@ -6,6 +6,7 @@ import explodingkittens.exceptions.InvalidCardException;
 import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
 import explodingkittens.model.ExplodingKittenCard;
+import explodingkittens.model.AttackCard;
 import explodingkittens.model.Player;
 import explodingkittens.view.GameView;
 

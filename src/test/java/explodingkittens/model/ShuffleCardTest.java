@@ -18,7 +18,6 @@ public class ShuffleCardTest {
 
     private Deck deck;
     private ShuffleCard shuffleCard;
-    // 因为effect需要List<Player>，我们传一个空list
     private List<Player> dummyPlayers;
 
     /**
@@ -28,7 +27,6 @@ public class ShuffleCardTest {
     void setUp() {
         deck = new Deck();
         shuffleCard = new ShuffleCard();
-        // 只是为了满足参数要求
         dummyPlayers = new ArrayList<>();
     }
 

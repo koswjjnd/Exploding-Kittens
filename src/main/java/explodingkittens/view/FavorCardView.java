@@ -28,7 +28,7 @@ public class FavorCardView {
      * Sets the user input for testing purposes.
      * @param input The input to simulate
      */
-    void setUserInput(String input) {
+    public void setUserInput(String input) {
         this.userInput = input;
     }
     
