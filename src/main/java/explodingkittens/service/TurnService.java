@@ -30,7 +30,8 @@ public class TurnService {
         this(view, cardEffectService, new NopeService(view));
     }
 
-    public TurnService(GameView view, CardEffectService cardEffectService, NopeService nopeService) {
+    public TurnService(GameView view, CardEffectService cardEffectService, 
+            NopeService nopeService) {
         this.view = view;
         this.cardEffectService = cardEffectService;
         this.nopeService = nopeService;
@@ -157,7 +158,8 @@ public class TurnService {
         /* —— apply effect —— */
         try {
             cardEffectService.applyEffect(card, player);
-        } catch (RuntimeException e) {
+        } 
+        catch (RuntimeException e) {
             throw new InvalidCardException(e.getMessage());
         }
 
@@ -220,7 +222,7 @@ public class TurnService {
             int pos = view.selectExplodingKittenPosition(GameContext.getGameDeck().size());
             GameContext.getGameDeck().insertAt(ek, pos);
             view.displayDefuseSuccess(player, pos);
-        } 
+        }
         else {
             /* 没有(或拒绝) Defuse → 淘汰 */
             player.setAlive(false);
