@@ -28,97 +28,78 @@
 ### Team member1: Qimeng Chao
 
 #### PR created:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/76 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/75 
 
-- #58
-- #57
-- #56
+#### PR done and approved:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/76
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/75
 
-### PR done and approved
-
-- #58
-- #57
-- #56
-
-### Other people's PR reviewed by you
-
-- #120
-- #117
+#### Other people's PR reviewed:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/92
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/90
 
 ### Team member2: Liming Luo
 
 #### PR created:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/62 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/61 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/60
 
-- #117
+#### PR done and approved:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/62 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/61 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/60 
 
-### PR done and approved
-
-- #117
-
-### Other people's PR reviewed by you
-
-- #124
+#### Other people's PR reviewed:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/62
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/60
 
 ### Team member3: Xiaoqin Bai
 
 #### PR created:
 
-- #73
-- #71
-- #67
-- #64
-- #63
-- #59
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/66 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/64 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/63 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/59 
 
+#### PR done and approved:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/63
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/59
 
-
-
-### PR done and approved
-
-- #101
-
-### Other people's PR reviewed by you
-
-- #113
-- #111
+#### Other people's PR reviewed:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/88
 
 ### Team member4: Shao Jin
 
 #### PR created:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/72
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/70
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/69 
 
-- #116
-- #113
-- #111
-- #106
-- #100
+#### PR done and approved:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/72
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/70
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/69
 
-### PR done and approved
-
-- #116
-- #113
-- #111
-- #106
-- #100
-
-### Other people's PR reviewed by you
-
-- #125
-- #124
+#### Other people's PR reviewed:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/93
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/86
 
 ### Team member5: Minjun Liang
 
 #### PR created:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/91 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/90
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/85 
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/65 
 
-- #126
-- #112
-- #102
+#### PR done and approved:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/90
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/85
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/65
 
-### PR done and approved
-
-- #126
-- #112
-- #102
-
-### Other people's PR reviewed by you
-
-- #106
-- #100
+#### Other people's PR reviewed:
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/84
+- https://github.com/nu-cs-sqe/course-project-20242510-team-02-20242503/pull/83
