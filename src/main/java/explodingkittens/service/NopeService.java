@@ -25,8 +25,13 @@ public class NopeService {
      * Determines if a card's effect is negated by the players.
      * @param targetCard The card whose effect is being checked for negation
      * @return true if the card's effect is negated, false otherwise
+     * @throws IllegalArgumentException if targetCard is null
      */
     public boolean isNegatedByPlayers(Card targetCard) {
+        if (targetCard == null) {
+            throw new IllegalArgumentException("Target card cannot be null");
+        }
+        
         List<Card> playedNopeCards = new ArrayList<>();
 
         for (Player p : GameContext.getTurnOrder()) {
