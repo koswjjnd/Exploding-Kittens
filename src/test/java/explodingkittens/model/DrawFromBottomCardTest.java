@@ -3,6 +3,7 @@ package explodingkittens.model;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Card;
 import explodingkittens.model.DrawFromBottomCard;
+import explodingkittens.view.GameView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,14 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.mock;
 
 class DrawFromBottomCardTest {
     private Player player;
@@ -28,6 +24,7 @@ class DrawFromBottomCardTest {
     private List<Player> turnOrder;
     private DrawFromBottomCard card;
     private MockedStatic<GameContext> mockedGameContext;
+    private GameView mockView;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +32,8 @@ class DrawFromBottomCardTest {
         deck = mock(Deck.class);
         turnOrder = new ArrayList<>();
         turnOrder.add(player);
-        card = new DrawFromBottomCard();
+        mockView = mock(GameView.class);
+        card = new DrawFromBottomCard(mockView);
         if (mockedGameContext != null) {
             mockedGameContext.close();
         }
@@ -59,9 +57,11 @@ class DrawFromBottomCardTest {
     void testDrawFromDeckWithOneCard() {
         // Setup
         Card bottom = mock(Card.class);
+        when(bottom.getType()).thenReturn(CardType.SKIP);
         ArrayList<Card> cards = new ArrayList<>();
         cards.add(bottom);
         when(deck.getCards()).thenReturn(cards);
+        when(deck.removeBottomCard()).thenReturn(bottom);
         
         // Mock GameContext
         mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
@@ -72,8 +72,10 @@ class DrawFromBottomCardTest {
         card.effect(turnOrder, deck);
         
         // Verify
-        assertEquals(0, cards.size());
+        verify(deck).removeBottomCard();
         verify(player).receiveCard(bottom);
+        verify(mockView).displayCardDrawnFromBottom(bottom);
+        verify(player).setLeftTurns(0);
     }
 
     @Test
@@ -82,11 +84,13 @@ class DrawFromBottomCardTest {
         Card c1 = mock(Card.class);
         Card c2 = mock(Card.class);
         Card c3 = mock(Card.class);
+        when(c3.getType()).thenReturn(CardType.ATTACK);
         ArrayList<Card> cards = new ArrayList<>();
         cards.add(c1);
         cards.add(c2);
         cards.add(c3);
         when(deck.getCards()).thenReturn(cards);
+        when(deck.removeBottomCard()).thenReturn(c3);
         
         // Mock GameContext
         mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
@@ -97,9 +101,33 @@ class DrawFromBottomCardTest {
         card.effect(turnOrder, deck);
         
         // Verify
-        assertEquals(2, cards.size());
-        assertFalse(cards.contains(c3));
+        verify(deck).removeBottomCard();
         verify(player).receiveCard(c3);
+        verify(mockView).displayCardDrawnFromBottom(c3);
+        verify(player).setLeftTurns(0);
+    }
+
+    @Test
+    void testDrawExplodingKitten() {
+        // Setup
+        ExplodingKittenCard ek = mock(ExplodingKittenCard.class);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(ek);
+        when(deck.getCards()).thenReturn(cards);
+        when(deck.removeBottomCard()).thenReturn(ek);
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
+        card.effect(turnOrder, deck);
+        
+        // Verify
+        verify(deck).removeBottomCard();
+        verify(mockView).displayCardDrawnFromBottom(ek);
+        verify(player).setLeftTurns(0);
     }
 
     @Test

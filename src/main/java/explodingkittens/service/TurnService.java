@@ -7,6 +7,7 @@ import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
 import explodingkittens.model.ExplodingKittenCard;
 import explodingkittens.model.AttackCard;
+import explodingkittens.model.DrawFromBottomCard;
 import explodingkittens.model.Player;
 import explodingkittens.view.GameView;
 
@@ -123,6 +124,11 @@ public class TurnService {
             try {
                 playCard(player, chosen);
                 view.displayPlayerHand(player); // after playing, refresh hand display
+                
+                // End the play phase if DrawFromBottomCard was played
+                if (chosen instanceof DrawFromBottomCard) {
+                    break;
+                }
             } 
             catch (InvalidCardException | RuntimeException ice) {
                 view.showError(ice.getMessage());
