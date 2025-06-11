@@ -118,8 +118,8 @@ tasks.jacocoTestReport {
 }
 
 pitest {
-    targetClasses = setOf("explodingkittens.model.*")
-    targetTests   = setOf("explodingkittens.model.*Test")
+    targetClasses = setOf("explodingkittens.model.*", "explodingkittens.service.*")
+    targetTests   = setOf("explodingkittens.model.*Test", "explodingkittens.service.*Test")
     junit5PluginVersion = "1.2.1"
     pitestVersion = "1.15.0"
 

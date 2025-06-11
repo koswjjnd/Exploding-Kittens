@@ -59,7 +59,6 @@ class TurnServiceTest {
         mockedStatic.when(GameContext::getGameDeck).thenReturn(deck);
         mockedStatic.when(GameContext::getTurnOrder).thenReturn(Arrays.asList(player, player2));
         mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player);
-        mockedStatic.when(GameContext::isGameOver).thenReturn(false);
         when(player.hasCardOfType(CardType.NOPE)).thenReturn(true);
         when(player.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
     }
@@ -503,6 +502,24 @@ class TurnServiceTest {
         // Verify that the service is created with a new NopeService
         assertNotNull(service.getNopeService());
         assertTrue(service.getNopeService() instanceof NopeService);
+    }
+
+    @Test
+    void testDrawPhaseWithNullGameDeck() {
+        // Setup
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.isAlive()).thenReturn(true);
+
+        // Mock GameContext to return null for game deck
+        mockedStatic.when(GameContext::getGameDeck).thenReturn(null);
+
+        // Execute and verify exception
+        assertThrows(IllegalArgumentException.class, () -> 
+            turnService.drawPhase(player));
+
+        // Verify
+        verify(view, never()).showCardDrawn(any(), any());
+        verify(player, never()).receiveCard(any());
     }
 
 } 
