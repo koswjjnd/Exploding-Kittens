@@ -213,4 +213,12 @@ public interface GameView {
      * @return 选择的卡牌
      */
     Card selectCardFromPlayer(Player targetPlayer, List<Card> hand);
+
+    /**
+     * handle winning combo
+     * @param player the current player
+     * @param hand the player's hand
+     * @return true if the player successfully plays a winning combo, false otherwise
+     */
+    boolean handleWinningCombo(Player player, List<Card> hand);
 } 

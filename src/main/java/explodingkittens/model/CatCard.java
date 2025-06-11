@@ -162,6 +162,7 @@ public class CatCard extends Card {
         private final List<Card> targetPlayerHand;
         private final int targetCardIndex;
         private final CardType requestedCardType;
+        private final CatType requestedCatType;
 
         public CatCardEffect(CatCard firstCard, CatCard secondCard, Player targetPlayer, 
                 int targetCardIndex) {
@@ -170,6 +171,7 @@ public class CatCard extends Card {
             this.secondCard = secondCard;
             this.thirdCard = null;
             this.requestedCardType = null;
+            this.requestedCatType = null;
             // Store immutable data instead of mutable Player object
             this.targetPlayerName = targetPlayer.getName();
             this.targetPlayerHand = new ArrayList<>(targetPlayer.getHand());
@@ -183,6 +185,13 @@ public class CatCard extends Card {
             this.secondCard = secondCard;
             this.thirdCard = thirdCard;
             this.requestedCardType = requestedCardType;
+            // 根据请求的卡牌类型设置猫牌类型
+            if (requestedCardType == CardType.CAT_CARD) {
+                // 如果是猫牌，使用第一张猫牌的类型
+                this.requestedCatType = firstCard.getCatType();
+            } else {
+                this.requestedCatType = null;
+            }
             this.targetPlayerName = currentPlayerName;
             this.targetPlayerHand = null;
             this.targetCardIndex = -1;
@@ -242,6 +251,14 @@ public class CatCard extends Card {
          */
         public CardType getRequestedCardType() {
             return requestedCardType;
+        }
+
+        /**
+         * Gets the requested cat type for the effect.
+         * @return The requested cat type
+         */
+        public CatType getRequestedCatType() {
+            return requestedCatType;
         }
     }
 } 
