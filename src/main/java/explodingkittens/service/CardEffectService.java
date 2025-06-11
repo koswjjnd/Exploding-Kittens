@@ -81,11 +81,18 @@ public class CardEffectService {
                     
                     // 让目标玩家选择一张指定类型的卡牌
                     Card requestedCard = view.selectCardFromPlayer(targetPlayer, matchingCards);
-                    targetPlayer.removeCard(requestedCard);
-                    currentPlayer.receiveCard(requestedCard);
-                    view.displayCardRequested(currentPlayer, targetPlayer, requestedCard);
+                    if (requestedCard != null) {
+                        targetPlayer.removeCard(requestedCard);
+                        currentPlayer.receiveCard(requestedCard);
+                        view.displayCardRequested(currentPlayer, targetPlayer, requestedCard);
+                    } 
+                    else {
+                        view.displayCardRequested(currentPlayer, targetPlayer, null);
+                        view.showError("No card was selected.");
+                    }
                 } 
                 else {
+                    view.displayCardRequested(currentPlayer, targetPlayer, null);
                     view.showError("Target player does not have the requested card type.");
                 }
             } 
