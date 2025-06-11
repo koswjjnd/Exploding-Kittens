@@ -22,6 +22,7 @@ public class DealServiceTest {
     private DealService dealService;
     private Deck deck;
     private List<Player> players;
+    private Deck gameDeck;
 
     @BeforeEach
     void setUp() {
@@ -30,6 +31,7 @@ public class DealServiceTest {
         players = new ArrayList<>();
         players.add(new Player("Player1"));
         players.add(new Player("Player2"));
+        gameDeck = new Deck();
     }
 
     // dealDefuses BVA Test Cases
@@ -141,5 +143,86 @@ public class DealServiceTest {
         assertThrows(InvalidPlayersListException.class, 
             () -> dealService.dealInitialHands(deck, null, 5),
             "Should throw InvalidPlayersListException when players list is null");
+    }
+
+    @Test
+    void testDealDefusesWithValidPlayers() {
+        List<Player> validPlayers = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            validPlayers.add(new Player("Player" + i));
+        }
+        
+        dealService.dealDefuses(gameDeck, validPlayers);
+        
+        for (Player player : validPlayers) {
+            assertEquals(1, player.getHand().size(), 
+                "Each player should have exactly one defuse card"
+            );
+            assertTrue(player.getHand().get(0) instanceof DefuseCard, 
+                "The card should be a DefuseCard"
+            );
+        }
+    }
+
+    @Test
+    void testDealDefusesWithNullPlayers() {
+        assertThrows(IllegalArgumentException.class, 
+            () -> dealService.dealDefuses(gameDeck, null),
+            "Should throw IllegalArgumentException when players is null"
+        );
+    }
+
+    @Test
+    void testDealDefusesWithEmptyPlayers() {
+        assertThrows(IllegalArgumentException.class, 
+            () -> dealService.dealDefuses(gameDeck, new ArrayList<>()),
+            "Should throw IllegalArgumentException when players is empty"
+        );
+    }
+
+    @Test
+    void testDealDefusesWithTooManyPlayers() {
+        List<Player> tooManyPlayers = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            tooManyPlayers.add(new Player("Player" + i));
+        }
+        
+        assertThrows(IllegalArgumentException.class, 
+            () -> dealService.dealDefuses(gameDeck, tooManyPlayers),
+            "Should throw IllegalArgumentException when there are too many players"
+        );
+    }
+
+    @Test
+    void testDealDefusesWithOnePlayer() {
+        // Create 1 player
+        players.add(new Player("Player1"));
+
+        // Deal cards
+        dealService.dealDefuses(gameDeck, players);
+
+        // Verify player received a defuse card
+        assertEquals(1, players.get(0).getHand().size(), "Player should receive one card");
+        assertTrue(players.get(0).getHand().get(0) instanceof DefuseCard,
+                "Player should receive a defuse card");
+    }
+
+    @Test
+    void testDealDefusesWithFourPlayers() {
+        // Create 4 players
+        for (int i = 0; i < 4; i++) {
+            players.add(new Player("Player" + (i + 1)));
+        }
+
+        // Deal cards
+        dealService.dealDefuses(gameDeck, players);
+
+        // Verify each player received a defuse card
+        for (Player player : players) {
+            assertEquals(1, player.getHand().size(),
+                    "Each player should receive one card");
+            assertTrue(player.getHand().get(0) instanceof DefuseCard,
+                    "Player should receive a defuse card");
+        }
     }
 } 

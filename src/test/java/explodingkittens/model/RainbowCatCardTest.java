@@ -105,6 +105,20 @@ class RainbowCatCardTest {
         verifyCatCardEffect(effect);
     }
 
+    @Test
+    void testEffectWithNoValidTargetPlayers() {
+        setupTwoRainbowCatCards();
+        
+        when(targetPlayer.isAlive()).thenReturn(false);
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> rainbowCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when no valid target players available"
+        );
+        assertEquals("No valid target players available", exception.getMessage());
+    }
+
     private void setupTwoRainbowCatCards() {
         RainbowCatCard card1 = new RainbowCatCard();
         RainbowCatCard card2 = new RainbowCatCard();

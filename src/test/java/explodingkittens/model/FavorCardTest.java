@@ -9,6 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -352,5 +357,90 @@ class FavorCardTest {
         verify(mockCurrentPlayer).receiveCard(mockCard7);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
+    }
+
+    @Test
+    void testGetViewReturnsNewInstance() {
+        FavorCard card = new FavorCard();
+        FavorCardView view1 = card.getView();
+        FavorCardView view2 = card.getView();
+        
+        assertNotSame(view1, view2, "getView should return a new instance each time");
+    }
+
+    @Test
+    void testConstructorCreatesNewView() {
+        FavorCard card = new FavorCard();
+        FavorCardView view = card.getView();
+        
+        assertNotNull(view, "Constructor should create a new view");
+    }
+
+    @Test
+    void testEffectWithNullTurnOrder() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            favorCard.effect(null, mockDeck),
+            "Should throw IllegalArgumentException when turnOrder is null"
+        );
+    }
+
+    @Test
+    void testEffectWithEmptyTurnOrder() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            favorCard.effect(new ArrayList<>(), mockDeck),
+            "Should throw IllegalArgumentException when turnOrder is empty"
+        );
+    }
+
+    @Test
+    void testProtectedConstructor() {
+        FavorCardView view = new FavorCardView();
+        FavorCard favorCard = new FavorCard(view) {};
+        assertNotNull(favorCard, "FavorCard should be created successfully");
+        assertEquals(CardType.FAVOR, favorCard.getType(), "Card type should be FAVOR");
+    }
+
+    @Test
+    void testEffectWithTargetPlayerHavingCards() {
+        // Create players
+        Player currentPlayer = new Player("Current");
+        Player targetPlayer = new Player("Target");
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(currentPlayer);
+        turnOrder.add(targetPlayer);
+
+        // Add a card to target player's hand
+        SkipCard skipCard = new SkipCard();
+        targetPlayer.receiveCard(skipCard);
+
+        // Create a new view for each input
+        FavorCardView targetSelectionView = new FavorCardView();
+        targetSelectionView.setUserInput("0");
+        FavorCardView cardSelectionView = new FavorCardView();
+        cardSelectionView.setUserInput("0");
+
+        // Create a favor card with the first view
+        FavorCard favorCardWithTargetView = new FavorCard(targetSelectionView);
+        
+        // Execute effect
+        favorCardWithTargetView.effect(turnOrder, mockDeck);
+
+        // Verify card was transferred to current player
+        List<Card> currentHand = currentPlayer.getHand();
+        assertEquals(1, currentHand.size(), "Current player should have one card");
+        assertTrue(currentHand.get(0) instanceof SkipCard,
+                "Current player should have received the skip card");
+    }
+
+    @Test
+    void testEffectWithTargetPlayerHavingNoCards() {
+        // 设置目标玩家没有卡牌
+        mockTargetPlayer1.getHand().clear();
+        
+        // 验证当目标玩家没有卡牌时抛出 IllegalStateException
+        assertThrows(IllegalStateException.class, 
+            () -> favorCard.effect(turnOrder, mockDeck),
+            "Should throw IllegalStateException when target player has no cards"
+        );
     }
 } 

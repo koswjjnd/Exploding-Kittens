@@ -78,14 +78,24 @@ public final class CatRequestCard extends CatCard {
      * @throws IllegalStateException if the target player has no cards
      * @throws IllegalStateException if the player has no turns left
      * @throws IllegalStateException if the controller is not set
+     * @throws IllegalArgumentException if turn order is null or empty
+     * @throws IllegalArgumentException if current player is null
      */
     @Override
     public void effect(List<Player> turnOrder, Deck gameDeck) {
+        if (turnOrder == null || turnOrder.isEmpty()) {
+            throw new IllegalArgumentException("Turn order cannot be null or empty");
+        }
+
+        Player currentPlayer = turnOrder.get(0);
+        if (currentPlayer == null) {
+            throw new IllegalArgumentException("Current player cannot be null");
+        }
+
         if (ControllerHolder.inputHandler == null) {
             throw new IllegalStateException("Controller not set");
         }
 
-        Player currentPlayer = turnOrder.get(0);
         if (currentPlayer.getLeftTurns() <= 0) {
             throw new IllegalStateException("No turns left");
         }
@@ -111,9 +121,6 @@ public final class CatRequestCard extends CatCard {
     }
 
     private List<Player> getAvailablePlayers(List<Player> turnOrder, Player currentPlayer) {
-        if (turnOrder == null || currentPlayer == null) {
-            throw new IllegalArgumentException("Turn order and current player cannot be null");
-        }
         List<Player> availablePlayers = turnOrder.stream()
             .filter(p -> p != currentPlayer && p.isAlive() && !p.getHand().isEmpty())
             .collect(Collectors.toList());

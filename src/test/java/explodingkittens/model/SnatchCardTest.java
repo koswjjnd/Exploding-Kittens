@@ -103,4 +103,31 @@ class SnatchCardTest {
         assert targetHand.size() == 2 : 
             "Target player should have 2 cards after snatch";
     }
+
+    /**
+     * Test Case: turnOrder is null
+     * Expected: IllegalArgumentException
+     */
+    @Test
+    void testEffectWithNullTurnOrder() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            snatchCard.effect(null, mockDeck),
+            "Should throw IllegalArgumentException when turnOrder is null"
+        );
+    }
+
+    /**
+     * Test Case: turnOrder has less than 2 players
+     * Expected: IllegalArgumentException
+     */
+    @Test
+    void testEffectWithInsufficientPlayers() {
+        List<Player> singlePlayerTurnOrder = new ArrayList<>();
+        singlePlayerTurnOrder.add(mockCurrentPlayer);
+        
+        assertThrows(IllegalArgumentException.class, () -> 
+            snatchCard.effect(singlePlayerTurnOrder, mockDeck),
+            "Should throw IllegalArgumentException when turnOrder has less than 2 players"
+        );
+    }
 } 
