@@ -241,6 +241,32 @@ class TurnServiceTest {
     }
 
     @Test
+    void testPlayCardWithNope() throws InvalidCardException {
+        // Setup
+        List<Card> hand = new ArrayList<>();
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(player.getName()).thenReturn("TestPlayer");
+        when(player.isAlive()).thenReturn(true);
+
+        // Mock NopeService to return true (card is noped)
+        when(nopeService.isNegatedByPlayers(card)).thenReturn(true);
+
+        // Mock view behavior
+        doNothing().when(view).showCardPlayed(player, card);
+        doNothing().when(view).showCardNoped(player, card);
+
+        // Run
+        turnService.playCard(player, card);
+
+        // Verify
+        verify(view).showCardPlayed(player, card);
+        verify(view).showCardNoped(player, card);
+        verify(player).removeCard(card);
+        verify(cardEffectService, never()).applyEffect(any(), any());
+    }
+
+    @Test
     void testDrawCardWithNullPlayer() {
         assertThrows(IllegalArgumentException.class, () ->
             turnService.drawPhase(null));
@@ -469,7 +495,15 @@ class TurnServiceTest {
         verify(cardEffectService).applyEffect(card, player);
     }
 
-
+    @Test
+    void testTwoParameterConstructor() {
+        // Create a new TurnService with two parameters
+        TurnService service = new TurnService(view, cardEffectService);
+        
+        // Verify that the service is created with a new NopeService
+        assertNotNull(service.getNopeService());
+        assertTrue(service.getNopeService() instanceof NopeService);
+    }
 
 } 
  
