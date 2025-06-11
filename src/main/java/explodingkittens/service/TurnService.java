@@ -27,9 +27,13 @@ public class TurnService {
     private final NopeService nopeService;
 
     public TurnService(GameView view, CardEffectService cardEffectService) {
+        this(view, cardEffectService, new NopeService(view));
+    }
+
+    public TurnService(GameView view, CardEffectService cardEffectService, NopeService nopeService) {
         this.view = view;
         this.cardEffectService = cardEffectService;
-        this.nopeService = new NopeService(view);     // NopeService needs view for interaction
+        this.nopeService = nopeService;
     }
 
     /* ===================================================================== */
@@ -119,8 +123,9 @@ public class TurnService {
                 playCard(player, chosen);
                 view.displayPlayerHand(player); // 出牌后刷新手牌显示
             } 
-            catch (InvalidCardException ice) {
+            catch (InvalidCardException | RuntimeException ice) {
                 view.showError(ice.getMessage());
+                view.displayPlayerHand(player); // 显示错误后也要刷新手牌显示
                 // continue to let player choose again
             }
         }
@@ -150,7 +155,11 @@ public class TurnService {
         }
 
         /* —— apply effect —— */
-        cardEffectService.applyEffect(card, player);
+        try {
+            cardEffectService.applyEffect(card, player);
+        } catch (RuntimeException e) {
+            throw new InvalidCardException(e.getMessage());
+        }
 
         /* —— remove card from hand —— */
         player.removeCard(card);
@@ -228,5 +237,13 @@ public class TurnService {
                 (p.isAlive() ? "" : " (Eliminated)"));
         }
         System.out.println();
+    }
+
+    /**
+     * Get the NopeService instance.
+     * @return the NopeService instance
+     */
+    public NopeService getNopeService() {
+        return nopeService;
     }
 }
