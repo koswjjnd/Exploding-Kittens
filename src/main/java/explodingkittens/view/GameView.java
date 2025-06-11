@@ -215,8 +215,18 @@ public interface GameView {
     Card selectCardFromPlayer(Player targetPlayer, List<Card> hand);
 
     /**
+
+     * handle winning combo
+     * @param player the current player
+     * @param hand the player's hand
+     * @return true if the player successfully plays a winning combo, false otherwise
+     */
+    boolean handleWinningCombo(Player player, List<Card> hand);
+
+    /**
      * Displays the card drawn from bottom.
      * @param card The card drawn from bottom
      */
     void displayCardDrawnFromBottom(Card card);
+
 } 

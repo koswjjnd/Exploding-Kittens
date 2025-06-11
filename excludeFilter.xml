@@ -23,4 +23,14 @@
     <Class name="~.*Test"/>
     <Bug pattern="NP_NULL_ON_SOME_PATH"/>
   </Match>
+
+  <!-- Suppress EI_EXPOSE_REP for Deck and Player -->
+  <Match>
+    <Class name="explodingkittens.model.Deck"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+  <Match>
+    <Class name="explodingkittens.model.Player"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
 </FindBugsFilter> 

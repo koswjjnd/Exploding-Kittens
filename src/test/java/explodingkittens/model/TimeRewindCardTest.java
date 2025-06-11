@@ -24,6 +24,7 @@ class TimeRewindCardTest {
         deck = mock(Deck.class);
         deckCards = new ArrayList<>();
         when(deck.getCards()).thenReturn(deckCards);
+        when(deck.getRealCards()).thenReturn(deckCards);
     }
 
     @Test
