@@ -81,11 +81,18 @@ public class CardEffectService {
                     
                     // 让目标玩家选择一张指定类型的卡牌
                     Card requestedCard = view.selectCardFromPlayer(targetPlayer, matchingCards);
-                    targetPlayer.removeCard(requestedCard);
-                    currentPlayer.receiveCard(requestedCard);
-                    view.displayCardRequested(currentPlayer, targetPlayer, requestedCard);
+                    if (requestedCard != null) {
+                        targetPlayer.removeCard(requestedCard);
+                        currentPlayer.receiveCard(requestedCard);
+                        view.displayCardRequested(currentPlayer, targetPlayer, requestedCard);
+                    } 
+                    else {
+                        view.displayCardRequested(currentPlayer, targetPlayer, null);
+                        view.showError("No card was selected.");
+                    }
                 } 
                 else {
+                    view.displayCardRequested(currentPlayer, targetPlayer, null);
                     view.showError("Target player does not have the requested card type.");
                 }
             } 
@@ -161,6 +168,7 @@ public class CardEffectService {
      * @param sourcePlayer The player who played the cat card
      * @param targetPlayer The player who is being stolen from
      * @param effect The cat card effect
+     * @throws IllegalStateException if the target player is not alive or has no cards
      */
     private void handleStealEffect(Player sourcePlayer, Player targetPlayer, 
             CatCard.CatCardEffect effect) {
@@ -168,8 +176,25 @@ public class CardEffectService {
         sourcePlayer.removeCard(effect.getFirstCard());
         sourcePlayer.removeCard(effect.getSecondCard());
         
+        // Check if target player is alive
+        if (!targetPlayer.isAlive()) {
+            throw new IllegalStateException("Target player is not alive");
+        }
+        
+        // Check if target player has any cards
+        List<Card> targetPlayerHand = effect.getTargetPlayerHand();
+        if (targetPlayerHand.isEmpty()) {
+            throw new IllegalStateException("Target player has no cards");
+        }
+        
+        // Check if target card index is valid
+        int targetIndex = effect.getTargetCardIndex();
+        if (targetIndex < 0 || targetIndex >= targetPlayerHand.size()) {
+            throw new IllegalStateException("Invalid target card index");
+        }
+        
         // Steal the card from the target player
-        Card stolenCard = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
+        Card stolenCard = targetPlayerHand.get(targetIndex);
         targetPlayer.removeCard(stolenCard);
         sourcePlayer.receiveCard(stolenCard);
         

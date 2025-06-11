@@ -118,8 +118,8 @@ tasks.jacocoTestReport {
 }
 
 pitest {
-    targetClasses = setOf("explodingkittens.model.*")
-    targetTests   = setOf("explodingkittens.model.*Test")
+    targetClasses = setOf("explodingkittens.model.*", "explodingkittens.service.*")
+    targetTests   = setOf("explodingkittens.model.*Test", "explodingkittens.service.*Test")
     junit5PluginVersion = "1.2.1"
     pitestVersion = "1.15.0"
 
@@ -132,7 +132,15 @@ pitest {
     useClasspathFile.set(true)
     fileExtensionsToFilter.addAll("xml")
     exportLineCoverage = true
-    mutators.set(listOf("STRONGER", "ALL"))
+    mutators.set(listOf(
+        "CONDITIONALS_BOUNDARY",
+        "INCREMENTS",
+        "INVERT_NEGS",
+        "MATH",
+        "NEGATE_CONDITIONALS",
+        "PRIMITIVE_RETURNS",
+        "VOID_METHOD_CALLS"
+    ))
     avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging"))
 }
 

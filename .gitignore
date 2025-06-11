@@ -186,3 +186,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Cucumber reports
+target/cucumber-reports/
+target/cucumber-reports/**/*

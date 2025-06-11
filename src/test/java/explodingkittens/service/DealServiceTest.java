@@ -142,4 +142,20 @@ public class DealServiceTest {
             () -> dealService.dealInitialHands(deck, null, 5),
             "Should throw InvalidPlayersListException when players list is null");
     }
+
+    /**
+     * Test Case 5: deck=normal, players=empty list
+     * Expected: EmptyPlayersListException
+     */
+    @Test
+    void testDealInitialHandsEmptyPlayers() {
+        // Add some cards to the deck
+        for (int i = 0; i < 5; i++) {
+            deck.addCard(new SkipCard());
+        }
+        
+        assertThrows(EmptyPlayersListException.class, 
+            () -> dealService.dealInitialHands(deck, new ArrayList<>(), 5),
+            "Should throw EmptyPlayersListException when players list is empty");
+    }
 } 
