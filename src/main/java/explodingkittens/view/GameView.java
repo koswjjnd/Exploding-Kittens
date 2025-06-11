@@ -213,4 +213,10 @@ public interface GameView {
      * @return the selected card
      */
     Card selectCardFromPlayer(Player targetPlayer, List<Card> hand);
+
+    /**
+     * Displays the card drawn from bottom.
+     * @param card The card drawn from bottom
+     */
+    void displayCardDrawnFromBottom(Card card);
 } 

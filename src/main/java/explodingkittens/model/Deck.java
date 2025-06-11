@@ -371,4 +371,16 @@ public class Deck {
         }
         cards.clear();
     }
+
+    /**
+     * Removes and returns the bottom card from the deck.
+     * @return the removed card
+     * @throws EmptyDeckException if the deck is empty
+     */
+    public Card removeBottomCard() {
+        if (cards.isEmpty()) {
+            throw new EmptyDeckException();
+        }
+        return cards.remove(cards.size() - 1);
+    }
 }
