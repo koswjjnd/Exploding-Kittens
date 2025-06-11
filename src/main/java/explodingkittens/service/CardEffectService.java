@@ -217,17 +217,32 @@ public class CardEffectService {
         // Check if target player has the requested card type
         CardType requestedType = effect.getRequestedCardType();
         List<Card> targetHand = targetPlayer.getHand();
-        for (int i = 0; i < targetHand.size(); i++) {
-            Card card = targetHand.get(i);
-            if (card.getType() == requestedType) {
-                targetPlayer.removeCard(card);
-                sourcePlayer.receiveCard(card);
-                view.displayCardRequested(sourcePlayer, targetPlayer, card);
+        
+        // 过滤出指定类型的卡牌
+        List<Card> matchingCards = targetHand.stream()
+            .filter(c -> {
+                if (requestedType == CardType.CAT_CARD) {
+                    // 如果是猫牌，检查具体的猫牌类型
+                    return c instanceof CatCard && 
+                           ((CatCard) c).getCatType() == effect.getRequestedCatType();
+                }
+                return c.getType() == requestedType;
+            })
+            .collect(Collectors.toList());
+            
+        if (!matchingCards.isEmpty()) {
+            // 让目标玩家选择一张指定类型的卡牌
+            Card requestedCard = view.selectCardFromPlayer(targetPlayer, matchingCards);
+            if (requestedCard != null) {
+                targetPlayer.removeCard(requestedCard);
+                sourcePlayer.receiveCard(requestedCard);
+                view.displayCardRequested(sourcePlayer, targetPlayer, requestedCard);
                 return;
             }
         }
         
         // If we get here, the target player didn't have the requested card
         view.displayCardRequested(sourcePlayer, targetPlayer, null);
+        view.showError("Target player does not have the requested card type.");
     }
 }

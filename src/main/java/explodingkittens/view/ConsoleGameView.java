@@ -6,6 +6,7 @@ import explodingkittens.model.CardType;
 import explodingkittens.model.CatCard;
 import explodingkittens.model.CatType;
 import explodingkittens.model.Deck;
+import explodingkittens.model.BasicCard;
 import explodingkittens.controller.GameContext;
 import java.util.List;
 import java.util.Scanner;
@@ -86,8 +87,9 @@ public class ConsoleGameView implements GameView {
         System.out.println("\nChoose an action:");
         System.out.println("1. Play a single card (non-cat card)");
         System.out.println("2. Play a cat card combo");
+        System.out.println("3. Play winning combo (5 same cat cards)");
         System.out.println("0. End turn");
-        System.out.print("Choice (0-2): ");
+        System.out.print("Choice (0-3): ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
         
         if (choice == 0) {
@@ -98,6 +100,9 @@ public class ConsoleGameView implements GameView {
         } 
         else if (choice == 2) {
             return handleCatCardCombo(player, hand);
+        }
+        else if (choice == 3) {
+            return handleWinningComboOption(player, hand);
         }
         return null;
     }
@@ -128,6 +133,7 @@ public class ConsoleGameView implements GameView {
         else {
             return handleRequestCombo(player, hand);
         }
+        
     }
 
     private Card handleStealCombo(Player player, List<Card> hand) {
@@ -189,10 +195,14 @@ public class ConsoleGameView implements GameView {
         return new CatCard(catType) {
             @Override
             public void effect(List<Player> turnOrder, Deck gameDeck) {
+                CatCard firstCatCard = (CatCard)hand.get(selectedIndices.get(0));
+                CatCard secondCatCard = (CatCard)hand.get(selectedIndices.get(1));
+                CatCard thirdCatCard = (CatCard)hand.get(selectedIndices.get(2));
+                
                 throw new CatCard.CatCardEffect(
-                    (CatCard)hand.get(selectedIndices.get(0)),
-                    (CatCard)hand.get(selectedIndices.get(1)),
-                    (CatCard)hand.get(selectedIndices.get(2)),
+                    firstCatCard,
+                    secondCatCard,
+                    thirdCatCard,
                     turnOrder.get(0).getName(),
                     requestedCardType
                 );
@@ -200,9 +210,44 @@ public class ConsoleGameView implements GameView {
 
             @Override
             public String toString() {
-                return "Request Card (" + catType + ")";
+                return "Request Card (" + requestedCardType + ")";
             }
         };
+    }
+
+    @Override
+    public boolean handleWinningCombo(Player player, List<Card> hand) {
+        List<Integer> selectedIndices = promptCatCardSelection(5, hand);
+        if (selectedIndices == null || selectedIndices.size() != 5) {
+            showError("Invalid selection. Please try again.");
+            return false;
+        }
+
+        // 验证选择的卡牌是否都是相同类型的猫牌
+        Card firstCard = hand.get(selectedIndices.get(0));
+        if (!(firstCard instanceof CatCard)) {
+            showError("Selected cards must be cat cards.");
+            return false;
+        }
+
+        CatType catType = ((CatCard) firstCard).getCatType();
+        for (int i = 1; i < selectedIndices.size(); i++) {
+            Card card = hand.get(selectedIndices.get(i));
+            if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
+                showError("All selected cards must be the same type of cat card.");
+                return false;
+            }
+        }
+        
+
+        // 将其他玩家全部设为淘汰，这样GameController.start()主循环会自动调用view.displayWinner(winner)并结束游戏
+        List<Player> turnOrder = GameContext.getTurnOrder();
+        for (Player p : turnOrder) {
+            if (p != player) {
+                p.setAlive(false);
+            }
+        }
+        return true;
     }
 
     @Override
@@ -446,8 +491,9 @@ public class ConsoleGameView implements GameView {
         System.out.println("18. Hairy Potato Cat");
         System.out.println("19. Watermelon Cat");
         System.out.println("20. Feral Cat");
+        System.out.println("21. Defuse");
         System.out.println("0. Cancel");
-        System.out.print("Choice (0-20): ");
+        System.out.print("Choice (0-21): ");
         
         int choice = Integer.parseInt(scanner.nextLine().trim());
         switch (choice) {
@@ -471,8 +517,16 @@ public class ConsoleGameView implements GameView {
             case 18: return CardType.CAT_CARD; // Hairy Potato Cat
             case 19: return CardType.CAT_CARD; // Watermelon Cat
             case 20: return CardType.CAT_CARD; // Feral Cat
+            case 21: return CardType.DEFUSE;
             case 0: return null;
             default: return null;
         }
+    }
+
+    private Card handleWinningComboOption(Player player, List<Card> hand) {
+        if (handleWinningCombo(player, hand)) {
+            return null;  // 直接返回null，结束回合
+        }
+        return promptPlayCard(player, hand);  // 如果失败，重新提示选择
     }
 } 
