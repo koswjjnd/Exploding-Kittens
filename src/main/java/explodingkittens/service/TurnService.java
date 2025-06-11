@@ -55,13 +55,13 @@ public class TurnService {
         // First, let player choose to play cards or draw
         String action = view.promptPlayerAction(player);
         if (action.equals("play")) {
-            playCardsPhase(player);    // ① play cards (can be multiple)
+            playCardsPhase(player);  
         }
 
         // Then, draw cards based on leftTurns
         int drawsLeft = player.getLeftTurns();
         for (int i = 0; i < drawsLeft; i++) {
-            drawPhase(player);         // ② draw card/exploding kitten
+            drawPhase(player);       
             if (GameContext.isGameOver()) {
                 break;
             }
@@ -104,7 +104,7 @@ public class TurnService {
         }
     }
 
-    /* ===================== ① 出牌阶段 ==================================== */
+    /* ===================== play cards phase ==================================== */
     /**
      * play cards phase
      * @param player The player taking the turn
@@ -115,18 +115,18 @@ public class TurnService {
             throw new IllegalArgumentException("Player must not be null");
         }
         while (true) {
-            Card chosen = view.selectCardToPlay(player, player.getHand());   // 用最新手牌
+            Card chosen = view.selectCardToPlay(player, player.getHand());   // use latest hand
             if (chosen == null) {
                 break;
             }
 
             try {
                 playCard(player, chosen);
-                view.displayPlayerHand(player); // 出牌后刷新手牌显示
+                view.displayPlayerHand(player); // after playing, refresh hand display
             } 
             catch (InvalidCardException | RuntimeException ice) {
                 view.showError(ice.getMessage());
-                view.displayPlayerHand(player); // 显示错误后也要刷新手牌显示
+                view.displayPlayerHand(player); // after showing error, refresh hand display
                 // continue to let player choose again
             }
         }
@@ -167,7 +167,7 @@ public class TurnService {
         player.removeCard(card);
     }
 
-    /* ===================== ② 抽牌阶段 ==================================== */
+    /* ===================== ② draw phase ==================================== */
     /**
      * draw phase
      * @param player The player taking the turn
@@ -204,12 +204,11 @@ public class TurnService {
             System.out.println();
         } 
         catch (EmptyDeckException ede) {
-            // 按官方规则：抽完牌堆其实游戏就结束；这里抛给上层即可
             throw ede;
         }
     }
 
-    /* ------------ 炸猫处理 ------------ */
+    /* ------------ handle exploding kitten ------------ */
     /**
      * handle exploding kitten
      * @param player The player taking the turn
@@ -217,14 +216,14 @@ public class TurnService {
      */
     public void handleExplodingKitten(Player player, ExplodingKittenCard ek) {
         if (player.hasDefuse() && view.confirmDefuse(player)) {
-            /* 使用 Defuse → 重新塞回牌堆指定位置 */
+            /* use Defuse → reinsert into deck at specified position */
             player.useDefuse();
             int pos = view.selectExplodingKittenPosition(GameContext.getGameDeck().size());
             GameContext.getGameDeck().insertAt(ek, pos);
             view.displayDefuseSuccess(player, pos);
         } 
         else {
-            /* 没有(或拒绝) Defuse → 淘汰 */
+            /* no Defuse → eliminate */
             player.setAlive(false);
             view.displayPlayerEliminated(player);
         }

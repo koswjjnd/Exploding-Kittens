@@ -40,7 +40,7 @@ public class CardTest {
 
     @Test
     void testCloneFailure() {
-        // 创建一个匿名子类来模拟克隆失败
+        // create an anonymous subclass to simulate clone failure
         SkipCard original = new SkipCard() {
             @Override
             public Card clone() {
@@ -65,22 +65,17 @@ public class CardTest {
         SkipCard card2 = new SkipCard();
         SkipCard card3 = new SkipCard();
         
-        // 自反性
         assertTrue(card1.equals(card1));
         
-        // 对称性
         assertTrue(card1.equals(card2));
         assertTrue(card2.equals(card1));
         
-        // 传递性
         assertTrue(card1.equals(card2));
         assertTrue(card2.equals(card3));
         assertTrue(card1.equals(card3));
         
-        // 非空性
         assertFalse(card1.equals(null));
         
-        // 不同类型
         assertFalse(card1.equals(new AttackCard()));
     }
 

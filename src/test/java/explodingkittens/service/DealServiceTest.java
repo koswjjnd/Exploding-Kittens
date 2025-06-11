@@ -230,6 +230,7 @@ public class DealServiceTest {
             assertTrue(player.getHand().get(0) instanceof DefuseCard,
                     "Player should receive a defuse card");
         }
+    }
 
     /**
      * Test Case 5: deck=normal, players=empty list
@@ -245,6 +246,5 @@ public class DealServiceTest {
         assertThrows(EmptyPlayersListException.class, 
             () -> dealService.dealInitialHands(deck, new ArrayList<>(), 5),
             "Should throw EmptyPlayersListException when players list is empty");
-
     }
 } 

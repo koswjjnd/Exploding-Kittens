@@ -37,9 +37,8 @@ public class SeeTheFutureViewTest {
         view.display(List.of());
         String output = outContent.toString(StandardCharsets.UTF_8);
 
-        // 检查有标题
         assertTrue(output.contains("You see the future cards"));
-        // 检查没有具体卡牌类型打印
+
         assertTrue(!output.contains("- "));
     }
 

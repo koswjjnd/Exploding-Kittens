@@ -273,18 +273,16 @@ class CatRequestCardTest {
 
     @Test
     void testEffectWithNoController() {
-        // 创建一个新的 CatRequestCard 实例，不设置控制器
         CatRequestCard card = new CatRequestCard(CatType.TACOCAT);
         List<Player> players = new ArrayList<>();
         Player player = new Player("Player1");
         players.add(player);
         
-        // 添加三张相同类型的猫牌
         for (int i = 0; i < 3; i++) {
             player.receiveCard(new CatRequestCard(CatType.TACOCAT));
         }
         
-        // 验证当控制器未设置时抛出 IllegalStateException
+        // check: should throw IllegalStateException when controller is not set
         assertThrows(IllegalStateException.class, () -> {
             card.effect(players, new Deck());
         });
