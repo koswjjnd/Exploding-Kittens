@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,13 @@ public class ShuffleCardTest {
         shuffleCard = new ShuffleCard();
         turnOrder = new ArrayList<>();
         gameDeck = new Deck();
+        
+        // 添加一些不同的牌到牌堆中
+        gameDeck.addCard(new DefuseCard());
+        gameDeck.addCard(new AttackCard());
+        gameDeck.addCard(new SkipCard());
+        gameDeck.addCard(new ShuffleCard());
+        gameDeck.addCard(new SeeTheFutureCard());
     }
 
     @Test
@@ -39,5 +47,11 @@ public class ShuffleCardTest {
         // 验证牌序已改变
         List<Card> newOrder = gameDeck.getCards();
         assertNotEquals(initialOrder, newOrder);
+        
+        // 验证牌的数量和种类保持不变
+        assertEquals(initialOrder.size(), newOrder.size());
+        for (Card card : initialOrder) {
+            assertTrue(newOrder.contains(card));
+        }
     }
 }

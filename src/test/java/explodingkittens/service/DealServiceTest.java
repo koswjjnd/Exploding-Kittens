@@ -166,17 +166,17 @@ public class DealServiceTest {
 
     @Test
     void testDealDefusesWithNullPlayers() {
-        assertThrows(IllegalArgumentException.class, 
+        assertThrows(InvalidPlayersListException.class, 
             () -> dealService.dealDefuses(gameDeck, null),
-            "Should throw IllegalArgumentException when players is null"
+            "Should throw InvalidPlayersListException when players is null"
         );
     }
 
     @Test
     void testDealDefusesWithEmptyPlayers() {
-        assertThrows(IllegalArgumentException.class, 
+        assertThrows(EmptyPlayersListException.class, 
             () -> dealService.dealDefuses(gameDeck, new ArrayList<>()),
-            "Should throw IllegalArgumentException when players is empty"
+            "Should throw EmptyPlayersListException when players is empty"
         );
     }
 
@@ -187,10 +187,16 @@ public class DealServiceTest {
             tooManyPlayers.add(new Player("Player" + i));
         }
         
-        assertThrows(IllegalArgumentException.class, 
-            () -> dealService.dealDefuses(gameDeck, tooManyPlayers),
-            "Should throw IllegalArgumentException when there are too many players"
-        );
+        dealService.dealDefuses(gameDeck, tooManyPlayers);
+        
+        for (Player player : tooManyPlayers) {
+            assertEquals(1, player.getHand().size(), 
+                "Each player should have exactly one defuse card"
+            );
+            assertTrue(player.getHand().get(0) instanceof DefuseCard, 
+                "The card should be a DefuseCard"
+            );
+        }
     }
 
     @Test
