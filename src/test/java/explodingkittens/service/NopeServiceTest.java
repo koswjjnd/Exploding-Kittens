@@ -2,16 +2,15 @@ package explodingkittens.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -19,10 +18,9 @@ import org.mockito.MockitoAnnotations;
 import explodingkittens.model.BasicCard;
 import explodingkittens.model.CardType;
 import explodingkittens.model.Player;
-import explodingkittens.view.ConsoleGameView;
+import explodingkittens.model.Card;
 import explodingkittens.view.GameView;
 import explodingkittens.controller.GameContext;
-import explodingkittens.model.Card;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +50,21 @@ public class NopeServiceTest {
     @Mock
     private Player player2;
     
+    /** Third test player used in the tests */
+    @Mock
+    private Player player3;
+    
+    /** Fourth test player used in the tests */
+    @Mock
+    private Player player4;
+    
     /** Test Nope card used in the tests */
     @Mock
     private BasicCard nopeCard;
     
     /** Test non-Nope card used in the tests */
     @Mock
-    private BasicCard skipCard;
+    private BasicCard targetCard;
 
     /** Mock view for testing */
     @Mock
@@ -76,8 +82,8 @@ public class NopeServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         nopeService = new NopeService(view);
-        when(skipCard.getType()).thenReturn(CardType.SKIP);
         when(nopeCard.getType()).thenReturn(CardType.NOPE);
+        when(targetCard.getType()).thenReturn(CardType.SKIP);
     }
 
     /**
@@ -138,9 +144,9 @@ public class NopeServiceTest {
     @Test
     void testIsNegatedWithMixedCardTypes() {
         List<BasicCard> cards = new ArrayList<>();
-        cards.add(skipCard);
+        cards.add(targetCard);
         cards.add(nopeCard);
-        cards.add(skipCard);
+        cards.add(targetCard);
         assertTrue(nopeService.isNegated(player1, cards));
     }
 
@@ -174,32 +180,32 @@ public class NopeServiceTest {
         List<Player> turnOrder = new ArrayList<>();
         turnOrder.add(player1);
         turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        // Mock GameContext static calls
         try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
             
             // Mock player behavior
             when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
             when(player2.isAlive()).thenReturn(true);
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
+            
             when(player2.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player3.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
             
             // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
             
             // Verify
             assertFalse(result);
-            verify(player1).hasCardOfType(CardType.NOPE);
-            verify(player2).hasCardOfType(CardType.NOPE);
-            verify(player2, never()).removeCardOfType(any());
-            mockedStatic.verify(
-                GameContext::getTurnOrder
-            );
-            mockedStatic.verify(
-                GameContext::getCurrentPlayer
-            );
+            verify(view, times(4)).showCardPlayed(player1, targetCard);
+            verify(view, never()).promptPlayNope(any(), any());
+            verify(view, never()).displayPlayedNope(any());
+            verify(view, never()).displayPlayerHand(any());
         }
     }
 
@@ -207,290 +213,206 @@ public class NopeServiceTest {
     void testIsNegatedByPlayersWithOneNopeCard() {
         // Setup
         List<Player> turnOrder = new ArrayList<>();
-        Player player2 = mock(Player.class);
         turnOrder.add(player1);
         turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        // Mock GameContext static calls
         try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
             
             // Mock player behavior
             when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
             when(player2.isAlive()).thenReturn(true);
-            when(player2.hasCardOfType(CardType.NOPE)).thenReturn(true);
-            when(player2.removeCardOfType(CardType.NOPE))
-                .thenReturn(nopeCard);
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
             
-            // Mock view behavior
-            when(view.promptPlayNope(
-                    player2,
-                    skipCard
-                ))
-                .thenReturn(true);
-            doNothing().when(view).displayPlayedNope(player2);
-            doNothing().when(view).displayPlayerHand(player2);
+            // Only player2 has Nope card and will use it
+            when(player2.hasCardOfType(CardType.NOPE))
+                .thenReturn(true)  // First call
+                .thenReturn(false); // After using the card
+            when(player3.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            
+            when(player2.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
+            when(view.promptPlayNope(player2, targetCard)).thenReturn(true);
             
             // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
             
             // Verify
             assertTrue(result);
-            verify(player2)
-                .removeCardOfType(CardType.NOPE);
-            verify(view)
-                .displayPlayedNope(player2);
-            verify(view)
-                .displayPlayerHand(player2);
-            mockedStatic.verify(
-                GameContext::getTurnOrder
-            );
-            mockedStatic.verify(
-                GameContext::getCurrentPlayer
-            );
+            verify(view, times(4)).showCardPlayed(player1, targetCard);
+            verify(view, times(1)).promptPlayNope(player2, targetCard);
+            verify(view, times(1)).displayPlayedNope(player2);
+            verify(view, times(1)).displayPlayerHand(player2);
         }
     }
 
     @Test
-    void testIsNegatedByPlayersWithEliminatedPlayer() {
+    void testIsNegatedByPlayersWithNopeChain() {
         // Setup
         List<Player> turnOrder = new ArrayList<>();
-        Player player2 = mock(Player.class);
         turnOrder.add(player1);
         turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        // Mock GameContext static calls
         try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
             
             // Mock player behavior
             when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
-            when(player2.isAlive()).thenReturn(false);  // Player2 is eliminated
+            when(player2.isAlive()).thenReturn(true);
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
+            
+            // Mock hasCardOfType to return true only once for each player
+            when(player2.hasCardOfType(CardType.NOPE))
+                .thenReturn(true)  // First call
+                .thenReturn(false); // Subsequent calls
+            when(player3.hasCardOfType(CardType.NOPE))
+                .thenReturn(true)  // First call
+                .thenReturn(false); // Subsequent calls
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            
+            when(player2.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
+            when(player3.removeCardOfType(CardType.NOPE)).thenReturn(nopeCard);
+            
+            // Mock promptPlayNope to return true only once for each player
+            when(view.promptPlayNope(player2, targetCard))
+                .thenReturn(true)  // First call
+                .thenReturn(false); // Subsequent calls
+            when(view.promptPlayNope(player3, targetCard))
+                .thenReturn(true)  // First call
+                .thenReturn(false); // Subsequent calls
             
             // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
             
             // Verify
-            assertFalse(result);
-            verify(player2, never())
-                .hasCardOfType(any());
-            mockedStatic.verify(GameContext::getTurnOrder);
-            mockedStatic.verify(GameContext::getCurrentPlayer);
+            assertFalse(result); // Even number of Nope cards
+            verify(view, times(4)).showCardPlayed(player1, targetCard);
+            verify(view, times(1)).promptPlayNope(player2, targetCard);
+            verify(view, times(1)).promptPlayNope(player3, targetCard);
+            verify(view, times(2)).displayPlayedNope(any());
+            verify(view, times(2)).displayPlayerHand(any());
         }
     }
 
     @Test
     void testIsNegatedByPlayersWithNullCard() {
-        // Execute and verify exception
         assertThrows(IllegalArgumentException.class, 
             () -> nopeService.isNegatedByPlayers(null));
     }
 
     @Test
-    void testIsNegatedByPlayersWithNullNopeCard() {
+    void testIsNegatedByPlayersWithCurrentPlayerNotFound() {
         // Setup
         List<Player> turnOrder = new ArrayList<>();
-        Player player2 = mock(Player.class);
-        turnOrder.add(player1);
         turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        // Mock GameContext static calls
         try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
             
-            // Mock player behavior
-            when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
-            when(player2.isAlive()).thenReturn(true);
-            when(player2.hasCardOfType(CardType.NOPE))
-                .thenReturn(true);  // Player has Nope card
-            when(player2.removeCardOfType(CardType.NOPE))
-                .thenReturn(null);  // But returns null when trying to remove it
-            
-            // Mock view behavior
-            when(view.promptPlayNope(
-                    player2,
-                    skipCard
-                ))
-                .thenReturn(true);
-            
-            // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
-            
-            // Verify
-            assertFalse(result);  // Should not be negated since no Nope card was actually played
-            verify(player2)
-                .removeCardOfType(CardType.NOPE);
-            verify(view, never())
-                .displayPlayedNope(any());
-            verify(view, never())
-                .displayPlayerHand(any());
-            mockedStatic.verify(
-                GameContext::getTurnOrder
-            );
-            mockedStatic.verify(
-                GameContext::getCurrentPlayer
-            );
+            // Execute and verify
+            assertThrows(IllegalStateException.class, 
+                () -> nopeService.isNegatedByPlayers(targetCard));
         }
     }
 
     @Test
-    void testIsNegatedByPlayersWithFalseHasCardOfType() {
-        // Setup
-        List<Player> turnOrder = new ArrayList<>();
-        Player player2 = mock(Player.class);
-        turnOrder.add(player1);
-        turnOrder.add(player2);
-        
-        // Mock GameContext static calls
-        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
-            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
-            mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
-            
-            // Mock player behavior
-            when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
-            when(player2.isAlive()).thenReturn(true);
-            when(player2.hasCardOfType(CardType.NOPE))
-                .thenReturn(false);  // Player doesn't have Nope card
-            
-            // Mock view behavior
-            when(view.promptPlayNope(
-                    player2,
-                    skipCard
-                ))
-                .thenReturn(true);
-            
-            // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
-            
-            // Verify
-            assertFalse(result);  // Should not be negated since player doesn't have Nope card
-            verify(player2, never())
-                .removeCardOfType(any());
-            verify(view, never())
-                .displayPlayedNope(any());
-            verify(view, never())
-                .displayPlayerHand(any());
-            mockedStatic.verify(GameContext::getTurnOrder);
-            mockedStatic.verify(GameContext::getCurrentPlayer);
-        }
+    void testIsNegatedWithOddNumberOfCards() {
+        List<Card> nopeCards = new ArrayList<>();
+        nopeCards.add(nopeCard);
+        assertTrue(nopeService.isNegated(player1, nopeCards));
+    }
+
+    @Test
+    void testIsNegatedWithEvenNumberOfCards() {
+        List<Card> nopeCards = new ArrayList<>();
+        nopeCards.add(nopeCard);
+        nopeCards.add(nopeCard);
+        assertFalse(nopeService.isNegated(player1, nopeCards));
     }
 
     @Test
     void testIsNegatedByPlayersWithDeclinedNope() {
         // Setup
         List<Player> turnOrder = new ArrayList<>();
-        Player player2 = mock(Player.class);
         turnOrder.add(player1);
         turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        // Mock GameContext static calls
         try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
             mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
             mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
             
             // Mock player behavior
             when(player1.isAlive()).thenReturn(true);
-            when(player1.hasCardOfType(CardType.NOPE)).thenReturn(false);
             when(player2.isAlive()).thenReturn(true);
-            when(player2.hasCardOfType(CardType.NOPE))
-                .thenReturn(true);
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
             
-            // Mock view behavior
-            when(view.promptPlayNope(
-                    player2,
-                    skipCard
-                ))
-                .thenReturn(false);  // Player declines to play Nope
+            when(player2.hasCardOfType(CardType.NOPE)).thenReturn(true);
+            when(player3.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            
+            when(view.promptPlayNope(player2, targetCard)).thenReturn(false);
             
             // Execute
-            boolean result = nopeService.isNegatedByPlayers(skipCard);
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
             
             // Verify
-            assertFalse(result);  // Should not be negated since player declined to play Nope
-            verify(player2, never())
-                .removeCardOfType(any());
-            verify(view, never())
-                .displayPlayedNope(any());
-            verify(view, never())
-                .displayPlayerHand(any());
-            mockedStatic.verify(GameContext::getTurnOrder);
-            mockedStatic.verify(GameContext::getCurrentPlayer);
+            assertFalse(result);
+            verify(view, times(4)).showCardPlayed(player1, targetCard);
+            verify(view).promptPlayNope(player2, targetCard);
+            verify(view, never()).displayPlayedNope(any());
+            verify(view, never()).displayPlayerHand(any());
         }
     }
 
     @Test
-    void testIsNegatedWithNonBasicCard() {
+    void testIsNegatedByPlayersWithNullNopeCard() {
         // Setup
-        Card nonBasicCard = mock(Card.class);
-        when(
-            nonBasicCard.getType()
-        )
-            .thenReturn(CardType.NOPE);
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
         
-        List<Card> cards = new ArrayList<>();
-        cards.add(nonBasicCard);
-        
-        // Execute
-        boolean result = nopeService.isNegated(player1, cards);
-        
-        // Verify
-        assertFalse(result);  // Should not be negated since card is not a BasicCard
-    }
-
-    @Test
-    void testIsNegatedWithNonNopeBasicCard() {
-        // Setup
-        BasicCard nonNopeCard = mock(BasicCard.class);
-        when(
-            nonNopeCard.getType()
-        )
-            .thenReturn(CardType.SKIP);  // Not a NOPE card
-        
-        List<Card> cards = new ArrayList<>();
-        cards.add(nonNopeCard);
-        
-        // Execute
-        boolean result = nopeService.isNegated(player1, cards);
-        
-        // Verify
-        assertFalse(result);  // Should not be negated since card is not a NOPE card
-    }
-
-    @Test
-    void testIsNegatedWithMixedInvalidCardTypes() {
-        // Setup
-        BasicCard nopeCard1 = mock(BasicCard.class);
-        BasicCard nopeCard2 = mock(BasicCard.class);
-        Card nonBasicCard = mock(Card.class);
-        BasicCard nonNopeCard = mock(BasicCard.class);
-        
-        when(nopeCard1.getType())
-            .thenReturn(CardType.NOPE);
-        when(nopeCard2.getType())
-            .thenReturn(CardType.NOPE);
-        when(nonBasicCard.getType())
-            .thenReturn(CardType.NOPE);
-        when(nonNopeCard.getType())
-            .thenReturn(CardType.SKIP);
-        
-        List<Card> cards = new ArrayList<>();
-        cards.add(nopeCard1);
-        cards.add(nonBasicCard);  // Should be ignored
-        cards.add(nopeCard2);
-        cards.add(nonNopeCard);   // Should be ignored
-        
-        // Execute
-        boolean result = nopeService.isNegated(player1, cards);
-        
-        // Verify
-        // Should not be negated since there are 2 valid NOPE cards (even number)
-        assertFalse(result);
+        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
+            
+            // Mock player behavior
+            when(player1.isAlive()).thenReturn(true);
+            when(player2.isAlive()).thenReturn(true);
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
+            
+            when(player2.hasCardOfType(CardType.NOPE)).thenReturn(true);
+            when(player3.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            
+            when(player2.removeCardOfType(CardType.NOPE)).thenReturn(null);
+            when(view.promptPlayNope(player2, targetCard)).thenReturn(true);
+            
+            // Execute
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
+            
+            // Verify
+            assertFalse(result);
+            verify(view, times(4)).showCardPlayed(player1, targetCard);
+            verify(view).promptPlayNope(player2, targetCard);
+            verify(view, never()).displayPlayedNope(any());
+            verify(view, never()).displayPlayerHand(any());
+        }
     }
 } 

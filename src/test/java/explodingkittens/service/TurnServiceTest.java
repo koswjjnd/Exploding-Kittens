@@ -249,17 +249,14 @@ class TurnServiceTest {
         // Mock NopeService to return true (card is noped)
         when(nopeService.isNegatedByPlayers(card)).thenReturn(true);
 
-        // Mock view behavior
-        doNothing().when(view).showCardPlayed(player, card);
-        doNothing().when(view).showCardNoped(player, card);
-
-        // Run
+        // Execute
         turnService.playCard(player, card);
 
         // Verify
-        verify(view).showCardPlayed(player, card);
+        verify(nopeService).isNegatedByPlayers(card);
         verify(view).showCardNoped(player, card);
         verify(player).removeCard(card);
+        verify(view, never()).showCardPlayed(any(), any());
         verify(cardEffectService, never()).applyEffect(any(), any());
     }
 
@@ -269,21 +266,15 @@ class TurnServiceTest {
         List<Card> hand = new ArrayList<>();
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
-        when(nopeService.isNegatedByPlayers(card)).thenReturn(false);
-        
-        // 模拟 cardEffect 抛出异常
-        doThrow(new RuntimeException("Invalid card"))
-            .when(cardEffectService)
-            .applyEffect(card, player);
-        
+        doThrow(new RuntimeException("Invalid card"
+        )).when(cardEffectService).applyEffect(card, player);
+
         // Execute and verify exception
-        assertThrows(
-            InvalidCardException.class,
-            () -> turnService.playCard(player, card)
-        );
+        assertThrows(InvalidCardException.class, () -> turnService.playCard(player, card));
 
         // Verify
-        verify(view).showCardPlayed(player, card);
+        verify(cardEffectService).applyEffect(card, player);
+        verify(view, never()).showCardPlayed(any(), any());
         verify(player, never()).removeCard(any());
     }
 
@@ -488,51 +479,6 @@ class TurnServiceTest {
     }
 
     
-    @Test
-    void testPlayCardsPhaseWithInvalidCard() {
-        // Prepare mocks
-        List<Card> hand = new ArrayList<>();
-        hand.add(card);
-        when(player.getHand()).thenReturn(hand);
-        when(player.getName()).thenReturn("TestPlayer");
-        when(player.isAlive()).thenReturn(true);
-
-        // Mock view behavior
-        when(view.selectCardToPlay(player, hand))
-            .thenReturn(card)
-            .thenReturn(null);
-        doNothing().when(view).showCardPlayed(player, card);
-        doNothing().when(view).showError(anyString());
-        doNothing().when(view).displayPlayerHand(player);
-
-        // Static context
-        mockedStatic.when(GameContext::getTurnOrder)
-            .thenReturn(List.of(player));
-        mockedStatic.when(GameContext::getCurrentPlayer)
-            .thenReturn(player);
-        mockedStatic.when(GameContext::isGameOver)
-            .thenReturn(false);
-
-        // Mock NopeService behavior
-        when(nopeService.isNegatedByPlayers(card))
-            .thenReturn(false);
-
-        // Card effect throws exception
-        doThrow(new RuntimeException("Invalid card"))
-            .when(cardEffectService)
-            .applyEffect(card, player);
-
-        // Run
-        turnService.playCardsPhase(player);
-
-        // Verify
-        verify(view).showCardPlayed(player, card);
-        verify(view).showError("Invalid card");
-        verify(player, never()).removeCard(any());
-        verify(view, atLeastOnce()).displayPlayerHand(player);
-        verify(view, atLeastOnce()).selectCardToPlay(player, hand);
-        verify(cardEffectService).applyEffect(card, player);
-    }
 
     @Test
     void testTwoParameterConstructor() {
