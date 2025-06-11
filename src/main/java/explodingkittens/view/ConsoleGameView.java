@@ -76,7 +76,7 @@ public class ConsoleGameView implements GameView {
     @Override
     public int promptDefusePosition(int deckSize) {
         System.out.println("\nChoose a position to place the Exploding Kitten " 
-            + "(0-" + (deckSize - 1) + "): ");
+            + "(0-" + (deckSize) + "): ");
         return Integer.parseInt(scanner.nextLine().trim());
     }
 
@@ -258,7 +258,7 @@ public class ConsoleGameView implements GameView {
     @Override
     public int selectExplodingKittenPosition(int deckSize) {
         System.out.println("\nChoose a position to place the Exploding Kitten "
-            + "(0-" + (deckSize - 1) + "): ");
+            + "(0-" + (deckSize) + "): ");
         return Integer.parseInt(scanner.nextLine().trim());
     }
 
@@ -381,6 +381,14 @@ public class ConsoleGameView implements GameView {
         System.out.println("\n" + sourcePlayer.getName() 
             + " received " + cardName 
             + " from " + targetPlayer.getName());
+    }
+
+    @Override
+    public void displayCardDrawnFromBottom(Card card) {
+        String cardName = card instanceof CatCard ? 
+            ((CatCard) card).getCatType().toString() : 
+            card.getType().toString();
+        System.out.println("\nCard drawn from bottom: " + cardName);
     }
 
     private int promptComboType() {

@@ -2,6 +2,10 @@ package explodingkittens.model;
 
 import java.util.List;
 import explodingkittens.controller.GameContext;
+import explodingkittens.service.TurnService;
+import explodingkittens.service.CardEffectService;
+import explodingkittens.view.ConsoleGameView;
+import explodingkittens.view.GameView;
 
 /**
  * Represents the Draw From Bottom card.
@@ -9,8 +13,20 @@ import explodingkittens.controller.GameContext;
  * If played as a defense to an Attack Card, each card ends 1 attack turn.
  */
 public class DrawFromBottomCard extends Card {
+    private final GameView view;
+
     public DrawFromBottomCard() {
         super(CardType.DRAW_FROM_BOTTOM);
+        this.view = new ConsoleGameView();
+    }
+
+    /**
+     * Creates a new DrawFromBottomCard with the specified view.
+     * @param view The view to use for displaying game information
+     */
+    public DrawFromBottomCard(GameView view) {
+        super(CardType.DRAW_FROM_BOTTOM);
+        this.view = view;
     }
 
     /**
@@ -35,15 +51,29 @@ public class DrawFromBottomCard extends Card {
             );
         }
         Player currentPlayer = turnOrder.get(0);
-        // Remove and get the bottom card
-        int lastIndex = deck.getCards().size() - 1;
-        Card bottomCard = deck.getCards().remove(lastIndex);
-        currentPlayer.receiveCard(bottomCard);
         
-        // End current player's turn
+        // Remove and get the bottom card using removeBottomCard()
+        Card bottomCard = deck.removeBottomCard();
+
+        // Display the drawn card using the view
+        view.displayCardDrawnFromBottom(bottomCard);
+
+        // Check if the drawn card is an Exploding Kitten
+        if (bottomCard instanceof ExplodingKittenCard) {
+            // Handle the Exploding Kitten
+            TurnService turnService = new TurnService(
+                new ConsoleGameView(), 
+                new CardEffectService(new ConsoleGameView())
+                );
+            turnService.handleExplodingKitten(currentPlayer, (ExplodingKittenCard) bottomCard);
+        } 
+        else {
+            // Add the card to the player's hand
+            currentPlayer.receiveCard(bottomCard);
+        }
+
+        // End current player's turn by setting leftTurns to 0
+        // Let TurnService handle the turn end logic
         currentPlayer.setLeftTurns(0);
-        
-        // Update GameContext's current player index
-        GameContext.nextTurn();
     }
 }
