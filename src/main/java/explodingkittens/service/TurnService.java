@@ -222,7 +222,7 @@ public class TurnService {
             int pos = view.selectExplodingKittenPosition(GameContext.getGameDeck().size());
             GameContext.getGameDeck().insertAt(ek, pos);
             view.displayDefuseSuccess(player, pos);
-        }
+        } 
         else {
             /* 没有(或拒绝) Defuse → 淘汰 */
             player.setAlive(false);

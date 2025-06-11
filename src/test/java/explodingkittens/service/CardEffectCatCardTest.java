@@ -90,8 +90,13 @@ class CardEffectCatCardTest {
 
     @Test
     void testApplyEffectWithUninitializedGameContext() {
-        Assertions.assertThrows(IllegalStateException.class, () -> 
-            cardEffectService.applyEffect(firstCatCard, player1));
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            // Mock GameContext to return null for turn order
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(null);
+            
+            Assertions.assertThrows(IllegalStateException.class, () -> 
+                cardEffectService.applyEffect(firstCatCard, player1));
+        }
     }
 
     @Test

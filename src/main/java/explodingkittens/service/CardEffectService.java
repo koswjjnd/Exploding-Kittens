@@ -168,6 +168,7 @@ public class CardEffectService {
      * @param sourcePlayer The player who played the cat card
      * @param targetPlayer The player who is being stolen from
      * @param effect The cat card effect
+     * @throws IllegalStateException if the target player is not alive or has no cards
      */
     private void handleStealEffect(Player sourcePlayer, Player targetPlayer, 
             CatCard.CatCardEffect effect) {

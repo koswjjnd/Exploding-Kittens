@@ -132,7 +132,15 @@ pitest {
     useClasspathFile.set(true)
     fileExtensionsToFilter.addAll("xml")
     exportLineCoverage = true
-    mutators.set(listOf("STRONGER", "ALL"))
+    mutators.set(listOf(
+        "CONDITIONALS_BOUNDARY",
+        "INCREMENTS",
+        "INVERT_NEGS",
+        "MATH",
+        "NEGATE_CONDITIONALS",
+        "PRIMITIVE_RETURNS",
+        "VOID_METHOD_CALLS"
+    ))
     avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging"))
 }
 

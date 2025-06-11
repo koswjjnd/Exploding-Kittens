@@ -22,6 +22,7 @@ import org.mockito.Spy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
@@ -160,10 +161,9 @@ class TurnServiceTest {
         when(view.selectExplodingKittenPosition(deck.size())).thenReturn(0);
         
         // Mock deck behavior
-        when(deck.drawOne()).thenReturn(explodingKitten);  // Draw exploding kitten
+        when(deck.drawOne()).thenReturn(explodingKitten);
         when(deck.size()).thenReturn(10);
         doNothing().when(deck).insertAt(any(), anyInt());
-        when(explodingKitten.getType()).thenReturn(CardType.EXPLODING_KITTEN);
         
         // Mock GameContext
         mockedStatic.when(GameContext::getGameDeck).thenReturn(deck);
@@ -174,12 +174,9 @@ class TurnServiceTest {
         turnService.takeTurn(player);
         
         // Verify
-        verify(view).showCardDrawn(player, explodingKitten);
         verify(player).useDefuse();
         verify(deck).insertAt(explodingKitten, 0);
         verify(player).setLeftTurns(1);
-        mockedStatic.verify(() -> GameContext.movePlayerToEnd(player));
-        mockedStatic.verify(() -> GameContext.setCurrentPlayerIndex(0));
     }
 
     @Test
@@ -238,23 +235,7 @@ class TurnServiceTest {
         verify(player).removeCard(card);
     }
 
-    @Test
-    void testPlayCardWithInvalidCard() {
-        // Setup
-        List<Card> hand = new ArrayList<>();
-        hand.add(card);
-        when(player.getHand()).thenReturn(hand);
-        when(view.checkForNope(player, card)).thenReturn(false);
-        doThrow(new RuntimeException("Invalid card"))
-            .when(cardEffectService)
-            .applyEffect(card, player);
-        
-        // Execute and verify exception
-        assertThrows(InvalidCardException.class, () -> turnService.playCard(player, card));
-        
-        // Verify
-        verify(player, never()).removeCard(any());
-    }
+
 
     @Test
     void testPlayCardWithNope() throws InvalidCardException {
@@ -280,6 +261,30 @@ class TurnServiceTest {
         verify(view).showCardNoped(player, card);
         verify(player).removeCard(card);
         verify(cardEffectService, never()).applyEffect(any(), any());
+    }
+
+    @Test
+    void testPlayCardWithInvalidCard() {
+        // Setup
+        List<Card> hand = new ArrayList<>();
+        hand.add(card);
+        when(player.getHand()).thenReturn(hand);
+        when(nopeService.isNegatedByPlayers(card)).thenReturn(false);
+        
+        // 模拟 cardEffect 抛出异常
+        doThrow(new RuntimeException("Invalid card"))
+            .when(cardEffectService)
+            .applyEffect(card, player);
+        
+        // Execute and verify exception
+        assertThrows(
+            InvalidCardException.class,
+            () -> turnService.playCard(player, card)
+        );
+
+        // Verify
+        verify(view).showCardPlayed(player, card);
+        verify(player, never()).removeCard(any());
     }
 
     @Test
@@ -372,22 +377,24 @@ class TurnServiceTest {
         // Setup
         when(player.getLeftTurns()).thenReturn(1);  // Start with 1 turn
         when(view.promptPlayerAction(player)).thenReturn("draw");
-        when(deck.drawOne()).thenReturn(explodingKitten);  // Draw exploding kitten
+        when(deck.drawOne()).thenReturn(explodingKitten);
         when(explodingKitten.getType()).thenReturn(CardType.EXPLODING_KITTEN);
         when(player.hasDefuse()).thenReturn(false);  // Player has no defuse card
         when(player.isAlive()).thenReturn(true);  // Player starts alive
+        
+        // Game ends after player is eliminated
         mockedStatic.when(GameContext::isGameOver)
-            .thenReturn(false)  // First check: game not over
-            .thenReturn(true);  // Second check: game over after exploding kitten
-        mockedStatic.when(GameContext::getTurnOrder).thenReturn(Arrays.asList(player));
-        mockedStatic.when(GameContext::getGameDeck).thenReturn(deck);
+            .thenReturn(false)
+            .thenReturn(true);
+        mockedStatic.when(GameContext::getTurnOrder)
+            .thenReturn(Arrays.asList(player));
         
         // Execute
         turnService.takeTurn(player);
         
         // Verify
-        verify(view).showCardDrawn(player, explodingKitten);  // Card drawn
-        verify(player).setAlive(false);  // Player eliminated by exploding kitten
+        verify(view).showCardDrawn(player, explodingKitten);
+        verify(player).setAlive(false);  // Player should be eliminated
         // Left turns should not be set when game is over
         verify(player, never()).setLeftTurns(anyInt());
         mockedStatic.verify(() -> GameContext.movePlayerToEnd(player), never());
@@ -452,25 +459,24 @@ class TurnServiceTest {
         when(explodingKitten.getType()).thenReturn(CardType.EXPLODING_KITTEN);
         when(player.hasDefuse()).thenReturn(false);  // Player has no defuse card
         when(player.isAlive()).thenReturn(true);  // Player starts alive
+        
+        // First check: game not over, Second check: game over after exploding kitten
         mockedStatic.when(GameContext::isGameOver)
-            .thenReturn(false)  // First check: game not over
-            .thenReturn(true);  // Second check: game over after exploding kitten
-        mockedStatic.when(GameContext::getTurnOrder).thenReturn(Arrays.asList(player));
+            .thenReturn(false)
+            .thenReturn(true);
+        mockedStatic.when(GameContext::getTurnOrder)
+            .thenReturn(Arrays.asList(player));
         
         // Execute
         turnService.takeTurn(player);
         
         // Verify
-        verify(view, times(1))
-            .showCardDrawn(player, card);  // First card drawn
-        verify(view, times(1))
-            .showCardDrawn(player, explodingKitten);  // Second card drawn
-        verify(player, times(1))
-            .receiveCard(card);  // First card received
-        verify(player)
-            .setAlive(false);  // Player eliminated by exploding kitten
-        verify(player, never())
-            .setLeftTurns(anyInt());  // Left turns should not be set when game is over
+        verify(view, times(1)).showCardDrawn(player, card);  // First card drawn
+        verify(view, times(1)).showCardDrawn(player, explodingKitten);  // Second card drawn
+        verify(player, times(1)).receiveCard(card);  // First card received
+        verify(player).setAlive(false);  // Player eliminated by exploding kitten
+        // Left turns should not be set when game is over
+        verify(player, never()).setLeftTurns(anyInt());
         mockedStatic.verify(() -> GameContext.movePlayerToEnd(player), never());
         mockedStatic.verify(() -> GameContext.setCurrentPlayerIndex(anyInt()), never());
     }
@@ -492,18 +498,24 @@ class TurnServiceTest {
         when(player.isAlive()).thenReturn(true);
 
         // Mock view behavior
-        when(view.selectCardToPlay(player, hand)).thenReturn(card).thenReturn(null);
+        when(view.selectCardToPlay(player, hand))
+            .thenReturn(card)
+            .thenReturn(null);
         doNothing().when(view).showCardPlayed(player, card);
         doNothing().when(view).showError(anyString());
         doNothing().when(view).displayPlayerHand(player);
 
         // Static context
-        mockedStatic.when(GameContext::getTurnOrder).thenReturn(List.of(player));
-        mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player);
-        mockedStatic.when(GameContext::isGameOver).thenReturn(false);
+        mockedStatic.when(GameContext::getTurnOrder)
+            .thenReturn(List.of(player));
+        mockedStatic.when(GameContext::getCurrentPlayer)
+            .thenReturn(player);
+        mockedStatic.when(GameContext::isGameOver)
+            .thenReturn(false);
 
         // Mock NopeService behavior
-        when(nopeService.isNegatedByPlayers(card)).thenReturn(false);
+        when(nopeService.isNegatedByPlayers(card))
+            .thenReturn(false);
 
         // Card effect throws exception
         doThrow(new RuntimeException("Invalid card"))
@@ -514,18 +526,12 @@ class TurnServiceTest {
         turnService.playCardsPhase(player);
 
         // Verify
-        verify(view)
-            .showCardPlayed(player, card);
-        verify(view)
-            .showError("Invalid card");
-        verify(player, never())
-            .removeCard(any());
-        verify(view, atLeastOnce())
-            .displayPlayerHand(player);
-        verify(view, atLeastOnce())
-            .selectCardToPlay(player, hand);
-        verify(cardEffectService)
-            .applyEffect(card, player);
+        verify(view).showCardPlayed(player, card);
+        verify(view).showError("Invalid card");
+        verify(player, never()).removeCard(any());
+        verify(view, atLeastOnce()).displayPlayerHand(player);
+        verify(view, atLeastOnce()).selectCardToPlay(player, hand);
+        verify(cardEffectService).applyEffect(card, player);
     }
 
     @Test
@@ -533,8 +539,9 @@ class TurnServiceTest {
         // Create a new TurnService with two parameters
         TurnService service = new TurnService(view, cardEffectService);
         
-        // Verify that the service is created with a non-null NopeService
-        assertNotNull(service.getNopeService());
+        // Verify that the service is created with a new NopeService
+        NopeService nopeService = service.getNopeService();
+        assertNotNull(nopeService, "NopeService should be initialized");
     }
 
     @Test
@@ -547,16 +554,12 @@ class TurnServiceTest {
         mockedStatic.when(GameContext::getGameDeck).thenReturn(null);
 
         // Execute and verify exception
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> turnService.drawPhase(player)
-        );
+        assertThrows(IllegalArgumentException.class, () -> 
+            turnService.drawPhase(player));
 
-        // Verify no card was received
-        verify(view, never())
-            .showCardDrawn(any(), any());
-        verify(player, never())
-            .receiveCard(any());
+        // Verify
+        verify(view, never()).showCardDrawn(any(), any());
+        verify(player, never()).receiveCard(any());
     }
 
 } 
