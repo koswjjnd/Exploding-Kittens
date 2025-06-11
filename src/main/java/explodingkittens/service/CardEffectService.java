@@ -175,8 +175,25 @@ public class CardEffectService {
         sourcePlayer.removeCard(effect.getFirstCard());
         sourcePlayer.removeCard(effect.getSecondCard());
         
+        // Check if target player is alive
+        if (!targetPlayer.isAlive()) {
+            throw new IllegalStateException("Target player is not alive");
+        }
+        
+        // Check if target player has any cards
+        List<Card> targetPlayerHand = effect.getTargetPlayerHand();
+        if (targetPlayerHand.isEmpty()) {
+            throw new IllegalStateException("Target player has no cards");
+        }
+        
+        // Check if target card index is valid
+        int targetIndex = effect.getTargetCardIndex();
+        if (targetIndex < 0 || targetIndex >= targetPlayerHand.size()) {
+            throw new IllegalStateException("Invalid target card index");
+        }
+        
         // Steal the card from the target player
-        Card stolenCard = effect.getTargetPlayerHand().get(effect.getTargetCardIndex());
+        Card stolenCard = targetPlayerHand.get(targetIndex);
         targetPlayer.removeCard(stolenCard);
         sourcePlayer.receiveCard(stolenCard);
         

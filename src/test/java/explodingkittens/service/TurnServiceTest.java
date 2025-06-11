@@ -19,8 +19,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,9 +160,10 @@ class TurnServiceTest {
         when(view.selectExplodingKittenPosition(deck.size())).thenReturn(0);
         
         // Mock deck behavior
-        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(deck.drawOne()).thenReturn(explodingKitten);  // Draw exploding kitten
         when(deck.size()).thenReturn(10);
         doNothing().when(deck).insertAt(any(), anyInt());
+        when(explodingKitten.getType()).thenReturn(CardType.EXPLODING_KITTEN);
         
         // Mock GameContext
         mockedStatic.when(GameContext::getGameDeck).thenReturn(deck);
@@ -161,9 +174,12 @@ class TurnServiceTest {
         turnService.takeTurn(player);
         
         // Verify
+        verify(view).showCardDrawn(player, explodingKitten);
         verify(player).useDefuse();
         verify(deck).insertAt(explodingKitten, 0);
         verify(player).setLeftTurns(1);
+        mockedStatic.verify(() -> GameContext.movePlayerToEnd(player));
+        mockedStatic.verify(() -> GameContext.setCurrentPlayerIndex(0));
     }
 
     @Test
@@ -229,8 +245,9 @@ class TurnServiceTest {
         hand.add(card);
         when(player.getHand()).thenReturn(hand);
         when(view.checkForNope(player, card)).thenReturn(false);
-        doThrow(new RuntimeException("Invalid card")
-        ).when(cardEffectService).applyEffect(card, player);
+        doThrow(new RuntimeException("Invalid card"))
+            .when(cardEffectService)
+            .applyEffect(card, player);
         
         // Execute and verify exception
         assertThrows(InvalidCardException.class, () -> turnService.playCard(player, card));
@@ -355,20 +372,24 @@ class TurnServiceTest {
         // Setup
         when(player.getLeftTurns()).thenReturn(1);  // Start with 1 turn
         when(view.promptPlayerAction(player)).thenReturn("draw");
-        when(deck.drawOne()).thenReturn(explodingKitten);
+        when(deck.drawOne()).thenReturn(explodingKitten);  // Draw exploding kitten
         when(explodingKitten.getType()).thenReturn(CardType.EXPLODING_KITTEN);
         when(player.hasDefuse()).thenReturn(false);  // Player has no defuse card
         when(player.isAlive()).thenReturn(true);  // Player starts alive
-        mockedStatic.when(GameContext::isGameOver).thenReturn(false).thenReturn(true);  // Game ends after player is eliminated
+        mockedStatic.when(GameContext::isGameOver)
+            .thenReturn(false)  // First check: game not over
+            .thenReturn(true);  // Second check: game over after exploding kitten
         mockedStatic.when(GameContext::getTurnOrder).thenReturn(Arrays.asList(player));
+        mockedStatic.when(GameContext::getGameDeck).thenReturn(deck);
         
         // Execute
         turnService.takeTurn(player);
         
         // Verify
-        verify(view).showCardDrawn(player, explodingKitten);
-        verify(player).setAlive(false);  // Player should be eliminated
-        verify(player, never()).setLeftTurns(anyInt());  // Left turns should not be set when game is over
+        verify(view).showCardDrawn(player, explodingKitten);  // Card drawn
+        verify(player).setAlive(false);  // Player eliminated by exploding kitten
+        // Left turns should not be set when game is over
+        verify(player, never()).setLeftTurns(anyInt());
         mockedStatic.verify(() -> GameContext.movePlayerToEnd(player), never());
         mockedStatic.verify(() -> GameContext.setCurrentPlayerIndex(anyInt()), never());
     }
@@ -440,11 +461,16 @@ class TurnServiceTest {
         turnService.takeTurn(player);
         
         // Verify
-        verify(view, times(1)).showCardDrawn(player, card);  // First card drawn
-        verify(view, times(1)).showCardDrawn(player, explodingKitten);  // Second card drawn
-        verify(player, times(1)).receiveCard(card);  // First card received
-        verify(player).setAlive(false);  // Player eliminated by exploding kitten
-        verify(player, never()).setLeftTurns(anyInt());  // Left turns should not be set when game is over
+        verify(view, times(1))
+            .showCardDrawn(player, card);  // First card drawn
+        verify(view, times(1))
+            .showCardDrawn(player, explodingKitten);  // Second card drawn
+        verify(player, times(1))
+            .receiveCard(card);  // First card received
+        verify(player)
+            .setAlive(false);  // Player eliminated by exploding kitten
+        verify(player, never())
+            .setLeftTurns(anyInt());  // Left turns should not be set when game is over
         mockedStatic.verify(() -> GameContext.movePlayerToEnd(player), never());
         mockedStatic.verify(() -> GameContext.setCurrentPlayerIndex(anyInt()), never());
     }
@@ -480,18 +506,26 @@ class TurnServiceTest {
         when(nopeService.isNegatedByPlayers(card)).thenReturn(false);
 
         // Card effect throws exception
-        doThrow(new RuntimeException("Invalid card")).when(cardEffectService).applyEffect(card, player);
+        doThrow(new RuntimeException("Invalid card"))
+            .when(cardEffectService)
+            .applyEffect(card, player);
 
         // Run
         turnService.playCardsPhase(player);
 
         // Verify
-        verify(view).showCardPlayed(player, card);
-        verify(view).showError("Invalid card");
-        verify(player, never()).removeCard(any());
-        verify(view, atLeastOnce()).displayPlayerHand(player);
-        verify(view, atLeastOnce()).selectCardToPlay(player, hand);
-        verify(cardEffectService).applyEffect(card, player);
+        verify(view)
+            .showCardPlayed(player, card);
+        verify(view)
+            .showError("Invalid card");
+        verify(player, never())
+            .removeCard(any());
+        verify(view, atLeastOnce())
+            .displayPlayerHand(player);
+        verify(view, atLeastOnce())
+            .selectCardToPlay(player, hand);
+        verify(cardEffectService)
+            .applyEffect(card, player);
     }
 
     @Test
@@ -499,9 +533,8 @@ class TurnServiceTest {
         // Create a new TurnService with two parameters
         TurnService service = new TurnService(view, cardEffectService);
         
-        // Verify that the service is created with a new NopeService
+        // Verify that the service is created with a non-null NopeService
         assertNotNull(service.getNopeService());
-        assertTrue(service.getNopeService() instanceof NopeService);
     }
 
     @Test
@@ -514,12 +547,16 @@ class TurnServiceTest {
         mockedStatic.when(GameContext::getGameDeck).thenReturn(null);
 
         // Execute and verify exception
-        assertThrows(IllegalArgumentException.class, () -> 
-            turnService.drawPhase(player));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> turnService.drawPhase(player)
+        );
 
-        // Verify
-        verify(view, never()).showCardDrawn(any(), any());
-        verify(player, never()).receiveCard(any());
+        // Verify no card was received
+        verify(view, never())
+            .showCardDrawn(any(), any());
+        verify(player, never())
+            .receiveCard(any());
     }
 
 } 
