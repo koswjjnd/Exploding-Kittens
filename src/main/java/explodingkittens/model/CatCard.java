@@ -189,7 +189,8 @@ public class CatCard extends Card {
             if (requestedCardType == CardType.CAT_CARD) {
                 // 如果是猫牌，使用第一张猫牌的类型
                 this.requestedCatType = firstCard.getCatType();
-            } else {
+            } 
+            else {
                 this.requestedCatType = null;
             }
             this.targetPlayerName = currentPlayerName;

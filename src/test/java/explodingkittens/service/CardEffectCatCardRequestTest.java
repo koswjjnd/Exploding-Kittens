@@ -80,8 +80,11 @@ class CardEffectCatCardRequestTest {
             Mockito.when(effect.getThirdCard()).thenReturn(thirdCatCard);
             Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
             
-            Mockito.when(player2.getHand()).thenReturn(Arrays.asList(requestedCard));
+            List<Card> player2Hand = Arrays.asList(requestedCard);
+            Mockito.when(player2.getHand()).thenReturn(player2Hand);
             Mockito.when(requestedCard.getType()).thenReturn(CardType.ATTACK);
+            Mockito.when(mockGameView.selectCardFromPlayer(player2, player2Hand))
+                .thenReturn(requestedCard);
             
             Mockito.doThrow(effect).when(firstCatCard).effect(turnOrder, gameDeck);
             
