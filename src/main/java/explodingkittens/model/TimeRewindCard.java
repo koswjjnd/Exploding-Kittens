@@ -39,9 +39,20 @@ public class TimeRewindCard extends Card {
         }
 
         // Move top 3 cards to bottom
-        List<Card> cards = gameDeck.getCards();
-        List<Card> topThree = new ArrayList<>(cards.subList(0, 3));
-        cards.removeAll(topThree);
-        cards.addAll(topThree);
+        List<Card> cards = gameDeck.getRealCards();
+        // Get the top three cards by their exact position
+        Card first = cards.get(0);
+        Card second = cards.get(1);
+        Card third = cards.get(2);
+        
+        // Remove them in reverse order to avoid index shifting
+        cards.remove(2);
+        cards.remove(1);
+        cards.remove(0);
+        
+        // Add them to the bottom
+        cards.add(first);
+        cards.add(second);
+        cards.add(third);
     }
 }

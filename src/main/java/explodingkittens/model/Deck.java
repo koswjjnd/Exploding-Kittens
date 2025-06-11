@@ -102,6 +102,16 @@ public class Deck {
     }
 
     /**
+     * Returns the cards in the deck.
+     * 
+     * @return A list of cards in the deck
+     */
+    @SuppressWarnings("EI_EXPOSE_REP")
+    public List<Card> getRealCards() {
+        return cards;
+    }
+
+    /**
      * Checks if the deck is empty.
      * @return true if the deck is empty, false otherwise
      */
