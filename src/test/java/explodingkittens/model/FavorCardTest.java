@@ -86,7 +86,7 @@ class FavorCardTest {
     @Test
     void testEffectWithEmptyHand() {
         // Arrange
-        when(mockTargetPlayer1.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         
         // Act & Assert
@@ -108,7 +108,7 @@ class FavorCardTest {
         // Arrange
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(0);
         
@@ -116,7 +116,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard1);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -135,7 +135,7 @@ class FavorCardTest {
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(1); // Select second card
         
@@ -143,7 +143,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard2);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -161,8 +161,8 @@ class FavorCardTest {
         // Arrange
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(0);
         
@@ -170,7 +170,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard1);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -189,8 +189,8 @@ class FavorCardTest {
         List<Card> targetHand = new ArrayList<>();
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(1);
         
@@ -198,7 +198,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard2);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -218,8 +218,8 @@ class FavorCardTest {
         targetHand.add(mockCard1);
         targetHand.add(mockCard2);
         targetHand.add(mockCard3);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(2);
         
@@ -227,7 +227,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard3);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -248,8 +248,8 @@ class FavorCardTest {
         targetHand.add(mockCard2);
         targetHand.add(mockCard3);
         targetHand.add(mockCard4);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(3);
         
@@ -257,7 +257,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard4);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -279,8 +279,8 @@ class FavorCardTest {
         targetHand.add(mockCard3);
         targetHand.add(mockCard4);
         targetHand.add(mockCard5);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(4);
         
@@ -288,7 +288,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard5);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -311,8 +311,8 @@ class FavorCardTest {
         targetHand.add(mockCard4);
         targetHand.add(mockCard5);
         targetHand.add(mockCard6);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(5);
         
@@ -320,7 +320,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard6);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
@@ -344,8 +344,8 @@ class FavorCardTest {
         targetHand.add(mockCard5);
         targetHand.add(mockCard6);
         targetHand.add(mockCard7);
-        when(mockTargetPlayer1.getHand()).thenReturn(targetHand);
-        when(mockTargetPlayer2.getHand()).thenReturn(new ArrayList<>());
+        when(mockTargetPlayer1.getRealHand()).thenReturn(targetHand);
+        when(mockTargetPlayer2.getRealHand()).thenReturn(new ArrayList<>());
         when(mockView.promptTargetPlayer(anyList())).thenReturn(0);
         when(mockView.promptCardSelection(anyList())).thenReturn(6);
         
@@ -353,7 +353,7 @@ class FavorCardTest {
         favorCard.effect(turnOrder, mockDeck);
         
         // Assert
-        verify(mockTargetPlayer1).getHand();
+        verify(mockTargetPlayer1).getRealHand();
         verify(mockCurrentPlayer).receiveCard(mockCard7);
         verify(mockView).promptTargetPlayer(anyList());
         verify(mockView).promptCardSelection(anyList());
