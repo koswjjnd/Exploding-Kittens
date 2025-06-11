@@ -62,7 +62,7 @@ public class FavorCard extends Card {
         Player targetPlayer = availablePlayers.get(targetIndex);
 
         // Check if target player has any cards
-        List<Card> targetHand = targetPlayer.getHand();
+        List<Card> targetHand = targetPlayer.getRealHand();
         if (targetHand.isEmpty()) {
             throw new IllegalStateException("Target player has no cards to give");
         }

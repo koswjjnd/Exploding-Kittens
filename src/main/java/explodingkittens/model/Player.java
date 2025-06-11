@@ -92,6 +92,15 @@ public class Player {
     }
 
     /**
+     * Gets the player's hand.
+     * @return the player's real hand
+     */
+    @SuppressWarnings("EI_EXPOSE_REP")
+    public List<Card> getRealHand() {
+        return hand;
+    }
+
+    /**
      * Removes a card from the player's hand.
      * @param card the card to remove
      * @return true if the card was removed, false otherwise
