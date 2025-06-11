@@ -33,9 +33,7 @@ public class ExplodingKittenCardTest {
         playerTurnOrder.add(player1);
         playerTurnOrder.add(player2);
         
-        // 重置 GameContext 状态
         GameContext.reset();
-        // 初始化 GameContext
         GameContext.setTurnOrder(playerTurnOrder);
         GameContext.setGameDeck(gameDeck);
     }

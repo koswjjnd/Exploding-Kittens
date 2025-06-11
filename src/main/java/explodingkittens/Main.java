@@ -36,15 +36,15 @@ public class Main {
 
             System.out.println(I18nUtil.getMessage("ui.welcome"));
 
-            /* ---------- Step 1 : 游戏初始化 ---------- */
+            /* ---------- Step 1 : initial ---------- */
             GameSetupView setupView   = new GameSetupView();
             PlayerService playerSvc   = new PlayerService();
             DealService   dealSvc     = new DealService();
             GameSetupController setup = new GameSetupController(setupView, playerSvc, dealSvc);
 
-            setup.setupGame();               // 交互式：人数 → 昵称 → 发牌 → 写入 GameContext
+            setup.setupGame();               
 
-            /* ---------- Step 2 : 进入主循环 ---------- */
+            /* ---------- Step 2 : main loop ---------- */
             ConsoleGameView gameView = new ConsoleGameView();
             GameController  gameCtrl = new GameController(gameView);
             gameCtrl.start();

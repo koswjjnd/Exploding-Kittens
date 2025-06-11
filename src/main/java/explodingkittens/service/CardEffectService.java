@@ -53,33 +53,33 @@ public class CardEffectService {
             card.effect(turnOrder, deck);
         } 
         catch (CatCard.CatCardEffect effect) {
-            // 处理猫卡效果
+            // handle cat card effect
             Player currentPlayer = turnOrder.get(0);
             
-            // 移除使用的猫卡
+            // remove used cat cards
             currentPlayer.removeCard(effect.getFirstCard());
             currentPlayer.removeCard(effect.getSecondCard());
             
             if (effect.getThirdCard() != null) {
-                // 处理三张猫牌请求卡牌的情况
+                // handle three cat cards request card
                 currentPlayer.removeCard(effect.getThirdCard());
                 CardType requestedType = effect.getRequestedCardType();
                 
-                // 选择目标玩家
+                // select target player
                 Player targetPlayer = selectTargetPlayer(turnOrder, currentPlayer);
                 view.displayCatCardEffect("request", currentPlayer, targetPlayer);
                 
-                // 检查目标玩家是否有请求的卡牌类型
+                // check if target player has requested card type
                 boolean hasRequestedCard = targetPlayer.getHand().stream()
                     .anyMatch(c -> c.getType() == requestedType);
                     
                 if (hasRequestedCard) {
-                    // 过滤出指定类型的卡牌
+                    // filter out cards of requested type
                     List<Card> matchingCards = targetPlayer.getHand().stream()
                         .filter(c -> c.getType() == requestedType)
                         .collect(Collectors.toList());
                     
-                    // 让目标玩家选择一张指定类型的卡牌
+                    // let target player select a card of requested type
                     Card requestedCard = view.selectCardFromPlayer(targetPlayer, matchingCards);
                     if (requestedCard != null) {
                         targetPlayer.removeCard(requestedCard);
@@ -97,7 +97,7 @@ public class CardEffectService {
                 }
             } 
             else {
-                // 处理两张猫牌偷牌的情况
+                // handle two cat cards steal effect
                 Player targetPlayer = turnOrder.stream()
                     .filter(p -> p.getName().equals(effect.getTargetPlayerName()))
                     .findFirst()

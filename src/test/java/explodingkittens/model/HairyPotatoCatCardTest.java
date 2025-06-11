@@ -105,6 +105,20 @@ class HairyPotatoCatCardTest {
         verifyCatCardEffect(effect);
     }
 
+    @Test
+    void testEffectWithNoValidTargetPlayers() {
+        setupTwoHairyPotatoCatCards();
+        
+        when(targetPlayer.isAlive()).thenReturn(false);
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> hairyPotatoCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when no valid target players available"
+        );
+        assertEquals("No valid target players available", exception.getMessage());
+    }
+
     private void setupTwoHairyPotatoCatCards() {
         HairyPotatoCatCard card1 = new HairyPotatoCatCard();
         HairyPotatoCatCard card2 = new HairyPotatoCatCard();

@@ -36,7 +36,7 @@ public class FavorCard extends Card {
      */
     protected FavorCard(FavorCardView view) {
         super(CardType.FAVOR);
-        this.view = new FavorCardView();
+        this.view = view;
     }
 
     /**

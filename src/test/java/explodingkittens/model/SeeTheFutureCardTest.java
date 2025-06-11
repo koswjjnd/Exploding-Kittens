@@ -100,11 +100,9 @@ public class SeeTheFutureCardTest {
      */
     @Test
     public void testEffectWithView() {
-        // 创建一个假的 view
         FakeSeeTheFutureView fakeView = new FakeSeeTheFutureView();
         seeTheFutureCard.setView(fakeView);
 
-        // 添加几张牌
         deck.addCard(new AttackCard());
         deck.addCard(new SkipCard());
         deck.addCard(new ShuffleCard());
@@ -120,7 +118,7 @@ public class SeeTheFutureCardTest {
      */
     @Test
     public void testEffectWithoutView() {
-        // 添加几张牌
+        // add some cards
         deck.addCard(new AttackCard());
         deck.addCard(new SkipCard());
 

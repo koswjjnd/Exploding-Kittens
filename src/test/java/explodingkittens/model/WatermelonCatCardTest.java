@@ -143,4 +143,21 @@ class WatermelonCatCardTest {
 
         verifyCatCardEffect(effect);
     }
+
+    @Test
+    void testEffectWithNoValidTargetPlayers() {
+        // Setup two watermelon cat cards
+        setupTwoWatermelonCatCards();
+        
+        // Make target player invalid (e.g., not alive)
+        when(targetPlayer.isAlive()).thenReturn(false);
+        
+        // Verify exception is thrown
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> watermelonCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when no valid target players available"
+        );
+        assertEquals("No valid target players available", exception.getMessage());
+    }
 } 
