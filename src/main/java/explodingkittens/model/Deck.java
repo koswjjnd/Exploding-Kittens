@@ -23,13 +23,13 @@ public class Deck {
     }
 
     /**
-     * 拷贝构造函数，实现深拷贝。
-     * @param other 要拷贝的Deck对象
+     * Copy constructor, implements deep copy.
+     * @param other the Deck object to copy
      */
     public Deck(Deck other) {
         this.cards = new ArrayList<>();
         for (Card card : other.cards) {
-            this.cards.add(card.clone()); // 假设Card实现了clone()
+            this.cards.add(card.clone()); // assume Card implements clone()
         }
     }
 

@@ -7,12 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 
 /**
  * Test class for the Deck class.
  */
 public class DeckTest {
+    private Deck deck;
+    private Card skipCard;
+    private Card attackCard;
+
+    @BeforeEach
+    void setUp() {
+        deck = new Deck();
+        skipCard = new SkipCard();
+        attackCard = new AttackCard();
+    }
+
     /**
      * Tests that initializing a deck with 1 player throws an IllegalArgumentException.
      */
@@ -177,5 +189,80 @@ public class DeckTest {
         Map<String, Integer> cardCounts = deck.getCardCounts();
         assertEquals(1, cardCounts.size());
         assertEquals(2, cardCounts.get("See_the_futureCard"));
+    }
+
+    @Test
+    void testDrawFromEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> 
+            deck.drawOne(),
+            "Should throw IllegalStateException when drawing from empty deck"
+        );
+    }
+
+    @Test
+    void testInsertCardAtValidPosition() {
+        // Insert cards at different positions
+        deck.insertAt(skipCard, 0);
+        deck.insertAt(attackCard, 1);
+
+        // Verify cards are in correct positions
+        assertEquals(skipCard, deck.drawOne(), "First card should be SkipCard");
+        assertEquals(attackCard, deck.drawOne(), "Second card should be AttackCard");
+    }
+
+    @Test
+    void testInsertNullCard() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            deck.insertAt(null, 0),
+            "Should throw IllegalArgumentException when inserting null card"
+        );
+    }
+
+    @Test
+    void testInsertCardAtNegativePosition() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            deck.insertAt(skipCard, -1),
+            "Should throw IllegalArgumentException when inserting at negative position"
+        );
+    }
+
+    @Test
+    void testInsertCardAtPositionBeyondSize() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            deck.insertAt(skipCard, 1),
+            "Should throw IllegalArgumentException when inserting at position beyond size"
+        );
+    }
+
+    @Test
+    void testPeekAtEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> 
+            deck.peekTop(),
+            "Should throw IllegalStateException when peeking at empty deck"
+        );
+    }
+
+    @Test
+    void testPeekAtNonEmptyDeck() {
+        deck.insertAt(skipCard, 0);
+        deck.insertAt(attackCard, 1);
+
+        // Verify peek returns first card without removing it
+        assertEquals(skipCard, deck.peekTop(), "Peek should return first card");
+        assertEquals(2, deck.size(), "Deck size should remain unchanged after peek");
+    }
+
+    @Test
+    void testSize() {
+        assertEquals(0, deck.size(), "Empty deck should have size 0");
+        
+        deck.insertAt(skipCard, 0);
+        assertEquals(1, deck.size(), "Deck should have size 1 after inserting one card");
+        
+        deck.insertAt(attackCard, 1);
+        assertEquals(2, deck.size(), "Deck should have size 2 after inserting two cards");
+        
+        deck.drawOne();
+        assertEquals(1, deck.size(), "Deck should have size 1 after drawing one card");
     }
 }

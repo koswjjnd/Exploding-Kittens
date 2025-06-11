@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
 import java.util.List;
 import explodingkittens.controller.CatCardRequestController;
@@ -245,5 +246,107 @@ class CatRequestCardTest {
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
 
         assertDoesNotThrow(() -> catRequestCard.effect(turnOrder, gameDeck));
+    }
+
+    @Test
+    @DisplayName("Test Case: getController throws exception when controller is not set")
+    void testGetControllerWithNoController() {
+        // Reset the controller by setting it to null using reflection
+        try {
+            java.lang.reflect.Field inputHandlerField = 
+                CatRequestCard.class.getDeclaredClasses()[0].getDeclaredField("inputHandler");
+            inputHandlerField.setAccessible(true);
+            inputHandlerField.set(null, null);
+            
+            // Verify that getController throws IllegalStateException
+            IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> CatRequestCard.getController(),
+                "Should throw IllegalStateException when controller is not set"
+            );
+            assertEquals("Controller not set", exception.getMessage());
+        }
+        catch (Exception e) {
+            fail("Test setup failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testEffectWithNoController() {
+        CatRequestCard card = new CatRequestCard(CatType.TACOCAT);
+        List<Player> players = new ArrayList<>();
+        Player player = new Player("Player1");
+        players.add(player);
+        
+        for (int i = 0; i < 3; i++) {
+            player.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        }
+        
+        // check: should throw IllegalStateException when controller is not set
+        assertThrows(IllegalStateException.class, () -> {
+            card.effect(players, new Deck());
+        });
+    }
+
+    @Test
+    void testEffectWithNullTurnOrder() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            catRequestCard.effect(null, gameDeck),
+            "Should throw IllegalArgumentException when turn order is null"
+        );
+    }
+
+    @Test
+    void testEffectWithNullCurrentPlayer() {
+        // Create a list with null as the first element
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(null);
+        
+        assertThrows(IllegalArgumentException.class, () -> 
+            catRequestCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalArgumentException when current player is null"
+        );
+    }
+
+    @Test
+    void testEffectWithNoTurnsLeft() {
+        // Create a player with no turns left
+        Player currentPlayer = new Player("Current");
+        currentPlayer.setLeftTurns(0);
+        turnOrder.add(currentPlayer);
+        
+        assertThrows(IllegalStateException.class, () -> 
+            catRequestCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when player has no turns left"
+        );
+    }
+
+    @Test
+    void testEffectWithInsufficientCatCards() {
+        // Create a player with only two cat cards of the same type
+        Player currentPlayer = new Player("Current");
+        currentPlayer.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        turnOrder.add(currentPlayer);
+        
+        assertThrows(IllegalStateException.class, () -> 
+            catRequestCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when player has insufficient cat cards"
+        );
+    }
+
+    @Test
+    void testEffectWithNoAvailablePlayers() {
+        // Create a player with three cat cards
+        Player currentPlayer = new Player("Current");
+        currentPlayer.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatRequestCard(CatType.TACOCAT));
+        turnOrder.add(currentPlayer);
+        
+        assertThrows(IllegalStateException.class, () -> 
+            catRequestCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when no other players are available"
+        );
     }
 } 

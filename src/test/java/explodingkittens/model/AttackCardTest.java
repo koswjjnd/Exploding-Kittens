@@ -179,4 +179,90 @@ class AttackCardTest {
         verify(currentPlayer, never()).setLeftTurns(anyInt());
         verify(nextPlayer, never()).setLeftTurns(anyInt());
     }
+
+    @Test
+    void testEffectWithNullServices() {
+        // Create new AttackCard without setting services
+        AttackCard card = new AttackCard();
+        
+        // Setup
+        when(currentPlayer.getLeftTurns()).thenReturn(1);
+        when(currentPlayer.isAlive()).thenReturn(true);
+        when(currentPlayer.getName()).thenReturn("CurrentPlayer");
+        when(nextPlayer.isAlive()).thenReturn(true);
+        when(nextPlayer.getName()).thenReturn("NextPlayer");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(currentPlayer);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        mockedGameContext.when(() -> GameContext.movePlayerToEnd(currentPlayer)
+        ).thenAnswer(invocation -> null);
+        
+        // Execute
+        card.effect(turnOrder, gameDeck);
+        
+        // Verify normal effect still occurs
+        verify(currentPlayer).setLeftTurns(0);
+        verify(nextPlayer).setLeftTurns(3);
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(currentPlayer));
+    }
+
+    @Test
+    void testEffectWithNullNopeService() {
+        // Create new AttackCard and set only view
+        AttackCard card = new AttackCard();
+        card.setServices(null, gameView);
+        
+        // Setup
+        when(currentPlayer.getLeftTurns()).thenReturn(1);
+        when(currentPlayer.isAlive()).thenReturn(true);
+        when(currentPlayer.getName()).thenReturn("CurrentPlayer");
+        when(nextPlayer.isAlive()).thenReturn(true);
+        when(nextPlayer.getName()).thenReturn("NextPlayer");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(currentPlayer);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        mockedGameContext.when(() -> GameContext.movePlayerToEnd(currentPlayer)
+        ).thenAnswer(invocation -> null);
+        
+        // Execute
+        card.effect(turnOrder, gameDeck);
+        
+        // Verify normal effect still occurs
+        verify(currentPlayer).setLeftTurns(0);
+        verify(nextPlayer).setLeftTurns(3);
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(currentPlayer));
+    }
+
+    @Test
+    void testEffectWithNullView() {
+        // Create new AttackCard and set only nopeService
+        AttackCard card = new AttackCard();
+        card.setServices(nopeService, null);
+        
+        // Setup
+        when(currentPlayer.getLeftTurns()).thenReturn(1);
+        when(currentPlayer.isAlive()).thenReturn(true);
+        when(currentPlayer.getName()).thenReturn("CurrentPlayer");
+        when(nextPlayer.isAlive()).thenReturn(true);
+        when(nextPlayer.getName()).thenReturn("NextPlayer");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(currentPlayer);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        mockedGameContext.when(() -> GameContext.movePlayerToEnd(currentPlayer)
+        ).thenAnswer(invocation -> null);
+        
+        // Execute
+        card.effect(turnOrder, gameDeck);
+        
+        // Verify normal effect still occurs
+        verify(currentPlayer).setLeftTurns(0);
+        verify(nextPlayer).setLeftTurns(3);
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(currentPlayer));
+    }
 } 

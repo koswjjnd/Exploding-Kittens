@@ -137,7 +137,7 @@ public class ConsoleGameView implements GameView {
             return promptPlayCard(player, hand);
         }
         
-        // 验证选择的卡牌是否都是相同类型的猫牌
+        // check if selected cards are all the same type of cat cards
         Card firstCard = hand.get(selectedIndices.get(0));
         if (!(firstCard instanceof CatCard)) {
             showError("Selected cards must be cat cards.");
@@ -163,7 +163,7 @@ public class ConsoleGameView implements GameView {
             return promptPlayCard(player, hand);
         }
         
-        // 验证选择的卡牌是否都是相同类型的猫牌
+        // check if selected cards are all the same type of cat cards
         Card firstCard = hand.get(selectedIndices.get(0));
         if (!(firstCard instanceof CatCard)) {
             showError("Selected cards must be cat cards.");
@@ -179,13 +179,13 @@ public class ConsoleGameView implements GameView {
             }
         }
 
-        // 选择要请求的卡牌类型
+        // select card type to request
         CardType requestedCardType = promptRequestedCardType();
         if (requestedCardType == null) {
             return promptPlayCard(player, hand);
         }
 
-        // 创建一个 CatCard 对象来触发请求效果
+        // create a CatCard object to trigger request effect
         return new CatCard(catType) {
             @Override
             public void effect(List<Player> turnOrder, Deck gameDeck) {
@@ -304,7 +304,7 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public Card selectCardFromPlayer(Player targetPlayer, List<Card> hand) {
-        // 获取请求的卡牌类型
+        // get requested card type
         CardType requestedType = null;
         CatType requestedCatType = null;
         for (Card card : hand) {
@@ -315,7 +315,7 @@ public class ConsoleGameView implements GameView {
             }
         }
 
-        // 如果请求的是猫牌，只显示该类型的猫牌
+        // if requested is cat card, only show cat cards of that type
         if (requestedType == CardType.CAT_CARD && requestedCatType != null) {
             List<Card> filteredHand = new ArrayList<>();
             for (Card card : hand) {

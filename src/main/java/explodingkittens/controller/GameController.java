@@ -46,7 +46,6 @@ public class GameController {
                 view.displayCurrentPlayer(currentPlayer);
                 turnService.takeTurn(currentPlayer);
                 
-                // 检查是否只剩一名玩家
                 List<Player> alivePlayers = GameContext.getTurnOrder().stream()
                     .filter(Player::isAlive)
                     .collect(Collectors.toList());
