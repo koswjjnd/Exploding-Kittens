@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Test class for CardEffectService.
@@ -519,6 +520,561 @@ class CardEffectServiceTest {
             Mockito.verify(player2).removeCard(stolenCard);
             Mockito.verify(player1).receiveCard(stolenCard);
             Mockito.verify(mockGameView).displayCardStolen(player1, player2, stolenCard);
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectThroughApplyEffect() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card requestedCard = Mockito.mock(Card.class);
+            List<Card> matchingCards = Arrays.asList(requestedCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(matchingCards);
+            Mockito.when(requestedCard.getType()).thenReturn(CardType.ATTACK);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList())).thenReturn(player2);
+            Mockito.when(mockGameView.selectCardFromPlayer(Mockito.any(), Mockito.anyList()))
+                .thenReturn(requestedCard);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player1).removeCard(thirdCard);
+            Mockito.verify(mockGameView).displayCatCardEffect("request", player1, player2);
+            Mockito.verify(player2).removeCard(requestedCard);
+            Mockito.verify(player1).receiveCard(requestedCard);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, requestedCard);
+        }
+    }
+
+    @Test
+    void testHandleStealEffectThroughApplyEffect() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card stolenCard = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(stolenCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(null);
+            Mockito.when(effect.getTargetPlayerName()).thenReturn("player2");
+            Mockito.when(effect.getTargetPlayerHand()).thenReturn(targetHand);
+            Mockito.when(effect.getTargetCardIndex()).thenReturn(0);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player2).removeCard(stolenCard);
+            Mockito.verify(player1).receiveCard(stolenCard);
+            Mockito.verify(mockGameView).displayCardStolen(player1, player2, stolenCard);
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectWithNoMatchingCardThroughApplyEffect() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card nonMatchingCard = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(nonMatchingCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(nonMatchingCard.getType()).thenReturn(CardType.SKIP);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList())).thenReturn(player2);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player1).removeCard(thirdCard);
+            Mockito.verify(mockGameView).displayCatCardEffect("request", player1, player2);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
+            Mockito.verify(mockGameView).showError(Mockito.anyString());
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectWithNullSelectionThroughApplyEffect() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card requestedCard = Mockito.mock(Card.class);
+            List<Card> matchingCards = Arrays.asList(requestedCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(matchingCards);
+            Mockito.when(requestedCard.getType()).thenReturn(CardType.ATTACK);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList())).thenReturn(player2);
+            Mockito.when(mockGameView.selectCardFromPlayer(Mockito.any(), Mockito.anyList()))
+                .thenReturn(null);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player1).removeCard(thirdCard);
+            Mockito.verify(mockGameView).displayCatCardEffect("request", player1, player2);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
+            Mockito.verify(mockGameView).showError(Mockito.anyString());
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectWithMultipleCards() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card nonMatchingCard1 = Mockito.mock(Card.class);
+            Card matchingCard = Mockito.mock(Card.class);
+            Card nonMatchingCard2 = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(nonMatchingCard1, matchingCard, nonMatchingCard2);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(nonMatchingCard1.getType()).thenReturn(CardType.SKIP);
+            Mockito.when(matchingCard.getType()).thenReturn(CardType.ATTACK);
+            Mockito.when(nonMatchingCard2.getType()).thenReturn(CardType.SKIP);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList())).thenReturn(player2);
+            Mockito.when(mockGameView.selectCardFromPlayer(Mockito.any(), Mockito.anyList()))
+                .thenReturn(matchingCard);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player1).removeCard(thirdCard);
+            Mockito.verify(mockGameView).displayCatCardEffect("request", player1, player2);
+            Mockito.verify(player2).removeCard(matchingCard);
+            Mockito.verify(player1).receiveCard(matchingCard);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, matchingCard);
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectWithNoMatchingCards() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card nonMatchingCard1 = Mockito.mock(Card.class);
+            Card nonMatchingCard2 = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(nonMatchingCard1, nonMatchingCard2);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(nonMatchingCard1.getType()).thenReturn(CardType.SKIP);
+            Mockito.when(nonMatchingCard2.getType()).thenReturn(CardType.SKIP);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList())).thenReturn(player2);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player1).removeCard(thirdCard);
+            Mockito.verify(mockGameView).displayCatCardEffect("request", player1, player2);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
+            Mockito.verify(mockGameView).showError(Mockito.anyString());
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectWithNullThirdCard() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card stolenCard = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(stolenCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(null);
+            Mockito.when(effect.getTargetPlayerName()).thenReturn("player2");
+            Mockito.when(effect.getTargetPlayerHand()).thenReturn(targetHand);
+            Mockito.when(effect.getTargetCardIndex()).thenReturn(0);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player2).removeCard(stolenCard);
+            Mockito.verify(player1).receiveCard(stolenCard);
+            Mockito.verify(mockGameView).displayCardStolen(player1, player2, stolenCard);
+        }
+    }
+
+    @Test
+    void testSelectTargetPlayerWithEmptyHand() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.isAlive()).thenReturn(true);
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(Arrays.asList());
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            Assertions.assertThrows(IllegalStateException.class, () -> 
+                cardEffectService.applyEffect(catCard, player1));
+        }
+    }
+
+    @Test
+    void testHandleCatCardEffectWithNullThirdCard() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            Card stolenCard = Mockito.mock(Card.class);
+            List<Card> targetHand = Arrays.asList(stolenCard);
+            
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(null);
+            Mockito.when(effect.getTargetPlayerName()).thenReturn("player2");
+            Mockito.when(effect.getTargetPlayerHand()).thenReturn(targetHand);
+            Mockito.when(effect.getTargetCardIndex()).thenReturn(0);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(targetHand);
+            Mockito.when(player2.getName()).thenReturn("player2");
+            Mockito.when(player2.isAlive()).thenReturn(true);
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            cardEffectService.applyEffect(catCard, player1);
+            
+            Mockito.verify(player1).removeCard(firstCard);
+            Mockito.verify(player1).removeCard(secondCard);
+            Mockito.verify(player2).removeCard(stolenCard);
+            Mockito.verify(player1).receiveCard(stolenCard);
+            Mockito.verify(mockGameView).displayCardStolen(player1, player2, stolenCard);
+        }
+    }
+
+    @Test
+    void testHandleCatCardEffectWithNonExistentTargetPlayer() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(null);
+            Mockito.when(effect.getTargetPlayerName()).thenReturn("nonExistentPlayer");
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getName()).thenReturn("player2");
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            Assertions.assertThrows(IllegalStateException.class, () -> 
+                cardEffectService.applyEffect(catCard, player1));
+        }
+    }
+
+    @Test
+    void testSelectTargetPlayerWithNoValidPlayers() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+            
+            CatCard catCard = Mockito.mock(CatCard.class);
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            CatCard firstCard = Mockito.mock(CatCard.class);
+            CatCard secondCard = Mockito.mock(CatCard.class);
+            CatCard thirdCard = Mockito.mock(CatCard.class);
+            
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+            
+            Mockito.when(player1.isAlive()).thenReturn(true);
+            Mockito.when(player2.isAlive()).thenReturn(false);
+            Mockito.when(player1.getHand()).thenReturn(Arrays.asList(catCard));
+            Mockito.when(player2.getHand()).thenReturn(Arrays.asList());
+            
+            Mockito.doThrow(effect).when(catCard).effect(turnOrder, gameDeck);
+            
+            Assertions.assertThrows(IllegalStateException.class, () -> 
+                cardEffectService.applyEffect(catCard, player1));
+        }
+    }
+
+    @Test
+    void testHandleRequestEffectDirectly() {
+        // Setup test data
+        CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+        CatCard firstCard = Mockito.mock(CatCard.class);
+        CatCard secondCard = Mockito.mock(CatCard.class);
+        CatCard thirdCard = Mockito.mock(CatCard.class);
+        Card requestedCard = Mockito.mock(Card.class);
+        List<Card> targetHand = Arrays.asList(requestedCard);
+
+        // Configure mocks
+        Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+        Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+        Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+        Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+        Mockito.when(requestedCard.getType()).thenReturn(CardType.ATTACK);
+        Mockito.when(player2.getHand()).thenReturn(targetHand);
+
+        // Call the method directly using reflection
+        try {
+            java.lang.reflect.Method method = CardEffectService.class.getDeclaredMethod(
+                "handleRequestEffect", Player.class, Player.class, CatCard.CatCardEffect.class);
+            method.setAccessible(true);
+            method.invoke(cardEffectService, player1, player2, effect);
+        } catch (Exception e) {
+            Assertions.fail("Failed to invoke handleRequestEffect: " + e.getMessage());
+        }
+
+        // Verify the behavior
+        Mockito.verify(player1).removeCard(firstCard);
+        Mockito.verify(player1).removeCard(secondCard);
+        Mockito.verify(player1).removeCard(thirdCard);
+        Mockito.verify(player2).removeCard(requestedCard);
+        Mockito.verify(player1).receiveCard(requestedCard);
+        Mockito.verify(mockGameView).displayCardRequested(player1, player2, requestedCard);
+    }
+
+    @Test
+    void testHandleRequestEffectDirectlyNoMatchingCard() {
+        // Setup test data
+        CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+        CatCard firstCard = Mockito.mock(CatCard.class);
+        CatCard secondCard = Mockito.mock(CatCard.class);
+        CatCard thirdCard = Mockito.mock(CatCard.class);
+        Card nonMatchingCard = Mockito.mock(Card.class);
+        List<Card> targetHand = Arrays.asList(nonMatchingCard);
+
+        // Configure mocks
+        Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+        Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+        Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+        Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+        Mockito.when(nonMatchingCard.getType()).thenReturn(CardType.SKIP);
+        Mockito.when(player2.getHand()).thenReturn(targetHand);
+
+        // Call the method directly using reflection
+        try {
+            java.lang.reflect.Method method = CardEffectService.class.getDeclaredMethod(
+                "handleRequestEffect", Player.class, Player.class, CatCard.CatCardEffect.class);
+            method.setAccessible(true);
+            method.invoke(cardEffectService, player1, player2, effect);
+        } catch (Exception e) {
+            Assertions.fail("Failed to invoke handleRequestEffect: " + e.getMessage());
+        }
+
+        // Verify the behavior
+        Mockito.verify(player1).removeCard(firstCard);
+        Mockito.verify(player1).removeCard(secondCard);
+        Mockito.verify(player1).removeCard(thirdCard);
+        Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
+    }
+
+    @Test
+    void testHandleCatCardEffectWithRequestEffect() {
+        // Setup test data
+        CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+        CatCard firstCard = Mockito.mock(CatCard.class);
+        CatCard secondCard = Mockito.mock(CatCard.class);
+        CatCard thirdCard = Mockito.mock(CatCard.class);
+        Card requestedCard = Mockito.mock(Card.class);
+        List<Card> targetHand = Arrays.asList(requestedCard);
+        List<Player> turnOrder = Arrays.asList(player1, player2);
+
+        // Configure mocks
+        Mockito.when(effect.getFirstCard()).thenReturn(firstCard);
+        Mockito.when(effect.getSecondCard()).thenReturn(secondCard);
+        Mockito.when(effect.getThirdCard()).thenReturn(thirdCard);
+        Mockito.when(effect.getTargetPlayerName()).thenReturn("Player 2");
+        Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.ATTACK);
+        Mockito.when(requestedCard.getType()).thenReturn(CardType.ATTACK);
+        Mockito.when(player2.getHand()).thenReturn(targetHand);
+        Mockito.when(player2.getName()).thenReturn("Player 2");
+
+        // Call the method using reflection
+        try {
+            java.lang.reflect.Method method = CardEffectService.class.getDeclaredMethod(
+                "handleCatCardEffect", CatCard.CatCardEffect.class, List.class);
+            method.setAccessible(true);
+            method.invoke(cardEffectService, effect, turnOrder);
+        } catch (Exception e) {
+            Assertions.fail("Failed to invoke handleCatCardEffect: " + e.getMessage());
+        }
+
+        // Verify the behavior
+        Mockito.verify(player1).removeCard(firstCard);
+        Mockito.verify(player1).removeCard(secondCard);
+        Mockito.verify(player1).removeCard(thirdCard);
+        Mockito.verify(player2).removeCard(requestedCard);
+        Mockito.verify(player1).receiveCard(requestedCard);
+        Mockito.verify(mockGameView).displayCardRequested(player1, player2, requestedCard);
+    }
+
+    @Test
+    void testHandleCatCardEffectTargetPlayerNotFound() {
+        // Setup test data
+        CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+        List<Player> turnOrder = Arrays.asList(player1); // Only player1 in turn order
+
+        // Configure mocks
+        Mockito.when(effect.getTargetPlayerName()).thenReturn("Non-existent Player");
+        Mockito.when(player1.getName()).thenReturn("Player 1");
+
+        // Call the method using reflection and expect exception
+        try {
+            java.lang.reflect.Method method = CardEffectService.class.getDeclaredMethod(
+                "handleCatCardEffect", CatCard.CatCardEffect.class, List.class);
+            method.setAccessible(true);
+            method.invoke(cardEffectService, effect, turnOrder);
+            Assertions.fail("Expected IllegalStateException was not thrown");
+        } catch (InvocationTargetException e) {
+            Assertions.assertTrue(e.getCause() instanceof IllegalStateException, 
+                "Expected IllegalStateException but got " + e.getCause().getClass().getName());
+            Assertions.assertEquals("Target player not found", e.getCause().getMessage());
+        } catch (Exception e) {
+            Assertions.fail("Unexpected exception: " + e.getMessage());
         }
     }
 } 
