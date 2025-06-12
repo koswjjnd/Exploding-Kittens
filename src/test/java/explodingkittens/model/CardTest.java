@@ -2,7 +2,7 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -40,7 +40,7 @@ public class CardTest {
 
     @Test
     void testCloneFailure() {
-        // create an anonymous subclass to simulate clone failure
+        
         SkipCard original = new SkipCard() {
             @Override
             public Card clone() {
