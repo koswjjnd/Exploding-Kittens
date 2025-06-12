@@ -74,3 +74,5 @@ public class CardTest {
         assertTrue(card1.equals(card2));
         assertTrue(card2.equals(card3));
         assertTrue(card1.equals(card3));
+    }
+}
