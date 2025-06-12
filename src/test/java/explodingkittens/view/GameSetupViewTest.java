@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,7 +22,7 @@ public class GameSetupViewTest {
         System.setIn(inputStream);
 
         try {
-            GameSetupView view = new GameSetupView();
+            GameSetupView view = new GameSetupView(new Scanner(System.in, StandardCharsets.UTF_8));
             int result = view.promptPlayerCount();
             assertEquals(1, result);
         }
@@ -42,7 +43,7 @@ public class GameSetupViewTest {
         System.setIn(inputStream);
 
         try {
-            GameSetupView view = new GameSetupView();
+            GameSetupView view = new GameSetupView(new Scanner(System.in, StandardCharsets.UTF_8));
             int result = view.promptPlayerCount();
             assertEquals(2, result);
         }
@@ -62,9 +63,13 @@ public class GameSetupViewTest {
                 simulatedInput.getBytes(StandardCharsets.UTF_8));
         System.setIn(inputStream);
 
-        GameSetupView view = new GameSetupView();
-        String result = view.promptNickname(1);
-        assertEquals("Alice", result);
-        System.setIn(originalIn);
+        try {
+            GameSetupView view = new GameSetupView(new Scanner(System.in, StandardCharsets.UTF_8));
+            String result = view.promptNickname(1);
+            assertEquals("Alice", result);
+        }
+        finally {
+            System.setIn(originalIn);
+        }
     }
 }

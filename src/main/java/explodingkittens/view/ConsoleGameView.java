@@ -8,6 +8,7 @@ import explodingkittens.model.CatType;
 import explodingkittens.model.Deck;
 import explodingkittens.model.BasicCard;
 import explodingkittens.controller.GameContext;
+import explodingkittens.util.I18nUtil;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
@@ -22,9 +23,14 @@ public class ConsoleGameView implements GameView {
         this.handView = new HandView();
     }
 
+    public ConsoleGameView(Scanner scanner) {
+        this.scanner = new Scanner(scanner.useDelimiter("\\A").next());
+        this.handView = new HandView();
+    }
+
     @Override
     public void displayCurrentPlayer(Player player) {
-        System.out.println("\nCurrent player: " + player.getName());
+        System.out.println("\n" + I18nUtil.getMessage("player.current", player.getName()));
     }
 
     @Override
@@ -44,26 +50,26 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public String promptPlayerAction(Player player) {
-        System.out.println("\nChoose an action:");
-        System.out.println("1. Draw a card");
-        System.out.println("2. Play a card");
-        System.out.print("Choice (1/2): ");
+        System.out.println("\n" + I18nUtil.getMessage("action.choose"));
+        System.out.println(I18nUtil.getMessage("player.action.draw"));
+        System.out.println(I18nUtil.getMessage("player.action.play"));
+        System.out.print(I18nUtil.getMessage("player.action.choice") + " ");
         return scanner.nextLine().trim().equals("1") ? "draw" : "play";
     }
 
     @Override
     public void displayPlayerEliminated(Player player) {
-        System.out.println("\n" + player.getName() + " has been eliminated!");
+        System.out.println("\n" + I18nUtil.getMessage("player.eliminated", player.getName()));
     }
 
     @Override
     public void displayWinner(Player winner) {
-        System.out.println("\nGame Over! The winner is: " + winner.getName());
+        System.out.println("\n" + I18nUtil.getMessage("player.winner", winner.getName()));
     }
 
     @Override
     public void displayGameOver() {
-        System.out.println("\nGame Over!");
+        System.out.println("\n" + I18nUtil.getMessage("game.over"));
     }
 
     @Override
@@ -71,25 +77,24 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\nDrawn card: " + cardName);
+        System.out.println("\n" + I18nUtil.getMessage("card.drawn", cardName));
     }
 
     @Override
     public int promptDefusePosition(int deckSize) {
-        System.out.println("\nChoose a position to place the Exploding Kitten " 
-            + "(0-" + (deckSize) + "): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.defuse.position", deckSize));
         return Integer.parseInt(scanner.nextLine().trim());
     }
 
     @Override
     public Card promptPlayCard(Player player, List<Card> hand) {
-        handView.displayHandWithIndices("Player: " + player.getName(), hand);
-        System.out.println("\nChoose an action:");
-        System.out.println("1. Play a single card (non-cat card)");
-        System.out.println("2. Play a cat card combo");
-        System.out.println("3. Play winning combo (5 same cat cards)");
-        System.out.println("0. End turn");
-        System.out.print("Choice (0-3): ");
+        handView.displayHandWithIndices(I18nUtil.getMessage("player.hand", player.getName()), hand);
+        System.out.println("\n" + I18nUtil.getMessage("action.choose"));
+        System.out.println(I18nUtil.getMessage("player.action.single"));
+        System.out.println(I18nUtil.getMessage("player.action.combo"));
+        System.out.println(I18nUtil.getMessage("player.action.winning"));
+        System.out.println(I18nUtil.getMessage("player.action.end"));
+        System.out.print(I18nUtil.getMessage("player.action.choice.range") + " ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
         
         if (choice == 0) {
@@ -108,14 +113,14 @@ public class ConsoleGameView implements GameView {
     }
 
     private Card handleSingleCardPlay(Player player, List<Card> hand) {
-        System.out.println("\nChoose a card to play (enter number): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.select"));
         int cardChoice = Integer.parseInt(scanner.nextLine().trim());
         if (cardChoice == 0) {
             return null;
         }
         Card selectedCard = hand.get(cardChoice - 1);
         if (selectedCard.getType() == CardType.CAT_CARD) {
-            showError("Cannot play a single cat card. Use combo option instead.");
+            showError(I18nUtil.getMessage("card.combo.single.error"));
             return promptPlayCard(player, hand);
         }
         return selectedCard;
@@ -139,14 +144,14 @@ public class ConsoleGameView implements GameView {
     private Card handleStealCombo(Player player, List<Card> hand) {
         List<Integer> selectedIndices = promptCatCardSelection(2, hand);
         if (selectedIndices == null || selectedIndices.size() != 2) {
-            showError("Invalid selection. Please try again.");
+            showError(I18nUtil.getMessage("card.combo.invalid"));
             return promptPlayCard(player, hand);
         }
         
         // check if selected cards are all the same type of cat cards
         Card firstCard = hand.get(selectedIndices.get(0));
         if (!(firstCard instanceof CatCard)) {
-            showError("Selected cards must be cat cards.");
+            showError(I18nUtil.getMessage("card.combo.must.be.cat"));
             return promptPlayCard(player, hand);
         }
         
@@ -154,7 +159,7 @@ public class ConsoleGameView implements GameView {
         for (int i = 1; i < selectedIndices.size(); i++) {
             Card card = hand.get(selectedIndices.get(i));
             if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
-                showError("All selected cards must be the same type of cat card.");
+                showError(I18nUtil.getMessage("card.combo.same.type"));
                 return promptPlayCard(player, hand);
             }
         }
@@ -165,14 +170,14 @@ public class ConsoleGameView implements GameView {
     private Card handleRequestCombo(Player player, List<Card> hand) {
         List<Integer> selectedIndices = promptCatCardSelection(3, hand);
         if (selectedIndices == null || selectedIndices.size() != 3) {
-            showError("Invalid selection. Please try again.");
+            showError(I18nUtil.getMessage("card.combo.invalid"));
             return promptPlayCard(player, hand);
         }
         
         // check if selected cards are all the same type of cat cards
         Card firstCard = hand.get(selectedIndices.get(0));
         if (!(firstCard instanceof CatCard)) {
-            showError("Selected cards must be cat cards.");
+            showError(I18nUtil.getMessage("card.combo.must.be.cat"));
             return promptPlayCard(player, hand);
         }
         
@@ -180,7 +185,7 @@ public class ConsoleGameView implements GameView {
         for (int i = 1; i < selectedIndices.size(); i++) {
             Card card = hand.get(selectedIndices.get(i));
             if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
-                showError("All selected cards must be the same type of cat card.");
+                showError(I18nUtil.getMessage("card.combo.same.type"));
                 return promptPlayCard(player, hand);
             }
         }
@@ -219,14 +224,14 @@ public class ConsoleGameView implements GameView {
     public boolean handleWinningCombo(Player player, List<Card> hand) {
         List<Integer> selectedIndices = promptCatCardSelection(5, hand);
         if (selectedIndices == null || selectedIndices.size() != 5) {
-            showError("Invalid selection. Please try again.");
+            showError(I18nUtil.getMessage("card.combo.invalid"));
             return false;
         }
 
         // 验证选择的卡牌是否都是相同类型的猫牌
         Card firstCard = hand.get(selectedIndices.get(0));
         if (!(firstCard instanceof CatCard)) {
-            showError("Selected cards must be cat cards.");
+            showError(I18nUtil.getMessage("card.combo.must.be.cat"));
             return false;
         }
 
@@ -234,7 +239,7 @@ public class ConsoleGameView implements GameView {
         for (int i = 1; i < selectedIndices.size(); i++) {
             Card card = hand.get(selectedIndices.get(i));
             if (!(card instanceof CatCard) || ((CatCard) card).getCatType() != catType) {
-                showError("All selected cards must be the same type of cat card.");
+                showError(I18nUtil.getMessage("card.combo.same.type"));
                 return false;
             }
         }
@@ -255,7 +260,7 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\n" + player.getName() + " played " + cardName);
+        System.out.println("\n" + I18nUtil.getMessage("player.played", player.getName(), cardName));
     }
 
     @Override
@@ -265,7 +270,7 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public void showError(String message) {
-        System.out.println("\nError: " + message);
+        System.out.println("\n" + I18nUtil.getMessage("error.prefix", message));
     }
 
     @Override
@@ -275,13 +280,13 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public boolean checkForNope(Player player, Card card) {
-        System.out.println("\nDoes any player want to play a Nope card? (y/n): ");
+        System.out.println("\n" + I18nUtil.getMessage("nope.prompt"));
         return scanner.nextLine().trim().equalsIgnoreCase("y");
     }
 
     @Override
     public void showCardNoped(Player player, Card card) {
-        System.out.println("\n" + player.getName() + "'s " + card + " was Noped!");
+        System.out.println("\n" + I18nUtil.getMessage("nope.card.noped", player.getName(), card));
     }
 
     @Override
@@ -289,60 +294,56 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\n" + player.getName() 
-            + " drew " + cardName);
+        System.out.println("\n" + I18nUtil.getMessage("player.drew", player.getName(), cardName));
     }
 
     @Override
     public boolean confirmDefuse(Player player) {
-        System.out.println("\n" + player.getName() + ", do you want to use your Defuse card?" 
-            + "(y/n): ");
+        System.out.println("\n" + I18nUtil.getMessage("defuse.confirm", player.getName()));
         return scanner.nextLine().trim().equalsIgnoreCase("y");
     }
 
     @Override
     public int selectExplodingKittenPosition(int deckSize) {
-        System.out.println("\nChoose a position to place the Exploding Kitten "
-            + "(0-" + (deckSize) + "): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.defuse.position", deckSize));
         return Integer.parseInt(scanner.nextLine().trim());
     }
 
     @Override
     public void displayDefuseUsed(Player player) {
-        System.out.println("\n" + player.getName() + " used a Defuse card!");
+        System.out.println("\n" + I18nUtil.getMessage("defuse.used", player.getName()));
     }
 
     @Override
     public void displayDefuseSuccess(Player player, int position) {
-        System.out.println("\n" + player.getName() 
-            + " successfully placed the Exploding Kitten at position " 
-            + position);
+        System.out.println("\n" + I18nUtil.getMessage("defuse.success", 
+            player.getName(), position));
     }
 
     @Override
     public boolean promptPlayNope(Player player, Card card) {
-        System.out.println("\n" + player.getName() 
-            + ", do you want to play a Nope card? (y/n): ");
+        System.out.println("\n" + I18nUtil.getMessage("nope.player.prompt", player.getName()));
         return scanner.nextLine().trim().equalsIgnoreCase("y");
     }
 
     @Override
     public void displayPlayedNope(Player player) {
-        System.out.println("\n" + player.getName() + " played a Nope card!");
+        System.out.println("\n" + I18nUtil.getMessage("nope.played", player.getName()));
     }
 
     @Override
     public void showCurrentPlayerTurn(Player player) {
-        System.out.println("\nIt's " + player.getName() + "'s turn.");
+        System.out.println("\n" + I18nUtil.getMessage("player.turn", player.getName()));
     }
 
     @Override
     public Player selectTargetPlayer(List<Player> availablePlayers) {
-        System.out.println("Available players:");
+        System.out.println(I18nUtil.getMessage("player.available"));
         for (int i = 0; i < availablePlayers.size(); i++) {
             System.out.println((i + 1) + ". " + availablePlayers.get(i).getName());
         }
-        System.out.print("Select a player (1-" + availablePlayers.size() + "): ");
+        String message = I18nUtil.getMessage("player.select", availablePlayers.size());
+        System.out.print(message + " ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
         return availablePlayers.get(choice - 1);
     }
@@ -364,22 +365,25 @@ public class ConsoleGameView implements GameView {
         if (requestedType == CardType.CAT_CARD && requestedCatType != null) {
             List<Card> filteredHand = new ArrayList<>();
             for (Card card : hand) {
-                if (card instanceof CatCard && ((CatCard) card).getCatType() == requestedCatType) {
+                if (card instanceof CatCard 
+                    && ((CatCard) card).getCatType() == requestedCatType) {
                     filteredHand.add(card);
                 }
             }
             
             if (filteredHand.isEmpty()) {
-                System.out.println("\nNo " + requestedCatType + " cards available.");
+                System.out.println("\n" + I18nUtil.getMessage("player.no.cards", 
+                    requestedCatType));
                 return null;
             }
 
-            System.out.println("\nSelect a " + requestedCatType + " card:");
+            System.out.println("\n" 
+                + I18nUtil.getMessage("player.select.specific", requestedCatType));
             for (int i = 0; i < filteredHand.size(); i++) {
                 CatCard catCard = (CatCard) filteredHand.get(i);
                 System.out.println((i + 1) + ". " + catCard.getCatType());
             }
-            System.out.print("Choice (1-" + filteredHand.size() + "): ");
+            System.out.print(I18nUtil.getMessage("card.combo.choice") + " ");
             int choice = Integer.parseInt(scanner.nextLine().trim());
             if (choice < 1 || choice > filteredHand.size()) {
                 return null;
@@ -389,22 +393,21 @@ public class ConsoleGameView implements GameView {
 
         // 对于非猫牌，显示所有卡牌
         handView.displayHandWithIndices(targetPlayer.getName(), hand);
-        System.out.print("Select a card (1-" + hand.size() + "): ");
+        System.out.print(I18nUtil.getMessage("player.select.card", hand.size()) + " ");
         int choice = Integer.parseInt(scanner.nextLine().trim());
         return hand.get(choice - 1);
     }
 
     @Override
-    public void displayCatCardEffect(String effectType, Player sourcePlayer, Player targetPlayer) {
+    public void displayCatCardEffect(String effectType, Player sourcePlayer, 
+            Player targetPlayer) {
         if (effectType.equals("steal")) {
-            System.out.println("\n" + sourcePlayer.getName() 
-                + " is stealing a card from " 
-                + targetPlayer.getName());
+            System.out.println("\n" + I18nUtil.getMessage("card.effect.stealing", 
+                sourcePlayer.getName(), targetPlayer.getName()));
         } 
         else if (effectType.equals("request")) {
-            System.out.println("\n" + sourcePlayer.getName() 
-                + " is requesting a card from " 
-                + targetPlayer.getName());
+            System.out.println("\n" + I18nUtil.getMessage("card.effect.requesting", 
+                sourcePlayer.getName(), targetPlayer.getName()));
         }
     }
 
@@ -413,9 +416,8 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\n" + sourcePlayer.getName() 
-            + " stole " + cardName 
-            + " from " + targetPlayer.getName());
+        System.out.println("\n" + I18nUtil.getMessage("player.stole", 
+            sourcePlayer.getName(), cardName, targetPlayer.getName()));
     }
 
     @Override
@@ -423,9 +425,8 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\n" + sourcePlayer.getName() 
-            + " received " + cardName 
-            + " from " + targetPlayer.getName());
+        System.out.println("\n" + I18nUtil.getMessage("player.received", 
+            sourcePlayer.getName(), cardName, targetPlayer.getName()));
     }
 
     @Override
@@ -433,21 +434,20 @@ public class ConsoleGameView implements GameView {
         String cardName = card instanceof CatCard ? 
             ((CatCard) card).getCatType().toString() : 
             card.getType().toString();
-        System.out.println("\nCard drawn from bottom: " + cardName);
+        System.out.println("\n" + I18nUtil.getMessage("card.drawn.from.bottom", cardName));
     }
 
     private int promptComboType() {
-        System.out.println("\nChoose combo type:");
-        System.out.println("1. Steal a card (2 same cat cards)");
-        System.out.println("2. Request a card (3 same cat cards)");
-        System.out.println("0. Cancel");
-        System.out.print("Choice (0-2): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.combo.type"));
+        System.out.println(I18nUtil.getMessage("card.combo.steal"));
+        System.out.println(I18nUtil.getMessage("card.combo.request"));
+        System.out.println(I18nUtil.getMessage("card.combo.cancel"));
+        System.out.print(I18nUtil.getMessage("card.combo.choice") + " ");
         return Integer.parseInt(scanner.nextLine().trim());
     }
 
     private List<Integer> promptCatCardSelection(int count, List<Card> hand) {
-        System.out.println("\nSelect " + count 
-            + " same cat cards (enter numbers, separated by space): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.combo.select", count));
         String[] cardChoices = scanner.nextLine().trim().split(" ");
         if (cardChoices.length != count) {
             return null;
@@ -470,30 +470,30 @@ public class ConsoleGameView implements GameView {
     }
 
     private CardType promptRequestedCardType() {
-        System.out.println("\nChoose card type to request:");
-        System.out.println("1. Attack");
-        System.out.println("2. Skip");
-        System.out.println("3. Super Skip");
-        System.out.println("4. Double Skip");
-        System.out.println("5. Favor");
-        System.out.println("6. Shuffle");
-        System.out.println("7. See the Future");
-        System.out.println("8. Nope");
-        System.out.println("9. Switch Deck by Half");
-        System.out.println("10. Draw from Bottom");
-        System.out.println("11. Snatch");
-        System.out.println("12. Reverse");
-        System.out.println("13. Time Rewind");
-        System.out.println("14. Taco Cat");
-        System.out.println("15. Beard Cat");
-        System.out.println("16. Cattermelon");
-        System.out.println("17. Rainbow Cat");
-        System.out.println("18. Hairy Potato Cat");
-        System.out.println("19. Watermelon Cat");
-        System.out.println("20. Feral Cat");
-        System.out.println("21. Defuse");
-        System.out.println("0. Cancel");
-        System.out.print("Choice (0-21): ");
+        System.out.println("\n" + I18nUtil.getMessage("card.request.type"));
+        System.out.println(I18nUtil.getMessage("cardtype.attack"));
+        System.out.println(I18nUtil.getMessage("cardtype.skip"));
+        System.out.println(I18nUtil.getMessage("cardtype.super.skip"));
+        System.out.println(I18nUtil.getMessage("cardtype.double.skip"));
+        System.out.println(I18nUtil.getMessage("cardtype.favor"));
+        System.out.println(I18nUtil.getMessage("cardtype.shuffle"));
+        System.out.println(I18nUtil.getMessage("cardtype.see.future"));
+        System.out.println(I18nUtil.getMessage("cardtype.nope"));
+        System.out.println(I18nUtil.getMessage("cardtype.switch.deck"));
+        System.out.println(I18nUtil.getMessage("cardtype.draw.bottom"));
+        System.out.println(I18nUtil.getMessage("cardtype.snatch"));
+        System.out.println(I18nUtil.getMessage("cardtype.reverse"));
+        System.out.println(I18nUtil.getMessage("cardtype.time.rewind"));
+        System.out.println(I18nUtil.getMessage("cardtype.taco.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.beard.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.cattermelon"));
+        System.out.println(I18nUtil.getMessage("cardtype.rainbow.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.hairy.potato.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.watermelon.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.feral.cat"));
+        System.out.println(I18nUtil.getMessage("cardtype.defuse"));
+        System.out.println(I18nUtil.getMessage("cardtype.cancel"));
+        System.out.print(I18nUtil.getMessage("cardtype.choice") + " ");
         
         int choice = Integer.parseInt(scanner.nextLine().trim());
         switch (choice) {

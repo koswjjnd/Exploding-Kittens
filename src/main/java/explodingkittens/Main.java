@@ -21,12 +21,15 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
+            // Initialize I18n with default locale (English)
+            I18nUtil.initialize();
+            
             // Language selection
             System.out.println(I18nUtil.getMessage("select.language"));
             System.out.println("1. English");
             System.out.println("2. 中文");
-            Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-            String langChoice = scanner.nextLine();
+            Scanner mainScanner = new Scanner(System.in, StandardCharsets.UTF_8);
+            String langChoice = mainScanner.nextLine();
             if ("2".equals(langChoice)) {
                 I18nUtil.setLocale(Locale.CHINESE);
             }
@@ -37,7 +40,7 @@ public class Main {
             System.out.println(I18nUtil.getMessage("ui.welcome"));
 
             /* ---------- Step 1 : initial ---------- */
-            GameSetupView setupView   = new GameSetupView();
+            GameSetupView setupView   = new GameSetupView(mainScanner);
             PlayerService playerSvc   = new PlayerService();
             DealService   dealSvc     = new DealService();
             GameSetupController setup = new GameSetupController(setupView, playerSvc, dealSvc);
@@ -45,7 +48,7 @@ public class Main {
             setup.setupGame();               
 
             /* ---------- Step 2 : main loop ---------- */
-            ConsoleGameView gameView = new ConsoleGameView();
+            ConsoleGameView gameView = new ConsoleGameView(mainScanner);
             GameController  gameCtrl = new GameController(gameView);
             gameCtrl.start();
 
