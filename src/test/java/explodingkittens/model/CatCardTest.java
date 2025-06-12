@@ -290,4 +290,99 @@ class CatCardTest {
             card.effect(players, null);
         });
     }
+
+    @Test
+    @DisplayName("Test findFirstCatCard method")
+    void testFindFirstCatCard() {
+        // Create a list of cards
+        List<Card> hand = new ArrayList<>();
+        
+        // Test case 1: Find matching CatCard
+        CatCard matchingCard = new CatCard(CatType.TACOCAT);
+        hand.add(matchingCard);
+        CatCard result = catCard1.findFirstCatCard(hand);
+        assertEquals(matchingCard, result, "Should find matching CatCard");
+        
+        // Test case 2: Find non-matching CatCard
+        hand.clear();
+        CatCard nonMatchingCard = new CatCard(CatType.BEARD_CAT);
+        hand.add(nonMatchingCard);
+        result = catCard1.findFirstCatCard(hand);
+        assertNull(result, "Should not find non-matching CatCard");
+        
+        // Test case 3: Find non-CatCard
+        hand.clear();
+        SkipCard skipCard = new SkipCard();
+        hand.add(skipCard);
+        result = catCard1.findFirstCatCard(hand);
+        assertNull(result, "Should not find non-CatCard");
+        
+        // Test case 4: Empty hand
+        hand.clear();
+        result = catCard1.findFirstCatCard(hand);
+        assertNull(result, "Should return null for empty hand");
+        
+        // Test case 5: Multiple cards with matching CatCard
+        hand.clear();
+        hand.add(new SkipCard());
+        hand.add(new CatCard(CatType.BEARD_CAT));
+        hand.add(matchingCard);
+        hand.add(new AttackCard());
+        result = catCard1.findFirstCatCard(hand);
+        assertEquals(matchingCard, result, "Should find first matching CatCard");
+    }
+
+    @Test
+    @DisplayName("Test findSecondCatCard method")
+    void testFindSecondCatCard() {
+        // Create a list of cards
+        List<Card> hand = new ArrayList<>();
+        
+        // Test case 1: Find second matching CatCard
+        CatCard firstCard = new CatCard(CatType.TACOCAT);
+        CatCard secondCard = new CatCard(CatType.TACOCAT);
+        hand.add(firstCard);
+        hand.add(new SkipCard());
+        hand.add(secondCard);
+        CatCard result = catCard1.findSecondCatCard(hand, firstCard);
+        assertEquals(secondCard, result, "Should find second matching CatCard");
+        
+        // Test case 2: No second matching CatCard
+        hand.clear();
+        hand.add(firstCard);
+        hand.add(new SkipCard());
+        hand.add(new CatCard(CatType.BEARD_CAT));
+        result = catCard1.findSecondCatCard(hand, firstCard);
+        assertNull(result, "Should not find second matching CatCard");
+        
+        // Test case 3: First card not in list
+        hand.clear();
+        hand.add(new SkipCard());
+        hand.add(secondCard);
+        result = catCard1.findSecondCatCard(hand, firstCard);
+        assertNull(result, "Should return null when first card not in list");
+        
+        // Test case 4: No cards after first card
+        hand.clear();
+        hand.add(firstCard);
+        result = catCard1.findSecondCatCard(hand, firstCard);
+        assertNull(result, "Should return null when no cards after first card");
+        
+        // Test case 5: Only non-matching CatCards after first card
+        hand.clear();
+        hand.add(firstCard);
+        hand.add(new CatCard(CatType.BEARD_CAT));
+        hand.add(new CatCard(CatType.RAINBOW_CAT));
+        result = catCard1.findSecondCatCard(hand, firstCard);
+        assertNull(result, "Should return null when only non-matching CatCards after first card");
+        
+        // Test case 6: Multiple matching CatCards after first card
+        hand.clear();
+        hand.add(firstCard);
+        hand.add(new SkipCard());
+        hand.add(secondCard);
+        hand.add(new CatCard(CatType.TACOCAT));
+        result = catCard1.findSecondCatCard(hand, firstCard);
+        assertEquals(secondCard, result, "Should find first matching CatCard after first card");
+    }
 }
