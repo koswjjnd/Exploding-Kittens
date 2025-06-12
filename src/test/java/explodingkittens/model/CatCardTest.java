@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +51,54 @@ class CatCardTest {
     }
 
     @Test
+    @DisplayName("Test CatCard constructor and basic properties")
+    void testCatCardConstructor() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        assertEquals(CatType.TACOCAT, card.getCatType());
+        assertEquals(CardType.CAT_CARD, card.getType());
+    }
+
+    @Test
+    @DisplayName("Test CatCardEffect exception properties")
+    void testCatCardEffectException() {
+        CatCard card1 = new CatCard(CatType.TACOCAT);
+        CatCard card2 = new CatCard(CatType.TACOCAT);
+        CatCard card3 = new CatCard(CatType.TACOCAT);
+        Player target = new Player("Target");
+        target.receiveCard(new SkipCard());
+
+        CatCard.CatCardEffect effect = new CatCard.CatCardEffect(
+            card1, card2, card3, target.getName(), CardType.ATTACK);
+
+        assertEquals(card1, effect.getFirstCard());
+        assertEquals(card2, effect.getSecondCard());
+        assertEquals(card3, effect.getThirdCard());
+        assertEquals(target.getName(), effect.getTargetPlayerName());
+        assertEquals(CardType.ATTACK, effect.getRequestedCardType());
+    }
+
+    @Test
+    @DisplayName("Test CatCardEffect exception with null third card")
+    void testCatCardEffectExceptionWithNullThirdCard() {
+        CatCard card1 = new CatCard(CatType.TACOCAT);
+        CatCard card2 = new CatCard(CatType.TACOCAT);
+        Player target = new Player("Target");
+        target.receiveCard(new SkipCard());
+
+        CatCard.CatCardEffect effect = new CatCard.CatCardEffect(
+            card1, card2, null, target.getName(), null);
+
+        assertEquals(card1, effect.getFirstCard());
+        assertEquals(card2, effect.getSecondCard());
+        assertNull(effect.getThirdCard());
+        assertEquals(target.getName(), effect.getTargetPlayerName());
+        assertNull(effect.getRequestedCardType());
+    }
+
+    @Test
     @DisplayName("Test when player has no cat cards")
     void testNoCatCards() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         assertThrows(IllegalStateException.class, () -> {
             catCard1.effect(turnOrder, gameDeck);
         }, "Should throw exception when player has no cat cards");
@@ -61,7 +107,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when player has only one cat card")
     void testOneCatCard() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         currentPlayer.receiveCard(catCard1);
         assertThrows(IllegalStateException.class, () -> {
             catCard1.effect(turnOrder, gameDeck);
@@ -71,7 +117,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when player has two different types of cat cards")
     void testDifferentCatCards() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         currentPlayer.receiveCard(catCard1);
         currentPlayer.receiveCard(catCard3);
         assertThrows(IllegalStateException.class, () -> {
@@ -82,7 +128,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when player has two same type cat cards")
     void testSameCatCards() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         currentPlayer.receiveCard(catCard1);
         currentPlayer.receiveCard(catCard2);
         targetPlayer.receiveCard(new SkipCard());
@@ -103,7 +149,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when player has multiple same type cat cards")
     void testMultipleSameCatCards() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         currentPlayer.receiveCard(catCard1);
         currentPlayer.receiveCard(catCard2);
         currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
@@ -163,7 +209,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when target player has multiple cards")
     void testMultipleTargetCards() {
-        setupInputHandler("1\n2\n2\n3\n"); // Provide input for both attempts
+        setupInputHandler("1\n2\n2\n3\n");
         currentPlayer.receiveCard(catCard1);
         currentPlayer.receiveCard(catCard2);
         targetPlayer.receiveCard(new SkipCard());
@@ -186,7 +232,7 @@ class CatCardTest {
     @Test
     @DisplayName("Test when player has no turns left")
     void testNoTurnsLeft() {
-        setupInputHandler("1\n1\n2\n2\n"); // Provide input for both attempts
+        setupInputHandler("1\n1\n2\n2\n");
         currentPlayer.setLeftTurns(0);
         currentPlayer.receiveCard(catCard1);
         currentPlayer.receiveCard(catCard2);
