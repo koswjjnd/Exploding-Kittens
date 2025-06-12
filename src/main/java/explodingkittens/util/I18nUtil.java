@@ -1,5 +1,6 @@
 package explodingkittens.util;
 
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -24,7 +25,12 @@ public class I18nUtil {
      */
     public static void setLocale(Locale locale) {
         currentLocale = locale;
-        messages = ResourceBundle.getBundle("messages", locale);
+        if (locale.equals(Locale.CHINESE)) {
+            messages = ResourceBundle.getBundle("messages", new Locale("zh", "CN"));
+        } 
+        else {
+            messages = ResourceBundle.getBundle("messages", locale);
+        }
     }
 
     /**
@@ -58,7 +64,7 @@ public class I18nUtil {
     public static String getMessage(String key, Object... params) {
         try {
             String message = messages.getString(key);
-            return String.format(message, params);
+            return MessageFormat.format(message, params);
         }
         catch (Exception e) {
             return key; // Return the key if translation is not found
