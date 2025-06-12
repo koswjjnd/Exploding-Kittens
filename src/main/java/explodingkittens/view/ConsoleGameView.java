@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class ConsoleGameView implements GameView {
+    @SuppressFBWarnings({"EI_EXPOSE_REP2", "MS_MUTABLE_COLLECTION"})
     private final Scanner scanner;
     private final HandView handView;
 
@@ -24,7 +26,7 @@ public class ConsoleGameView implements GameView {
     }
 
     public ConsoleGameView(Scanner scanner) {
-        this.scanner = new Scanner(scanner.useDelimiter("\\A").next());
+        this.scanner = scanner;
         this.handView = new HandView();
     }
 

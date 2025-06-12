@@ -38,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import explodingkittens.exceptions.InvalidPlayerCountException;
 import explodingkittens.exceptions.InvalidNicknameException;
 import explodingkittens.exceptions.InvalidDeckException;
+import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 @ExtendWith(MockitoExtension.class)
 class GameSetupControllerTest {
@@ -51,7 +53,7 @@ class GameSetupControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GameSetupController(view, playerService, dealService);
+        controller = new GameSetupController(view, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
         // Reset GameContext before each test
         GameContext.reset();
     }

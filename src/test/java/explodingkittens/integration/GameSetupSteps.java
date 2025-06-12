@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Step definitions for game setup integration tests.
@@ -58,7 +60,7 @@ public class GameSetupSteps {
         view = Mockito.mock(GameSetupView.class);
         playerService = new PlayerService();
         dealService = new DealService();
-        controller = new GameSetupController(view, playerService, dealService);
+        controller = new GameSetupController(view, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
         GameContext.reset();
         gameInitialized = false;
     }

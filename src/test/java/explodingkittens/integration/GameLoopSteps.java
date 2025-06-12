@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.function.Supplier;
+import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +64,7 @@ public class GameLoopSteps {
         controller = new GameController(view);
         playerService = new PlayerService();
         dealService = new DealService();
-        setupController = new GameSetupController(setupView, playerService, dealService);
+        setupController = new GameSetupController(setupView, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
         cardEffectService = new CardEffectService(view);
         turnService = new TurnService(view, cardEffectService);
         deckCards = new ArrayList<>();
@@ -83,7 +85,7 @@ public class GameLoopSteps {
         playerService = new PlayerService();
         dealService = new DealService();
         cardEffectService = new CardEffectService(view);
-        setupController = new GameSetupController(setupView, playerService, dealService);
+        setupController = new GameSetupController(setupView, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
         turnService = new TurnService(view, cardEffectService);
         GameContext.reset();
         gameInitialized = false;
