@@ -1,6 +1,7 @@
 package explodingkittens.view;
 
 import explodingkittens.model.Card;
+import explodingkittens.util.I18nUtil;
 import java.util.List;
 
 /**
@@ -17,11 +18,11 @@ public class HandView {
      */
     public void displayHand(String playerName, List<Card> hand, boolean showIndices) {
         if (hand.isEmpty()) {
-            System.out.println("\n" + playerName + "'s hand is empty.");
+            System.out.println("\n" + I18nUtil.getMessage("player.hand.empty", playerName));
             return;
         }
 
-        System.out.println("\n" + playerName + "'s hand:");
+        System.out.println("\n" + playerName);
         
         // Display one card per line
         for (int i = 0; i < hand.size(); i++) {

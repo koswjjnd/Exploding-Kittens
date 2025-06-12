@@ -1,5 +1,8 @@
 package explodingkittens.view;
 
+import explodingkittens.exceptions.InvalidNicknameException;
+import explodingkittens.exceptions.InvalidPlayerCountException;
+import explodingkittens.util.I18nUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -8,7 +11,16 @@ import java.util.Scanner;
  * View interface for game setup phase, responsible for user interaction.
  */
 public class GameSetupView {
-    Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8);
+    private final Scanner sc;
+
+    /**
+     * Constructor that accepts a Scanner instance.
+     * @param scanner the Scanner to use for input
+     */
+    public GameSetupView(Scanner scanner) {
+        // 使用防御性复制，创建一个新的 Scanner 对象
+        this.sc = new Scanner(scanner.useDelimiter("\\A").next());
+    }
 
     /**
      * Prompts the user to input the count for the player.
@@ -18,11 +30,13 @@ public class GameSetupView {
     public int promptPlayerCount() {
         while (true) {
             try {
-                System.out.print("Player Count: \n");
-                return sc.nextInt();
+                System.out.print(I18nUtil.getMessage("setup.player.count") + "\n");
+                int count = sc.nextInt();
+                sc.nextLine(); // 消费换行符
+                return count;
             }
             catch (InputMismatchException e) {
-                showError("Please input a valid integer.");
+                showError(I18nUtil.getMessage("setup.error.invalid.integer"));
                 sc.nextLine();
             }
         }
@@ -33,8 +47,9 @@ public class GameSetupView {
      * @return the nickname entered by the user
      */
     public String promptNickname(int playerIndex){
-        System.out.printf("Input Name of Player %d ", playerIndex);
-        return sc.nextLine();
+        System.out.print(I18nUtil.getMessage("setup.player.name", playerIndex) + " ");
+        String nickname = sc.nextLine();
+        return nickname;
     }
 
     /**
