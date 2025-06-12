@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayInputStream;
@@ -399,7 +401,8 @@ class CatCardTest {
         try {
             catCard1.play(currentPlayer, turnOrder);
             fail("Should throw CatCardEffect");
-        } catch (CatCard.CatCardEffect effect) {
+        } 
+        catch (CatCard.CatCardEffect effect) {
             assertEquals(catCard1, effect.getFirstCard());
             assertEquals(catCard2, effect.getSecondCard());
             assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
@@ -455,5 +458,27 @@ class CatCardTest {
         assertThrows(IllegalStateException.class, () -> {
             card.play(player, players);
         });
+    }
+
+    @Test
+    @DisplayName("Test validateTargetPlayer method")
+    void testValidateTargetPlayer() throws Exception {
+        // Get the protected method using reflection
+        java.lang.reflect.Method validateMethod = CatCard.class.getDeclaredMethod("validateTargetPlayer", Player.class);
+        validateMethod.setAccessible(true);
+
+        // Test case 1: Target player has cards
+        targetPlayer.receiveCard(new SkipCard());
+        assertDoesNotThrow(() -> {
+            validateMethod.invoke(catCard1, targetPlayer);
+        }, "Should not throw exception when target player has cards");
+
+        // Test case 2: Target player has no cards
+        targetPlayer.getHand().clear();
+        Exception exception = assertThrows(java.lang.reflect.InvocationTargetException.class, () -> {
+            validateMethod.invoke(catCard1, targetPlayer);
+        }, "Should throw InvocationTargetException when target player has no cards");
+        Throwable cause = exception.getCause();
+        assertTrue(cause instanceof IllegalStateException, "Cause should be IllegalStateException");
     }
 }
