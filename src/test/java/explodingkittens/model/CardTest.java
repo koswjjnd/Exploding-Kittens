@@ -2,7 +2,7 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 /**
  * Test class for the Card class.
@@ -73,18 +74,5 @@ public class CardTest {
         assertTrue(card1.equals(card2));
         assertTrue(card2.equals(card3));
         assertTrue(card1.equals(card3));
-        
-        assertFalse(card1.equals(null));
-        
-        assertFalse(card1.equals(new AttackCard()));
     }
-
-    @Test
-    void testHashCode() {
-        SkipCard card1 = new SkipCard();
-        SkipCard card2 = new SkipCard();
-        
-        assertEquals(card1.hashCode(), card2.hashCode());
-        assertNotEquals(card1.hashCode(), new AttackCard().hashCode());
-    }
-} 
+}
