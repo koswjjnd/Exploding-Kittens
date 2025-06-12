@@ -415,4 +415,42 @@ public class NopeServiceTest {
             verify(view, never()).displayPlayerHand(any());
         }
     }
+
+    @Test
+    void testIsNegatedByPlayersWithDeadPlayer() {
+        // Setup
+        List<Player> turnOrder = new ArrayList<>();
+        turnOrder.add(player1);
+        turnOrder.add(player2);
+        turnOrder.add(player3);
+        turnOrder.add(player4);
+        
+        try (MockedStatic<GameContext> mockedStatic = mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getCurrentPlayer).thenReturn(player1);
+            
+            // Mock player behavior - player2 is dead
+            when(player1.isAlive()).thenReturn(true);
+            when(player2.isAlive()).thenReturn(false);  // player2 is dead
+            when(player3.isAlive()).thenReturn(true);
+            when(player4.isAlive()).thenReturn(true);
+            
+            // player2 has Nope card but is dead, so it shouldn't be used
+            when(player2.hasCardOfType(CardType.NOPE)).thenReturn(true);
+            when(player3.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            when(player4.hasCardOfType(CardType.NOPE)).thenReturn(false);
+            
+            // Execute
+            boolean result = nopeService.isNegatedByPlayers(targetCard);
+            
+            // Verify
+            assertFalse(result);
+            // Should only show card to alive players (3 times)
+            verify(view, times(3)).showCardPlayed(player1, targetCard);
+            // Dead player should not be prompted
+            verify(view, never()).promptPlayNope(player2, targetCard);
+            verify(view, never()).displayPlayedNope(any());
+            verify(view, never()).displayPlayerHand(any());
+        }
+    }
 } 
