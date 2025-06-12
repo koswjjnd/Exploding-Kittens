@@ -385,4 +385,75 @@ class CatCardTest {
         result = catCard1.findSecondCatCard(hand, firstCard);
         assertEquals(secondCard, result, "Should find first matching CatCard after first card");
     }
+
+    @Test
+    @DisplayName("Test play method")
+    void testPlay() {
+        // Setup
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        setupInputHandler("1\n1\n2\n2\n");
+
+        // Test play method
+        try {
+            catCard1.play(currentPlayer, turnOrder);
+            fail("Should throw CatCardEffect");
+        } catch (CatCard.CatCardEffect effect) {
+            assertEquals(catCard1, effect.getFirstCard());
+            assertEquals(catCard2, effect.getSecondCard());
+            assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
+            assertEquals(targetPlayer.getHand(), effect.getTargetPlayerHand());
+            assertEquals(0, effect.getTargetCardIndex());
+        }
+    }
+
+    @Test
+    @DisplayName("Test play method with no input handler")
+    void testPlayWithNoInputHandler() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("Player1"));
+        players.add(new Player("Player2"));
+
+        assertThrows(IllegalStateException.class, () -> {
+            card.play(players.get(0), players);
+        });
+    }
+
+    @Test
+    @DisplayName("Test play method with no turns left")
+    void testPlayWithNoTurnsLeft() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        List<Player> players = new ArrayList<>();
+        Player player = new Player("Player1");
+        player.setLeftTurns(0);
+        players.add(player);
+        players.add(new Player("Player2"));
+
+        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name())));
+
+        assertThrows(IllegalStateException.class, () -> {
+            card.play(player, players);
+        });
+    }
+
+    @Test
+    @DisplayName("Test play method with no cat cards")
+    void testPlayWithNoCatCards() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        List<Player> players = new ArrayList<>();
+        Player player = new Player("Player1");
+        player.setLeftTurns(1);
+        players.add(player);
+        players.add(new Player("Player2"));
+
+        CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(
+            new Scanner(System.in, StandardCharsets.UTF_8.name())));
+
+        assertThrows(IllegalStateException.class, () -> {
+            card.play(player, players);
+        });
+    }
 }
