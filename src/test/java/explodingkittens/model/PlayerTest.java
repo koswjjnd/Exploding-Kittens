@@ -5,10 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 class PlayerTest {
     private Player player;
@@ -25,6 +28,88 @@ class PlayerTest {
         player = new Player("TestPlayer");
         when(defuseCard.getType()).thenReturn(CardType.DEFUSE);
         when(nonDefuseCard.getType()).thenReturn(CardType.ATTACK);
+    }
+
+    @Test
+    void testGetName() {
+        assertEquals("TestPlayer", player.getName());
+    }
+
+    @Test
+    void testGetHand() {
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        
+        List<Card> hand = player.getHand();
+        assertEquals(2, hand.size());
+        assertTrue(hand.contains(defuseCard));
+        assertTrue(hand.contains(nonDefuseCard));
+        
+        // Test that returned list is a copy
+        hand.remove(defuseCard);
+        assertEquals(2, player.getHand().size());
+    }
+
+    @Test
+    void testGetRealHand() {
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        
+        List<Card> hand = player.getRealHand();
+        assertEquals(2, hand.size());
+        assertTrue(hand.contains(defuseCard));
+        assertTrue(hand.contains(nonDefuseCard));
+        
+        // Test that returned list is the real hand
+        hand.remove(defuseCard);
+        assertEquals(1, player.getRealHand().size());
+    }
+
+    @Test
+    void testRemoveCard() {
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        
+        assertTrue(player.removeCard(defuseCard));
+        assertEquals(1, player.getHand().size());
+        assertFalse(player.getHand().contains(defuseCard));
+        
+        assertFalse(player.removeCard(defuseCard));
+        assertEquals(1, player.getHand().size());
+    }
+
+    @Test
+    void testIsAlive() {
+        assertTrue(player.isAlive());
+        player.setAlive(false);
+        assertFalse(player.isAlive());
+        player.setAlive(true);
+        assertTrue(player.isAlive());
+    }
+
+    @Test
+    void testHasCardOfType() {
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        
+        assertTrue(player.hasCardOfType(CardType.DEFUSE));
+        assertTrue(player.hasCardOfType(CardType.ATTACK));
+        assertFalse(player.hasCardOfType(CardType.SKIP));
+    }
+
+    @Test
+    void testRemoveCardOfType() {
+        player.receiveCard(defuseCard);
+        player.receiveCard(nonDefuseCard);
+        
+        Card removed = player.removeCardOfType(CardType.DEFUSE);
+        assertEquals(defuseCard, removed);
+        assertEquals(1, player.getHand().size());
+        assertFalse(player.hasCardOfType(CardType.DEFUSE));
+        
+        Card removed2 = player.removeCardOfType(CardType.DEFUSE);
+        assertNull(removed2);
+        assertEquals(1, player.getHand().size());
     }
 
     @Test
@@ -221,5 +306,20 @@ class PlayerTest {
                 .filter(card -> card.getType() == CardType.ATTACK)
                 .count());
     }
-    
+
+    @Test
+    void testUseSkipCardWithZeroTurns() {
+        player.setLeftTurns(0);
+        player.useSkipCard();
+        String msg = "Turns should remain 0 when using skip card with 0 turns";
+        assertEquals(0, player.getLeftTurns(), msg);
+    }
+
+    @Test
+    void testUseSkipCardWithNegativeTurns() {
+        player.setLeftTurns(-1);
+        player.useSkipCard();
+        String msg = "Turns should remain -1 when using skip card with negative turns";
+        assertEquals(-1, player.getLeftTurns(), msg);
+    }
 } 
