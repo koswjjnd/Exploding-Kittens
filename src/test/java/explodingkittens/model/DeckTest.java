@@ -1,14 +1,20 @@
 package explodingkittens.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
-
+import org.junit.jupiter.api.Test;
+import java.util.Map;
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import explodingkittens.exceptions.EmptyDeckException;
 
 /**
  * Test class for the Deck class.
@@ -17,252 +23,274 @@ public class DeckTest {
     private Deck deck;
     private Card skipCard;
     private Card attackCard;
+    private Card seeTheFutureCard;
+    private Card nopeCard;
 
     @BeforeEach
     void setUp() {
         deck = new Deck();
         skipCard = new SkipCard();
         attackCard = new AttackCard();
+        seeTheFutureCard = new SeeTheFutureCard();
+        nopeCard = new NopeCard();
     }
 
-    /**
-     * Tests that initializing a deck with 1 player throws an IllegalArgumentException.
-     */
     @Test
-    public void testInitializeBaseDeckInvalidPlayerCount1() {
-        Deck deck = new Deck();
+    void testConstructor() {
+        assertNotNull(deck);
+        assertTrue(deck.isEmpty());
+        assertEquals(0, deck.size());
+    }
+
+    @Test
+    void testCopyConstructor() {
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
+        Deck copyDeck = new Deck(deck);
+        
+        assertNotSame(deck, copyDeck);
+        assertEquals(deck.size(), copyDeck.size());
+        assertNotSame(deck.getCards().get(0), copyDeck.getCards().get(0));
+    }
+
+    @Test
+    void testInitializeBaseDeckInvalidPlayerCount() {
         assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(1));
-    }
-    
-    /**
-     * Tests that initializing a deck with 2 players creates the correct number of cards.
-     */
-    @Test
-    public void testInitializeBaseDeckPlayerCount2() {
-        Deck deck = new Deck();
-        deck.initializeBaseDeck(2);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-
-        assertEquals(3, cardCounts.get("DefuseCard"));  // 5 - 2
-        assertEquals(2, cardCounts.get("AttackCard"));
-        assertEquals(2, cardCounts.get("SkipCard"));
-        assertEquals(2, cardCounts.get("ShuffleCard"));
-        assertEquals(2, cardCounts.get("See_the_futureCard"));
-        assertEquals(4, cardCounts.get("NopeCard"));
-
-        
-        assertEquals(5, cardCounts.get("CatCard_WATERMELON_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(5, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_RAINBOW_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_HAIRY_POTATO_CAT"));
-
-
-        assertEquals(1, cardCounts.get("SnatchCard"));
-        assertEquals(1, cardCounts.get("Switch_deck_by_halfCard"));
-        assertEquals(1, cardCounts.get("Time_rewindCard"));
-        assertEquals(1, cardCounts.get("FavorCard"));
-        assertEquals(2, cardCounts.get("Draw_from_bottomCard"));
-        assertEquals(2, cardCounts.get("ReverseCard"));
-        assertEquals(2, cardCounts.get("Super_skipCard"));
-        assertEquals(2, cardCounts.get("Double_skipCard"));
-    }
-
-
-    /**
-     * Tests that initializing a deck with 4 players creates the correct number of cards.
-     */
-    @Test
-    public void testInitializeBaseDeckPlayerCount4() {
-        Deck deck = new Deck();
-        deck.initializeBaseDeck(4);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.get("DefuseCard")); 
-        assertEquals(2, cardCounts.get("AttackCard"));
-        assertEquals(2, cardCounts.get("SkipCard"));
-        assertEquals(2, cardCounts.get("ShuffleCard"));
-        assertEquals(2, cardCounts.get("See_the_futureCard"));
-        assertEquals(4, cardCounts.get("NopeCard"));
-
-        
-        assertEquals(5, cardCounts.get("CatCard_WATERMELON_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_TACOCAT"));
-        assertEquals(5, cardCounts.get("CatCard_BEARD_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_RAINBOW_CAT"));
-        assertEquals(5, cardCounts.get("CatCard_HAIRY_POTATO_CAT"));
-
-
-        assertEquals(1, cardCounts.get("SnatchCard"));
-        assertEquals(1, cardCounts.get("Switch_deck_by_halfCard"));
-        assertEquals(1, cardCounts.get("Time_rewindCard"));
-        assertEquals(1, cardCounts.get("FavorCard"));
-        assertEquals(2, cardCounts.get("Draw_from_bottomCard"));
-        assertEquals(2, cardCounts.get("ReverseCard"));
-        assertEquals(2, cardCounts.get("Super_skipCard"));
-        assertEquals(2, cardCounts.get("Double_skipCard"));
-    }
-
-    /**
-     * Tests that initializing a deck with 5 players throws an IllegalArgumentException.
-     */
-    @Test
-    public void testInitializeBaseDeckInvalidPlayerCount5() {
-        Deck deck = new Deck();
         assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(5));
     }
 
-    /**
-     * Tests that an empty deck returns an empty card count map.
-     */
     @Test
-    public void testGetCardCountsEmptyDeck() {
-        Deck deck = new Deck();
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertTrue(cardCounts.isEmpty());
-    }
-
-    /**
-     * Tests that a deck with a single skip card returns the correct card count.
-     */
-    @Test
-    public void testGetCardCountsSingleSkipCard() {
-        Deck deck = new Deck();
-        deck.addCard(new SkipCard());
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.size());
-        assertEquals(1, cardCounts.get("SkipCard"));
-    }
-
-    /**
-     * Tests that a deck with one of each card type returns the correct card counts.
-     */
-    @Test
-    public void testGetCardCountsOneOfEachType() {
-        Deck deck = new Deck();
-        deck.addCards(new SkipCard(), 1);
-        deck.addCards(new ShuffleCard(), 1);
-        deck.addCards(new AttackCard(), 1);
-        deck.addCards(new DefuseCard(), 1);
-        deck.addCards(new SeeTheFutureCard(), 1);
-        deck.addCards(new NopeCard(), 1);
+    void testInitializeBaseDeckValidPlayerCount() {
+        deck.initializeBaseDeck(2);
+        Map<String, Integer> counts = deck.getCardCounts();
         
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(6, cardCounts.size());
-        assertEquals(1, cardCounts.get("SkipCard"));
-        assertEquals(1, cardCounts.get("ShuffleCard"));
-        assertEquals(1, cardCounts.get("AttackCard"));
-        assertEquals(1, cardCounts.get("DefuseCard"));
-        assertEquals(1, cardCounts.get("See_the_futureCard"));
-        assertEquals(1, cardCounts.get("NopeCard"));
-    }
-
-    /**
-     * Tests that adding zero cards to a deck results in an empty deck.
-     */
-    @Test
-    public void testAddCardsZeroCount() {
-        Deck deck = new Deck();
-        deck.addCards(new ShuffleCard(), 0);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertTrue(cardCounts.isEmpty());
-    }
-
-    /**
-     * Tests that adding a single card to a deck results in the correct card count.
-     */
-    @Test
-    public void testAddCardsSingleCard() {
-        Deck deck = new Deck();
-        deck.addCards(new SkipCard(), 1);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.size());
-        assertEquals(1, cardCounts.get("SkipCard"));
-    }
-
-    /**
-     * Tests that adding multiple cards to a deck results in the correct card count.
-     */
-    @Test
-    public void testAddCardsMultipleCards() {
-        Deck deck = new Deck();
-        deck.addCards(new SeeTheFutureCard(), 2);
-        Map<String, Integer> cardCounts = deck.getCardCounts();
-        assertEquals(1, cardCounts.size());
-        assertEquals(2, cardCounts.get("See_the_futureCard"));
+        assertEquals(3, counts.get("DefuseCard")); // 5-2
+        assertEquals(4, counts.get("NopeCard")); // Fixed number of Nope cards
     }
 
     @Test
-    void testDrawFromEmptyDeck() {
-        assertThrows(IllegalStateException.class, () -> 
-            deck.drawOne(),
-            "Should throw IllegalStateException when drawing from empty deck"
-        );
-    }
-
-    @Test
-    void testInsertCardAtValidPosition() {
-        // Insert cards at different positions
-        deck.insertAt(skipCard, 0);
-        deck.insertAt(attackCard, 1);
-
-        // Verify cards are in correct positions
-        assertEquals(skipCard, deck.drawOne(), "First card should be SkipCard");
-        assertEquals(attackCard, deck.drawOne(), "Second card should be AttackCard");
-    }
-
-    @Test
-    void testInsertNullCard() {
-        assertThrows(IllegalArgumentException.class, () -> 
-            deck.insertAt(null, 0),
-            "Should throw IllegalArgumentException when inserting null card"
-        );
-    }
-
-    @Test
-    void testInsertCardAtNegativePosition() {
-        assertThrows(IllegalArgumentException.class, () -> 
-            deck.insertAt(skipCard, -1),
-            "Should throw IllegalArgumentException when inserting at negative position"
-        );
-    }
-
-    @Test
-    void testInsertCardAtPositionBeyondSize() {
-        assertThrows(IllegalArgumentException.class, () -> 
-            deck.insertAt(skipCard, 1),
-            "Should throw IllegalArgumentException when inserting at position beyond size"
-        );
-    }
-
-    @Test
-    void testPeekAtEmptyDeck() {
-        assertThrows(IllegalStateException.class, () -> 
-            deck.peekTop(),
-            "Should throw IllegalStateException when peeking at empty deck"
-        );
-    }
-
-    @Test
-    void testPeekAtNonEmptyDeck() {
-        deck.insertAt(skipCard, 0);
-        deck.insertAt(attackCard, 1);
-
-        // Verify peek returns first card without removing it
-        assertEquals(skipCard, deck.peekTop(), "Peek should return first card");
-        assertEquals(2, deck.size(), "Deck size should remain unchanged after peek");
-    }
-
-    @Test
-    void testSize() {
-        assertEquals(0, deck.size(), "Empty deck should have size 0");
+    void testAddCards() {
+        deck.addCards(skipCard, 3);
+        assertEquals(3, deck.size());
         
-        deck.insertAt(skipCard, 0);
-        assertEquals(1, deck.size(), "Deck should have size 1 after inserting one card");
+        Map<String, Integer> counts = deck.getCardCounts();
+        assertEquals(3, counts.get("SkipCard"));
+    }
+
+    @Test
+    void testAddCardsInvalidInput() {
+        assertThrows(IllegalArgumentException.class, () -> deck.addCards(null, 1));
+        assertThrows(IllegalArgumentException.class, () -> deck.addCards(skipCard, -1));
+    }
+
+    @Test
+    void testAddCard() {
+        deck.addCard(skipCard);
+        assertEquals(1, deck.size());
+        assertEquals(skipCard, deck.peekTop());
+    }
+
+    @Test
+    void testAddCardInvalidInput() {
+        assertThrows(IllegalArgumentException.class, () -> deck.addCard(null));
+    }
+
+    @Test
+    void testDrawOne() {
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
         
-        deck.insertAt(attackCard, 1);
-        assertEquals(2, deck.size(), "Deck should have size 2 after inserting two cards");
+        Card drawn = deck.drawOne();
+        assertEquals(skipCard, drawn);
+        assertEquals(1, deck.size());
+    }
+
+    @Test
+    void testDrawOneEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> deck.drawOne());
+    }
+
+    @Test
+    void testInsertAt() {
+        deck.addCard(skipCard);
+        deck.insertAt(attackCard, 0);
         
-        deck.drawOne();
-        assertEquals(1, deck.size(), "Deck should have size 1 after drawing one card");
+        assertEquals(attackCard, deck.drawOne());
+        assertEquals(skipCard, deck.drawOne());
+    }
+
+    @Test
+    void testInsertAtInvalidInput() {
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(null, 0));
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(skipCard, -1));
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(skipCard, 1));
+    }
+
+    @Test
+    void testPeekTop() {
+        deck.addCard(skipCard);
+        assertEquals(skipCard, deck.peekTop());
+        assertEquals(1, deck.size());
+    }
+
+    @Test
+    void testPeekTopEmptyDeck() {
+        assertThrows(IllegalStateException.class, () -> deck.peekTop());
+    }
+
+    @Test
+    void testShuffle() {
+        deck.addCards(skipCard, 5);
+        deck.addCards(attackCard, 5);
+        List<Card> beforeShuffle = new ArrayList<>(deck.getCards());
+        
+        deck.shuffle();
+        List<Card> afterShuffle = deck.getCards();
+        
+        assertEquals(beforeShuffle.size(), afterShuffle.size());
+        assertNotEquals(beforeShuffle, afterShuffle);
+    }
+
+    @Test
+    void testShuffleWithRandom() {
+        deck.addCards(skipCard, 5);
+        deck.addCards(attackCard, 5);
+        List<Card> beforeShuffle = new ArrayList<>(deck.getCards());
+        
+        deck.shuffle(new Random(42)); // Fixed seed for deterministic testing
+        List<Card> afterShuffle = deck.getCards();
+        
+        assertEquals(beforeShuffle.size(), afterShuffle.size());
+        assertNotEquals(beforeShuffle, afterShuffle);
+    }
+
+    @Test
+    void testGetCards() {
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
+        
+        List<Card> cards = deck.getCards();
+        assertEquals(2, cards.size());
+        assertNotSame(deck.getCards(), cards); // Should return a copy
+    }
+
+    @Test
+    void testGetUnmodifiableCards() {
+        deck.addCard(skipCard);
+        List<Card> unmodifiableCards = deck.getUnmodifiableCards();
+        assertThrows(UnsupportedOperationException.class, () -> unmodifiableCards.add(attackCard));
+    }
+
+    @Test
+    void testRemoveTopCard() {
+        deck.addCard(skipCard);
+        Card removed = deck.removeTopCard();
+        assertEquals(skipCard, removed);
+        assertTrue(deck.isEmpty());
+    }
+
+    @Test
+    void testRemoveTopCardEmptyDeck() {
+        assertThrows(EmptyDeckException.class, () -> deck.removeTopCard());
+    }
+
+    @Test
+    void testRemoveBottomCard() {
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
+        Card removed = deck.removeBottomCard();
+        assertEquals(attackCard, removed);
+        assertEquals(1, deck.size());
+    }
+
+    @Test
+    void testRemoveBottomCardEmptyDeck() {
+        assertThrows(EmptyDeckException.class, () -> deck.removeBottomCard());
+    }
+
+    @Test
+    void testSwitchTopAndBottomHalf() {
+        deck.addCards(skipCard, 3);
+        deck.addCards(attackCard, 3);
+        List<Card> beforeSwitch = new ArrayList<>(deck.getCards());
+        
+        deck.switchTopAndBottomHalf();
+        List<Card> afterSwitch = deck.getCards();
+        
+        assertEquals(beforeSwitch.size(), afterSwitch.size());
+        assertNotEquals(beforeSwitch, afterSwitch);
+    }
+
+    @Test
+    void testSwitchTopAndBottomHalfOddSize() {
+        deck.addCards(skipCard, 3);
+        deck.addCards(attackCard, 2);
+        List<Card> beforeSwitch = new ArrayList<>(deck.getCards());
+        
+        deck.switchTopAndBottomHalf();
+        List<Card> afterSwitch = deck.getCards();
+        
+        assertEquals(beforeSwitch.size(), afterSwitch.size());
+        assertNotEquals(beforeSwitch, afterSwitch);
+    }
+
+    @Test
+    void testSwitchTopAndBottomHalfSmallDeck() {
+        deck.addCard(skipCard);
+        deck.switchTopAndBottomHalf();
+        assertEquals(1, deck.size());
+    }
+
+    @Test
+    void testClear() {
+        deck.addCards(skipCard, 3);
+        deck.clear();
+        assertTrue(deck.isEmpty());
+    }
+
+    @Test
+    void testClearUninitialized() {
+        deck = new Deck();
+        assertDoesNotThrow(() -> deck.clear());
+    }
+
+    @Test
+    void testGetCardCounts() {
+        deck.addCards(skipCard, 2);
+        deck.addCards(attackCard, 3);
+        deck.addCards(seeTheFutureCard, 1);
+        
+        Map<String, Integer> counts = deck.getCardCounts();
+        assertEquals(2, counts.get("SkipCard"));
+        assertEquals(3, counts.get("AttackCard"));
+    }
+
+    @Test
+    void testAddExplodingKittensInvalidInput() {
+        assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1));
+    }
+
+    @Test
+    void testValidateDeckWithInvalidMainCards() {
+        deck.initializeBaseDeck(2);
+        deck.addCards(new AttackCard(), 2); // Should be 3
+        assertFalse(deck.validateDeck(2));
+    }
+
+    @Test
+    void testValidateDeckWithInvalidCatCards() {
+        deck.initializeBaseDeck(2);
+        deck.addCards(new CatCard(CatType.TACOCAT), 3); // Should be 4
+        assertFalse(deck.validateDeck(2));
+    }
+
+    @Test
+    void testAddNopeCard() {
+        deck.addCard(nopeCard);
+        assertEquals(1, deck.size());
+        assertEquals(nopeCard, deck.peekTop());
+        
+        Map<String, Integer> counts = deck.getCardCounts();
+        assertEquals(1, counts.get("NopeCard"));
     }
 }

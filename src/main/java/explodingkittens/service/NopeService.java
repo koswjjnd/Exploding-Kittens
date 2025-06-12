@@ -26,6 +26,7 @@ public class NopeService {
      * @param targetCard The card whose effect is being checked for negation
      * @return true if the card's effect is negated, false otherwise
      * @throws IllegalArgumentException if targetCard is null
+     * @throws IllegalStateException if the current player is not found in the turn order
      */
     public boolean isNegatedByPlayers(Card targetCard) {
         if (targetCard == null) {
@@ -33,24 +34,50 @@ public class NopeService {
         }
         
         List<Card> playedNopeCards = new ArrayList<>();
+        List<Player> allPlayers = GameContext.getTurnOrder();
+        Player currentPlayer = GameContext.getCurrentPlayer();
 
-        for (Player p : GameContext.getTurnOrder()) {
+        // First show the card being played to all players
+        for (Player p : allPlayers) {
             if (!p.isAlive()) continue;
+            view.showCardPlayed(currentPlayer, targetCard);
+        }
 
-            if (p.hasCardOfType(CardType.NOPE)) {
-                boolean playNope = view.promptPlayNope(p, targetCard);
-                if (playNope) {
-                    Card nope = p.removeCardOfType(CardType.NOPE);
-                    if (nope != null) {
-                        playedNopeCards.add(nope);
-                        view.displayPlayedNope(p);
-                        view.displayPlayerHand(p);
+        // Find the index of current player
+        int currentIndex = allPlayers.indexOf(currentPlayer);
+        if (currentIndex == -1) {
+            throw new IllegalStateException("Current player not found in turn order");
+        }
+
+        // Start Nope chain
+        boolean someonePlayedNope = true;
+        while (someonePlayedNope) {
+            someonePlayedNope = false;
+            
+            // Start from the next player after current player
+            for (int i = 0; i < allPlayers.size(); i++) {
+                // Calculate the actual index, starting from next player
+                int actualIndex = (currentIndex + 1 + i) % allPlayers.size();
+                Player p = allPlayers.get(actualIndex);
+                
+                if (!p.isAlive()) continue;
+                
+                if (p.hasCardOfType(CardType.NOPE)) {
+                    boolean playNope = view.promptPlayNope(p, targetCard);
+                    if (playNope) {
+                        Card nope = p.removeCardOfType(CardType.NOPE);
+                        if (nope != null) {
+                            playedNopeCards.add(nope);
+                            view.displayPlayedNope(p);
+                            view.displayPlayerHand(p);
+                            someonePlayedNope = true;
+                        }
                     }
                 }
             }
         }
 
-        return isNegated(GameContext.getCurrentPlayer(), playedNopeCards);
+        return isNegated(currentPlayer, playedNopeCards);
     }
 
     /**
@@ -68,12 +95,7 @@ public class NopeService {
             throw new IllegalArgumentException("Nope cards cannot be null");
         }
 
-        int count = 0;
-        for (Card card : nopeCards) {
-            if (card instanceof BasicCard && ((BasicCard) card).getType() == CardType.NOPE) {
-                count++;
-            }
-        }
-        return count % 2 != 0;
+        // Count all Nope cards, regardless of their specific type
+        return nopeCards.size() % 2 != 0;
     }
 }

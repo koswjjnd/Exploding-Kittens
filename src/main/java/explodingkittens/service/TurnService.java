@@ -150,9 +150,6 @@ public class TurnService {
             throw new IllegalArgumentException("Player / card must not be null");
         }
 
-        /* —— show played card —— */
-        view.showCardPlayed(player, card);
-
         /* —— Nope check —— */
         boolean noped = nopeService.isNegatedByPlayers(card);
         if (noped) {
@@ -160,7 +157,6 @@ public class TurnService {
             player.removeCard(card);  // the card is played but the effect is invalid
             return;
         }
-
         /* —— apply effect —— */
         try {
             cardEffectService.applyEffect(card, player);
@@ -168,7 +164,8 @@ public class TurnService {
         catch (RuntimeException e) {
             throw new InvalidCardException(e.getMessage());
         }
-
+        /* —— show played card —— */
+        view.showCardPlayed(player, card);
         /* —— remove card from hand —— */
         player.removeCard(card);
     }
