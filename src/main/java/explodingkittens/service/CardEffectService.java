@@ -231,18 +231,22 @@ public class CardEffectService {
             .collect(Collectors.toList());
             
         if (!matchingCards.isEmpty()) {
-            // 让目标玩家选择一张指定类型的卡牌
             Card requestedCard = view.selectCardFromPlayer(targetPlayer, matchingCards);
             if (requestedCard != null) {
                 targetPlayer.removeCard(requestedCard);
                 sourcePlayer.receiveCard(requestedCard);
                 view.displayCardRequested(sourcePlayer, targetPlayer, requestedCard);
-                return;
+            } 
+            else {
+                // 玩家有目标卡牌但没有选任何卡
+                view.displayCardRequested(sourcePlayer, targetPlayer, null);
+                view.showError("No card was selected.");
             }
+        } 
+        else {
+            // 玩家根本没有目标卡牌
+            view.displayCardRequested(sourcePlayer, targetPlayer, null);
+            view.showError("Target player does not have the requested card type.");
         }
-        
-        // If we get here, the target player didn't have the requested card
-        view.displayCardRequested(sourcePlayer, targetPlayer, null);
-        view.showError("Target player does not have the requested card type.");
     }
 }

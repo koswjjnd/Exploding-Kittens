@@ -5,6 +5,7 @@ import explodingkittens.model.Deck;
 import explodingkittens.model.Card;
 import explodingkittens.model.CardType;
 import explodingkittens.model.ExplodingKittenCard;
+import explodingkittens.model.DrawFromBottomCard;
 import explodingkittens.controller.GameContext;
 import explodingkittens.exceptions.EmptyDeckException;
 import explodingkittens.exceptions.InvalidCardException;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -506,6 +508,79 @@ class TurnServiceTest {
         // Verify
         verify(view, never()).showCardDrawn(any(), any());
         verify(player, never()).receiveCard(any());
+    }
+
+    @Test
+    void testPlayCardsPhaseWithDrawFromBottomCard() throws InvalidCardException {
+        // Setup
+        List<Card> hand = new ArrayList<>();
+        DrawFromBottomCard drawFromBottomCard = mock(DrawFromBottomCard.class);
+        hand.add(drawFromBottomCard);
+        when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand)).thenReturn(drawFromBottomCard);
+        when(nopeService.isNegatedByPlayers(drawFromBottomCard)).thenReturn(false);
+        
+        // Execute
+        turnService.playCardsPhase(player);
+        
+        // Verify
+        verify(cardEffectService).applyEffect(drawFromBottomCard, player);
+        verify(player).removeCard(drawFromBottomCard);
+        verify(view).showCardPlayed(player, drawFromBottomCard);
+        // Verify that selectCardToPlay is only called once since we break after DrawFromBottomCard
+        verify(view, times(1)).selectCardToPlay(player, hand);
+    }
+
+    @Test
+    void testPlayCardsPhaseWithInvalidCard() {
+        // Setup
+        List<Card> hand = new ArrayList<>();
+        Card invalidCard = mock(Card.class);
+        hand.add(invalidCard);
+        when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand))
+            .thenReturn(invalidCard)  // First attempt: invalid card
+            .thenReturn(null);        // Second attempt: end play phase
+        when(nopeService.isNegatedByPlayers(invalidCard)).thenReturn(false);
+        
+        // Mock card effect service to throw runtime exception
+        doThrow(new RuntimeException("Invalid card effect"))
+            .when(cardEffectService).applyEffect(invalidCard, player);
+        
+        // Execute
+        turnService.playCardsPhase(player);
+        
+        // Verify
+        verify(view).showError("Invalid card effect");
+        verify(view, times(1)).displayPlayerHand(player); // Only once after error
+        verify(player, never()).removeCard(any()); // Card should not be removed
+        verify(view, never()).showCardPlayed(any(), any()); // Card should not be shown as played
+    }
+
+    @Test
+    void testPlayCardsPhaseWithRuntimeException() {
+        // Setup
+        List<Card> hand = new ArrayList<>();
+        Card errorCard = mock(Card.class);
+        hand.add(errorCard);
+        when(player.getHand()).thenReturn(hand);
+        when(view.selectCardToPlay(player, hand))
+            .thenReturn(errorCard)  // First attempt: card that causes runtime error
+            .thenReturn(null);      // Second attempt: end play phase
+        when(nopeService.isNegatedByPlayers(errorCard)).thenReturn(false);
+        
+        // Mock card effect service to throw runtime exception
+        doThrow(new RuntimeException("Unexpected error"))
+            .when(cardEffectService).applyEffect(errorCard, player);
+        
+        // Execute
+        turnService.playCardsPhase(player);
+        
+        // Verify
+        verify(view).showError("Unexpected error");
+        verify(view, times(1)).displayPlayerHand(player); // Only once after error
+        verify(player, never()).removeCard(any()); // Card should not be removed
+        verify(view, never()).showCardPlayed(any(), any()); // Card should not be shown as played
     }
 
 } 

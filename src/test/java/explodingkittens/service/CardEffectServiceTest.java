@@ -7,7 +7,9 @@ import explodingkittens.model.SkipCard;
 import explodingkittens.model.SeeTheFutureCard;
 import explodingkittens.model.ShuffleCard;
 import explodingkittens.model.CatCard;
+import explodingkittens.model.CatType;
 import explodingkittens.model.DefuseCard;
+import explodingkittens.model.TacoCatCard;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Player;
 import explodingkittens.model.Deck;
@@ -19,10 +21,13 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * Test class for CardEffectService.
@@ -521,6 +526,54 @@ class CardEffectServiceTest {
                     null
                 );
             Mockito.verify(mockGameView).showError("No card was selected.");
+        }
+    }
+
+    @Test
+    void testApplyEffectWithSpecificCatTypeFiltering() {
+        try (MockedStatic<GameContext> mockedStatic = Mockito.mockStatic(GameContext.class)) {
+            mockedStatic.when(GameContext::getTurnOrder).thenReturn(turnOrder);
+            mockedStatic.when(GameContext::getGameDeck).thenReturn(gameDeck);
+
+            // Set up one TacoCat and one RainbowCat in player2's hand
+            CatCard tacoCat = Mockito.mock(CatCard.class);
+            CatCard rainbowCat = Mockito.mock(CatCard.class);
+
+            Mockito.when(tacoCat.getType()).thenReturn(CardType.CAT_CARD);
+            Mockito.when(tacoCat.getCatType()).thenReturn(CatType.TACOCAT);
+
+            Mockito.when(rainbowCat.getType()).thenReturn(CardType.CAT_CARD);
+            Mockito.when(rainbowCat.getCatType()).thenReturn(CatType.RAINBOW_CAT);
+
+            List<Card> player2Hand = Arrays.asList(tacoCat, rainbowCat);
+            Mockito.when(player2.getHand()).thenReturn(player2Hand);
+
+            // Set up effect to request TACOCAT
+            CatCard.CatCardEffect effect = Mockito.mock(CatCard.CatCardEffect.class);
+            Mockito.when(effect.getTargetPlayerName()).thenReturn("player2");
+            Mockito.when(effect.getFirstCard()).thenReturn(firstCatCard);
+            Mockito.when(effect.getSecondCard()).thenReturn(secondCatCard);
+            Mockito.when(effect.getThirdCard()).thenReturn(thirdCatCard);
+            Mockito.when(effect.getTargetPlayerHand()).thenReturn(player2Hand);
+            Mockito.when(effect.getRequestedCardType()).thenReturn(CardType.CAT_CARD);
+            Mockito.when(effect.getRequestedCatType()).thenReturn(CatType.TACOCAT);
+
+            // Mock view to select TacoCat only
+            Mockito.when(mockGameView.selectTargetPlayer(Mockito.anyList()))
+                .thenReturn(player2);
+            Mockito.when(mockGameView.selectCardFromPlayer(Mockito.eq(player2), Mockito.anyList()))
+                .thenReturn(tacoCat);
+
+            Mockito.doThrow(effect).when(mockCard).effect(turnOrder, gameDeck);
+
+            // Act
+            cardEffectService.applyEffect(mockCard, player1);
+
+            // Assert
+            Mockito.verify(player2).removeCard(tacoCat);
+            Mockito.verify(player1).receiveCard(tacoCat);
+            Mockito.verify(mockGameView).displayCardRequested(player1, player2, tacoCat);
+            Mockito.verify(mockGameView, Mockito.never()).showError(Mockito.any());
         }
     }
 } 
