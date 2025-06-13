@@ -80,7 +80,7 @@ Feature: Game Loop Integration Tests
     And the next player should be "P2"
 
   @IT-TURN-06
-  Scenario: Nope card countering Favor
+  Scenario: Favor card effect is countered by Nope
     Given the game loop is initialized with players having hands:
       | Player | Hand  |
       | P1     | Favor |

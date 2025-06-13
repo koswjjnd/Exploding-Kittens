@@ -81,7 +81,7 @@ public class TurnService {
                 System.out.println((i + 1) + ". " + p.getName() + 
                     (p.isAlive() ? "" : " (Eliminated)"));
             }
-            System.out.println();
+            // System.out.println();
             
             // Move current player to end of turn order
             GameContext.movePlayerToEnd(player);
@@ -94,7 +94,7 @@ public class TurnService {
                 System.out.println((i + 1) + ". " + p.getName() + 
                     (p.isAlive() ? "" : " (Eliminated)"));
             }
-            System.out.println();
+            // System.out.println();
             
             // Set the next player to be the first player in the new order
             GameContext.setCurrentPlayerIndex(0);
@@ -204,7 +204,7 @@ public class TurnService {
                     (p == player ? " (Current)" : "") + 
                     (p.isAlive() ? "" : " (Eliminated)"));
             }
-            System.out.println();
+            // System.out.println();
         } 
         catch (EmptyDeckException ede) {
             throw ede;
@@ -240,7 +240,7 @@ public class TurnService {
                 (p == player ? " (Current)" : "") + 
                 (p.isAlive() ? "" : " (Eliminated)"));
         }
-        System.out.println();
+        // System.out.println();
     }
 
     /**

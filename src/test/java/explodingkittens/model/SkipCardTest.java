@@ -121,4 +121,32 @@ class SkipCardTest {
         assertEquals(player, turnOrder.get(0));
         verify(player).setLeftTurns(Integer.MAX_VALUE - 1);
     }
+
+    @Test
+    void testEffectWithZeroLeftTurns() {
+        // Test Case 7: leftTurn = 0 (boundary case)
+        turnOrder.add(player);
+        when(player.getLeftTurns()).thenReturn(0);
+        when(player.isAlive()).thenReturn(true);
+        when(player.getName()).thenReturn("TestPlayer");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> card.effect(turnOrder, deck),
+            "Should throw IllegalStateException when player has exactly 0 turns left"
+        );
+        
+        assertEquals(
+            "Cannot use Skip card when you have no turns left. You must draw a card first.",
+            exception.getMessage()
+        );
+        
+        verify(player, never()).setLeftTurns(anyInt());
+        mockedGameContext.verify(() -> GameContext.movePlayerToEnd(player), never());
+    }
 }
