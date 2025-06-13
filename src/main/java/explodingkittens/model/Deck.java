@@ -161,6 +161,7 @@ public class Deck {
         this.addCards(new ReverseCard(), 2);
         this.addCards(new SuperSkipCard(), 2);
         this.addCards(new DoubleSkipCard(), 2);
+        this.addCards(new FeralCatCard(), 5);
     }
     
     /**
@@ -205,11 +206,31 @@ public class Deck {
                 key = "CatCard_" + ((CatCard) card).getCatType().name();  // e.g., CatCard_TACOCAT
             } 
             else {
-                // e.g., CardType.DEFUSE -> DefuseCard
+                // Handle special cases
                 String base = card.getType().name().toLowerCase();
-                key = Character.toUpperCase(base.charAt(0)) + base.substring(1) + "Card";
+                switch (base) {
+                    case "see_the_future":
+                        key = "See_the_futureCard";
+                        break;
+                    case "switch_deck_by_half":
+                        key = "Switch_deck_by_halfCard";
+                        break;
+                    case "time_rewind":
+                        key = "Time_rewindCard";
+                        break;
+                    case "draw_from_bottom":
+                        key = "Draw_from_bottomCard";
+                        break;
+                    case "super_skip":
+                        key = "Super_skipCard";
+                        break;
+                    case "double_skip":
+                        key = "Double_skipCard";
+                        break;
+                    default:
+                        key = Character.toUpperCase(base.charAt(0)) + base.substring(1) + "Card";
+                }
             }
-    
             counts.put(key, counts.getOrDefault(key, 0) + 1);
         }
         return counts;
@@ -223,7 +244,7 @@ public class Deck {
      */
     private String getCardTypeKey(Card card) {
         if (card instanceof CatCard) {
-            return "CatCard_" + ((CatCard) card).getType().name();
+            return "CatCard_" + ((CatCard) card).getCatType().name();
         } 
         if (card instanceof DefuseCard) {
             return "DefuseCard";
@@ -238,13 +259,13 @@ public class Deck {
             return "ShuffleCard";
         } 
         if (card instanceof SeeTheFutureCard) {
-            return "SeeTheFutureCard";
+            return "See_the_futureCard";
         } 
         if (card instanceof NopeCard) {
             return "NopeCard";
         }
         if (card instanceof ExplodingKittenCard) {
-            return "ExplodingKittenCard";
+            return "Exploding_kittenCard";
         }
         return "UnknownCard";
     }
@@ -268,13 +289,17 @@ public class Deck {
             return false;
         }
         Map<String, Integer> counts = getCardCounts();
+        System.out.println("DEBUG: Card counts = " + counts);
         if (!validateDefuse(counts, playerCount)) {
+            System.out.println("Invalid defuse count");
             return false;
         }
         if (!validateMainCards(counts)) {
+            System.out.println("Invalid main cards");
             return false;
         }
         if (!validateCatCards(counts)) {
+            System.out.println("Invalid cat cards");
             return false;
         }
         return true;
@@ -285,16 +310,16 @@ public class Deck {
     }
 
     private boolean validateMainCards(Map<String, Integer> counts) {
-        if (counts.getOrDefault("AttackCard", 0) != 3) {
+        if (counts.getOrDefault("AttackCard", 0) != 2) {
             return false;
         }
-        if (counts.getOrDefault("SkipCard", 0) != 3) {
+        if (counts.getOrDefault("SkipCard", 0) != 2) {
             return false;
         }
-        if (counts.getOrDefault("ShuffleCard", 0) != 4) {
+        if (counts.getOrDefault("ShuffleCard", 0) != 2) {
             return false;
         }
-        if (counts.getOrDefault("SeeTheFutureCard", 0) != 4) {
+        if (counts.getOrDefault("See_the_futureCard", 0) != 2) {
             return false;
         }
         if (counts.getOrDefault("NopeCard", 0) != 4) {
@@ -305,7 +330,7 @@ public class Deck {
 
     private boolean validateCatCards(Map<String, Integer> counts) {
         for (CatType type : CatType.values()) {
-            if (counts.getOrDefault("CatCard_" + type.name(), 0) != 4) {
+            if (counts.getOrDefault("CatCard_" + type.name(), 0) != 5) {
                 return false;
             }
         }

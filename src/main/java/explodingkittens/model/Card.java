@@ -32,15 +32,6 @@ public abstract class Card implements Cloneable {
      */
     public abstract void effect(List<Player> turnOrder, Deck gameDeck);
     
-    @Override
-    public Card clone() {
-        try {
-            return (Card) super.clone();
-        } 
-        catch (CloneNotSupportedException e) {
-            throw new AssertionError("Card cloning failed", e);
-        }
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -53,4 +44,19 @@ public abstract class Card implements Cloneable {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    @Override
+    public Card clone() {
+        try {
+            return doClone();
+        } 
+        catch (CloneNotSupportedException e) {
+            throw new AssertionError("Card cloning failed", e);
+        }
+    }
+    
+    protected Card doClone() throws CloneNotSupportedException {
+        return (Card) super.clone();
+    }
+    
 }
