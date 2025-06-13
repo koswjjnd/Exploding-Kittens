@@ -10,11 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
+import org.mockito.Mockito;
 
 class CatCardTest {
     private List<Player> turnOrder;
@@ -469,5 +472,128 @@ class CatCardTest {
         
         // Test setting null input handler
         CatCard.setInputHandler(null);
+    }
+
+    @Test
+    void testSelectTargetPlayer_noAvailablePlayers() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        List<Player> turnOrder = new ArrayList<>();
+        Player currentPlayer = new Player("A");
+        turnOrder.add(currentPlayer);
+        CatCard.setInputHandler(Mockito.mock(CatCardStealInputHandler.class));
+        assertThrows(IllegalStateException.class, () -> card.selectTargetPlayer(turnOrder, currentPlayer));
+    }
+
+    @Test
+    void testSelectTargetPlayer_invalidSelection() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        List<Player> turnOrder = new ArrayList<>();
+        Player currentPlayer = new Player("A");
+        Player other = new Player("B");
+        turnOrder.add(currentPlayer);
+        turnOrder.add(other);
+
+        // mock other为活着且有手牌
+        other.receiveCard(new SkipCard());
+
+        CatCardStealInputHandler handler = Mockito.mock(CatCardStealInputHandler.class);
+        Mockito.when(handler.selectTargetPlayer(Mockito.anyList())).thenReturn(null);
+        CatCard.setInputHandler(handler);
+
+        assertThrows(IllegalArgumentException.class, () -> card.selectTargetPlayer(turnOrder, currentPlayer));
+
+        Mockito.when(handler.selectTargetPlayer(Mockito.anyList())).thenReturn(new Player("C"));
+        assertThrows(IllegalArgumentException.class, () -> card.selectTargetPlayer(turnOrder, currentPlayer));
+    }
+
+    @Test
+    void testSelectCardIndex_invalidIndex() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        Player target = Mockito.mock(Player.class);
+        Mockito.when(target.getHand()).thenReturn(List.of(new SkipCard(), new AttackCard()));
+
+        CatCardStealInputHandler handler = Mockito.mock(CatCardStealInputHandler.class);
+        // too small
+        Mockito.when(handler.selectCardIndex(2)).thenReturn(-1);
+        CatCard.setInputHandler(handler);
+        assertThrows(IllegalArgumentException.class, () -> card.selectCardIndex(target));
+        // too large
+        Mockito.when(handler.selectCardIndex(2)).thenReturn(2);
+        assertThrows(IllegalArgumentException.class, () -> card.selectCardIndex(target));
+    }
+
+    @Test
+    void testValidatePlayerTurns_noTurnsLeft() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        Player player = Mockito.mock(Player.class);
+        Mockito.when(player.getLeftTurns()).thenReturn(0);
+        assertThrows(IllegalStateException.class, () -> card.validatePlayerTurns(player));
+    }
+
+    @Test
+    void testValidateTargetPlayer_emptyHand() {
+        CatCard card = new CatCard(CatType.TACOCAT);
+        Player player = Mockito.mock(Player.class);
+        Mockito.when(player.getHand()).thenReturn(new ArrayList<>());
+        assertThrows(IllegalStateException.class, () -> card.validateTargetPlayer(player));
+    }
+
+    @Test
+    void testGetRequestedCatType() {
+        CatCard card1 = new CatCard(CatType.TACOCAT);
+        CatCard card2 = new CatCard(CatType.TACOCAT);
+        CatCard card3 = new CatCard(CatType.BEARD_CAT);
+
+        // requestedCardType 为 CAT_CARD，requestedCatType 应为 card1.getCatType()
+        CatCard.CatCardEffect effect1 = new CatCard.CatCardEffect(
+            card1, card2, card3, "Player1", CardType.CAT_CARD);
+        assertEquals(CatType.TACOCAT, effect1.getRequestedCatType());
+
+        // requestedCardType 为 ATTACK，requestedCatType 应为 null
+        CatCard.CatCardEffect effect2 = new CatCard.CatCardEffect(
+            card1, card2, card3, "Player1", CardType.ATTACK);
+        assertNull(effect2.getRequestedCatType());
+
+        // requestedCardType 为 null，requestedCatType 应为 null
+        CatCard.CatCardEffect effect3 = new CatCard.CatCardEffect(
+            card1, card2, card3, "Player1", null);
+        assertNull(effect3.getRequestedCatType());
+    }
+
+    @Test
+    void testGetTargetPlayerHand() {
+        CatCard card1 = new CatCard(CatType.TACOCAT);
+        CatCard card2 = new CatCard(CatType.TACOCAT);
+        Player target = new Player("Target");
+        target.receiveCard(new SkipCard());
+
+        // 构造 targetPlayerHand 不为 null 的 effect
+        CatCard.CatCardEffect effect1 = new CatCard.CatCardEffect(
+            card1, card2, target, 0);
+        List<Card> handCopy = effect1.getTargetPlayerHand();
+        assertNotNull(handCopy);
+        assertEquals(target.getHand(), handCopy);
+        assertNotSame(target.getHand(), handCopy);
+
+        CatCard.CatCardEffect effect2 = new CatCard.CatCardEffect(
+            card1, card2, null, "Player1", CardType.ATTACK);
+        assertNull(effect2.getTargetPlayerHand());
+    }
+    
+    @Test
+    @DisplayName("Test play() hits effect() without internal exception")
+    void testPlayMethodCoverageLineHit() {
+        // 创建 dummy CatCard 子类，不抛异常
+        CatCard card = new CatCard(CatType.TACOCAT) {
+            @Override
+            public void effect(List<Player> turnOrder, Deck gameDeck) {
+            }
+        };
+    
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("A"));
+        players.add(new Player("B"));
+    
+        card.play(players.get(0), players);
     }
 }
