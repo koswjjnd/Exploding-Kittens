@@ -75,8 +75,19 @@ public class BasicCardTest {
         BasicCard card2 = new BasicCard(CardType.SKIP);
         BasicCard card3 = new BasicCard(CardType.ATTACK);
         
-        assertEquals(card1.hashCode(), card2.hashCode()); 
-        assertNotEquals(card1.hashCode(), card3.hashCode()); 
+        // Verify exact hash code calculation
+        int expectedHash1 = 31 * card1.getClass().hashCode() + CardType.SKIP.hashCode();
+        int expectedHash2 = 31 * card2.getClass().hashCode() + CardType.SKIP.hashCode();
+        int expectedHash3 = 31 * card3.getClass().hashCode() + CardType.ATTACK.hashCode();
+        
+        assertEquals(expectedHash1, card1.hashCode());
+        assertEquals(expectedHash2, card2.hashCode());
+        assertEquals(expectedHash3, card3.hashCode());
+        
+        // Verify that same type cards have same hash code
+        assertEquals(card1.hashCode(), card2.hashCode());
+        // Verify that different type cards have different hash codes
+        assertNotEquals(card1.hashCode(), card3.hashCode());
     }
 
     @Test

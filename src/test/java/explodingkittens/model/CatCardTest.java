@@ -596,4 +596,76 @@ class CatCardTest {
     
         card.play(players.get(0), players);
     }
+
+    @Test
+    @DisplayName("Test effect method validates input handler")
+    void testEffectValidatesInputHandler() {
+        // Setup
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        
+        // Create a spy of the cat card to verify method calls
+        CatCard spyCard = Mockito.spy(catCard1);
+        
+        // Set up input handler
+        setupInputHandler("1\n1\n2\n2\n");
+        
+        try {
+            spyCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            // Verify that validateInputHandler was called
+            Mockito.verify(spyCard, Mockito.times(1)).validateInputHandler();
+        }
+    }
+
+    @Test
+    @DisplayName("Test effect method validates player turns")
+    void testEffectValidatesPlayerTurns() {
+        // Setup
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        
+        // Create a spy of the cat card to verify method calls
+        CatCard spyCard = Mockito.spy(catCard1);
+        
+        // Set up input handler
+        setupInputHandler("1\n1\n2\n2\n");
+        
+        try {
+            spyCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            // Verify that validatePlayerTurns was called
+            Mockito.verify(spyCard, Mockito.times(1)).validatePlayerTurns(Mockito.any());
+        }
+    }
+
+    @Test
+    @DisplayName("Test effect method validates target player")
+    void testEffectValidatesTargetPlayer() {
+        // Setup
+        currentPlayer.receiveCard(catCard1);
+        currentPlayer.receiveCard(catCard2);
+        targetPlayer.receiveCard(new SkipCard());
+        
+        // Create a spy of the cat card to verify method calls
+        CatCard spyCard = Mockito.spy(catCard1);
+        
+        // Set up input handler
+        setupInputHandler("1\n1\n2\n2\n");
+        
+        try {
+            spyCard.effect(turnOrder, gameDeck);
+            fail("Should throw CatCardEffect");
+        } 
+        catch (CatCard.CatCardEffect effect) {
+            // Verify that validateTargetPlayer was called
+            Mockito.verify(spyCard, Mockito.times(1)).validateTargetPlayer(Mockito.any());
+        }
+    }
 }

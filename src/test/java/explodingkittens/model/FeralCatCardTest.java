@@ -12,8 +12,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 class FeralCatCardTest {
     private FeralCatCard feralCatCard;
@@ -174,6 +176,67 @@ class FeralCatCardTest {
         assertThrows(IllegalStateException.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
         });
+    }
+
+    @Test
+    void testValidateInputHandler() {
+        // Setup
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+        CatCard.setInputHandler(null);
+        
+        // Execute and verify
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> feralCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when input handler is null"
+        );
+        assertEquals("Input handler not set", exception.getMessage());
+    }
+
+    @Test
+    void testValidatePlayerTurns() {
+        // Setup
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+        when(currentPlayer.getLeftTurns()).thenReturn(0);
+        
+        // Execute and verify
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> feralCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when player has no turns left"
+        );
+        assertEquals("No turns left", exception.getMessage());
+    }
+
+    @Test
+    void testValidateTargetPlayer() {
+        // Setup
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+        
+        // Make target player's hand empty
+        targetPlayerHand.clear();
+        
+        // Create a spy of the feral cat card to override getAvailableTargets
+        FeralCatCard spyCard = org.mockito.Mockito.spy(feralCatCard);
+        List<Player> mockTargets = new ArrayList<>();
+        mockTargets.add(targetPlayer);
+        
+        // Override getAvailableTargets to return our mock list
+        doReturn(mockTargets).when(spyCard).getAvailableTargets(anyList(), any(Player.class));
+        
+        // Mock input handler to return target player
+        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
+        
+        // Execute and verify
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> spyCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when target player has no cards"
+        );
+        assertEquals("Target player has no cards", exception.getMessage());
     }
 } 
 

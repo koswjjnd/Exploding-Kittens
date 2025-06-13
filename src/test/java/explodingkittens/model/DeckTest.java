@@ -17,6 +17,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
 import explodingkittens.exceptions.EmptyDeckException;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Test class for the Deck class.
@@ -26,6 +30,9 @@ public class DeckTest {
     private Card skipCard;
     private Card attackCard;
     private Card seeTheFutureCard;
+    private Card defuseCard;
+    private Card shuffleCard;
+    private Card catCard;
 
     @BeforeEach
     void setUp() {
@@ -33,6 +40,9 @@ public class DeckTest {
         skipCard = new SkipCard();
         attackCard = new AttackCard();
         seeTheFutureCard = new SeeTheFutureCard();
+        defuseCard = new DefuseCard();
+        shuffleCard = new ShuffleCard();
+        catCard = new CatCard(CatType.TACOCAT);
     }
 
     @Test
@@ -117,6 +127,34 @@ public class DeckTest {
     }
 
     @Test
+    void testAddCardsBoundaryConditions() {
+        // Test valid boundaries
+        assertDoesNotThrow(() -> deck.addCards(skipCard, 0));  // 最小有效值
+        assertDoesNotThrow(() -> deck.addCards(skipCard, 1));  // 正常值
+        assertDoesNotThrow(() -> deck.addCards(skipCard, 100));  // 大数值
+        
+        // Test invalid boundaries
+        assertThrows(IllegalArgumentException.class, () -> deck.addCards(skipCard, -1));  // 负数
+        
+        // Verify cards were added correctly
+        deck.clear();
+        deck.addCards(skipCard, 0);
+        assertEquals(0, deck.size(), "Adding 0 cards should not change deck size");
+        
+        deck.clear();
+        deck.addCards(skipCard, 1);
+        assertEquals(1, deck.size(), "Adding 1 card should increase deck size by 1");
+        assertEquals(skipCard, deck.getCards().get(0), "Added card should be the same as input");
+        
+        deck.clear();
+        deck.addCards(skipCard, 100);
+        assertEquals(100, deck.size(), "Adding 100 cards should increase deck size by 100");
+        for (int i = 0; i < 100; i++) {
+            assertEquals(skipCard, deck.getCards().get(i), "All added cards should be the same as input");
+        }
+    }
+
+    @Test
     void testAddCard() {
         deck.addCard(skipCard);
         assertEquals(1, deck.size());
@@ -157,6 +195,28 @@ public class DeckTest {
         assertThrows(IllegalArgumentException.class, () -> deck.insertAt(null, 0));
         assertThrows(IllegalArgumentException.class, () -> deck.insertAt(skipCard, -1));
         assertThrows(IllegalArgumentException.class, () -> deck.insertAt(skipCard, 1));
+    }
+
+    @Test
+    void testInsertAtBoundaryConditions() {
+        // Setup
+        deck.addCard(skipCard);
+        deck.addCard(attackCard);
+        
+        // Test valid positions
+        assertDoesNotThrow(() -> deck.insertAt(seeTheFutureCard, 0));  // 插入到开头
+        assertDoesNotThrow(() -> deck.insertAt(seeTheFutureCard, 1));  // 插入到中间
+        assertDoesNotThrow(() -> deck.insertAt(seeTheFutureCard, 4));  // 插入到末尾（等于size）
+        
+        // Test invalid positions
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(seeTheFutureCard, -1));  // 负数位置
+        assertThrows(IllegalArgumentException.class, () -> deck.insertAt(seeTheFutureCard, 6));   // 超出范围
+        
+        // Verify the cards were inserted at correct positions
+        List<Card> cards = deck.getCards();
+        assertEquals(seeTheFutureCard, cards.get(0));  // 验证插入到开头
+        assertEquals(seeTheFutureCard, cards.get(1));  // 验证插入到中间
+        assertEquals(seeTheFutureCard, cards.get(4));  // 验证插入到末尾
     }
 
     @Test
@@ -519,6 +579,132 @@ public class DeckTest {
         assertFalse(deck.validateDeck(2));
     }
 
+    @Test
+    void testInitializeBaseDeckBoundaryConditions() {
+        // Test valid boundaries
+        assertDoesNotThrow(() -> deck.initializeBaseDeck(2)); 
+        assertDoesNotThrow(() -> deck.initializeBaseDeck(3)); 
+        assertDoesNotThrow(() -> deck.initializeBaseDeck(4)); 
+        
+        // Test invalid boundaries
+        assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(1)); 
+        assertThrows(IllegalArgumentException.class, () -> deck.initializeBaseDeck(5)); 
+        
+        // Verify deck is initialized correctly for valid player counts
+        deck.initializeBaseDeck(2);
+        assertFalse(deck.isEmpty());
+        assertEquals(3, deck.getCardCounts().get("DefuseCard"));  // 5-2 = 3 defuse cards
+        
+        deck.clear();
+        deck.initializeBaseDeck(4);
+        assertFalse(deck.isEmpty());
+        assertEquals(1, deck.getCardCounts().get("DefuseCard"));  // 5-4 = 1 defuse card
+    }
+
+    @Test
+    void testInitializeBaseDeckClearsExistingCards() {
+        // Setup: Add some cards to the deck
+        deck.addCard(skipCard);
+        deck.addCard(skipCard);
+        deck.addCard(skipCard);
+        assertEquals(3, deck.size(), "Deck should have 3 cards initially");
+        
+        // Initialize deck with 2 players
+        deck.initializeBaseDeck(2);
+        
+        // Verify that old cards were cleared and new cards were added
+        assertNotEquals(3, deck.size(), "Deck size should have changed");
+        Map<String, Integer> counts = deck.getCardCounts();
+        assertEquals(2, counts.get("SkipCard"), "Deck should have 3 cards initially");
+        
+        // Verify new cards were added
+        assertEquals(3, counts.get("DefuseCard"));  // 5-2 = 3 defuse cards
+        assertEquals(2, counts.get("AttackCard"));
+        assertEquals(2, counts.get("SkipCard"));
+    }
+
+    @Test
+    void testValidateDeckBoundaryConditions() {
+        // Initialize deck for player count validation
+        deck.initializeBaseDeck(2);
+        // Test player count boundaries
+        assertFalse(deck.validateDeck(1), "Player count 1 should be invalid");
+        assertTrue(deck.validateDeck(2), "Player count 2 should be valid");
+        deck.initializeBaseDeck(4);
+        assertTrue(deck.validateDeck(4), "Player count 4 should be valid");
+        
+        // Test invalid defuse count
+        deck.clear();
+        deck.initializeBaseDeck(2); 
+        deck.getCards().removeIf(card -> card instanceof DefuseCard);  
+        deck.addCards(defuseCard, 2);  
+        assertFalse(deck.validateDeck(2), "Invalid defuse count should fail validation");
+        
+        // Test invalid main cards
+        deck.clear();
+        deck.initializeBaseDeck(2);  
+        deck.getCards().removeIf(card -> card instanceof AttackCard);  
+        deck.addCards(attackCard, 1); 
+        assertFalse(deck.validateDeck(2), "Invalid main cards should fail validation");
+        
+        // Test invalid cat cards
+        deck.clear();
+        deck.initializeBaseDeck(2);  
+        deck.getCards().removeIf(card -> card instanceof CatCard);  
+        deck.addCards(new CatCard(CatType.TACOCAT), 1);  
+        assertFalse(deck.validateDeck(2), "Invalid cat cards should fail validation");
+        
+        // Test valid deck
+        deck.clear();
+        deck.initializeBaseDeck(2);  
+        assertTrue(deck.validateDeck(2), "Valid deck should pass validation");
+    }
+
+    @Test
+    void testValidateDeckPrintsDebugInfo() throws UnsupportedEncodingException {
+        // 保存原始的 System.out
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent, true, StandardCharsets.UTF_8.name()));
+
+        try {
+            // Test invalid defuse count
+            deck.clear();
+            deck.initializeBaseDeck(2);
+            deck.getRealCards().removeIf(card -> card instanceof DefuseCard);
+            assertFalse(deck.validateDeck(2));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("DEBUG: Card counts"));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("Invalid defuse count"));
+            
+            // 清空输出
+            outContent.reset();
+            
+            // Test invalid main cards
+            deck.clear();
+            deck.initializeBaseDeck(2);
+            deck.getRealCards().removeIf(card -> card instanceof AttackCard);
+            deck.addCard(shuffleCard);  // 使用 shuffleCard 字段
+            assertFalse(deck.validateDeck(2));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("DEBUG: Card counts"));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("Invalid main cards"));
+            
+            // 清空输出
+            outContent.reset();
+            
+            // Test invalid cat cards
+            deck.clear();
+            deck.initializeBaseDeck(2);
+            deck.getRealCards().removeIf(card -> card instanceof CatCard);
+            deck.addCard(catCard);
+            assertFalse(deck.validateDeck(2));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("DEBUG: Card counts"));
+            assertTrue(outContent.toString(StandardCharsets.UTF_8).contains("Invalid cat cards"));
+        } 
+        finally {
+            System.setOut(originalOut);
+        }
+    }
+
     private boolean invokeValidateDeck(int playerCount) {
         try {
             java.lang.reflect.Method m = Deck.class.getDeclaredMethod("validateDeck", int.class);
@@ -578,5 +764,16 @@ public class DeckTest {
         AssertionError error = assertThrows(AssertionError.class, card::clone);
         assertEquals("Card cloning failed", error.getMessage());
         assertTrue(error.getCause() instanceof CloneNotSupportedException);
+    }
+
+    @Test
+    void testAddExplodingKittensBoundaryConditions() {
+        // Test valid boundaries
+        assertDoesNotThrow(() -> deck.addExplodingKittens(0));  
+        assertDoesNotThrow(() -> deck.addExplodingKittens(1));  
+        assertDoesNotThrow(() -> deck.addExplodingKittens(100));  
+        
+        // Test invalid boundaries
+        assertThrows(IllegalArgumentException.class, () -> deck.addExplodingKittens(-1));  
     }
 }
