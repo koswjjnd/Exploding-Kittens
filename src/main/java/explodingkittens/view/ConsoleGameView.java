@@ -90,28 +90,38 @@ public class ConsoleGameView implements GameView {
 
     @Override
     public Card promptPlayCard(Player player, List<Card> hand) {
-        handView.displayHandWithIndices(I18nUtil.getMessage("player.hand", player.getName()), hand);
-        System.out.println("\n" + I18nUtil.getMessage("action.choose"));
-        System.out.println(I18nUtil.getMessage("player.action.single"));
-        System.out.println(I18nUtil.getMessage("player.action.combo"));
-        System.out.println(I18nUtil.getMessage("player.action.winning"));
-        System.out.println(I18nUtil.getMessage("player.action.end"));
-        System.out.print(I18nUtil.getMessage("player.action.choice.range") + " ");
-        int choice = Integer.parseInt(scanner.nextLine().trim());
-        
-        if (choice == 0) {
-            return null;
-        } 
-        else if (choice == 1) {
-            return handleSingleCardPlay(player, hand);
-        } 
-        else if (choice == 2) {
-            return handleCatCardCombo(player, hand);
+        while (true) {
+            handView.displayHandWithIndices(I18nUtil.getMessage("player.hand", player.getName()), hand);
+            System.out.println("\n" + I18nUtil.getMessage("action.choose"));
+            System.out.println(I18nUtil.getMessage("player.action.single"));
+            System.out.println(I18nUtil.getMessage("player.action.combo"));
+            System.out.println(I18nUtil.getMessage("player.action.winning"));
+            System.out.println(I18nUtil.getMessage("player.action.end"));
+            System.out.print(I18nUtil.getMessage("player.action.choice.range") + " ");
+            
+            try {
+                int choice = Integer.parseInt(scanner.nextLine().trim());
+                
+                if (choice == 0) {
+                    return null;
+                } 
+                else if (choice == 1) {
+                    return handleSingleCardPlay(player, hand);
+                } 
+                else if (choice == 2) {
+                    return handleCatCardCombo(player, hand);
+                }
+                else if (choice == 3) {
+                    return handleWinningComboOption(player, hand);
+                }
+                else {
+                    System.out.println(I18nUtil.getMessage("error.invalid.move"));
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println(I18nUtil.getMessage("error.invalid.move"));
+            }
         }
-        else if (choice == 3) {
-            return handleWinningComboOption(player, hand);
-        }
-        return null;
     }
 
     private Card handleSingleCardPlay(Player player, List<Card> hand) {

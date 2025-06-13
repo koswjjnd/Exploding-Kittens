@@ -1,6 +1,7 @@
 package explodingkittens.view;
 
 import explodingkittens.model.Card;
+import explodingkittens.model.CatCard;
 import explodingkittens.model.Player;
 import java.util.List;
 import java.util.Scanner;
@@ -84,7 +85,11 @@ public class FavorCardView {
         // Display all available cards
         System.out.println("\nChoose a card to give to the current player:");
         for (int i = 0; i < cards.size(); i++) {
-            System.out.printf("%d: %s%n", i, cards.get(i).getType());
+            Card card = cards.get(i);
+            String cardName = card instanceof CatCard ? 
+                ((CatCard) card).getCatType().name() : 
+                card.getType().name();
+            System.out.printf("%d: %s%n", i, cardName);
         }
         System.out.print("Please select a card to give (enter number): ");
         
