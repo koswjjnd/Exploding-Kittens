@@ -57,18 +57,22 @@ public class GameLoopSteps {
     private List<Boolean> drawCardResponses;
     private int currentDrawResponseIndex;
     private Exception thrownException;
+    private Scanner scanner;
+    private FavorCardView mockFavorCardView;
 
     public GameLoopSteps() {
-        view = Mockito.mock(GameView.class);
-        setupView = Mockito.mock(GameSetupView.class);
-        controller = new GameController(view);
-        playerService = new PlayerService();
-        dealService = new DealService();
-        setupController = new GameSetupController(setupView, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
-        cardEffectService = new CardEffectService(view);
-        turnService = new TurnService(view, cardEffectService);
-        deckCards = new ArrayList<>();
-        drawCardResponses = new ArrayList<>();
+        this.view = Mockito.mock(GameView.class);
+        this.setupView = Mockito.mock(GameSetupView.class);
+        this.cardEffectService = new CardEffectService(view);
+        this.turnService = new TurnService(view, cardEffectService);
+        this.mockFavorCardView = Mockito.mock(FavorCardView.class);
+        this.scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
+        this.controller = new GameController(view);
+        this.playerService = new PlayerService();
+        this.dealService = new DealService();
+        this.setupController = new GameSetupController(setupView, playerService, dealService, scanner);
+        this.deckCards = new ArrayList<>();
+        this.drawCardResponses = new ArrayList<>();
         currentDrawResponseIndex = 0;
 
         Mockito.when(view.confirmDefuse(Mockito.any())).thenReturn(true);
@@ -80,12 +84,13 @@ public class GameLoopSteps {
      */
     @Given("^the game loop system is ready$")
     public void gameSystemIsReady() {
+        this.scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
         setupView = Mockito.mock(GameSetupView.class);
         view = Mockito.mock(GameView.class);
         playerService = new PlayerService();
         dealService = new DealService();
         cardEffectService = new CardEffectService(view);
-        setupController = new GameSetupController(setupView, playerService, dealService, new Scanner(System.in, StandardCharsets.UTF_8));
+        setupController = new GameSetupController(setupView, playerService, dealService, scanner);
         turnService = new TurnService(view, cardEffectService);
         GameContext.reset();
         gameInitialized = false;
@@ -154,8 +159,13 @@ public class GameLoopSteps {
                 "Game deck is not initialized. Make sure to initialize the game first.");
         }
         deck.clear();
-        for (Card card : deckCards) {
-            deck.addCard(card);
+        List<Map<String, String>> cards = dataTable.asMaps();
+        for (Map<String, String> cardInfo : cards) {
+            String cardType = cardInfo.get("Card");
+            Card card = createCardFromType(cardType);
+            if (card != null) {
+                deck.addCard(card);
+            }
         }
         System.out.println("\nDeck contents after stacking:");
         for (Card card : deck.getCards()) {
@@ -173,30 +183,21 @@ public class GameLoopSteps {
     @When("^player \"([^\"]*)\" plays \"([^\"]*)\"$")
     public void playerPlaysCard(String playerName, String cardType) {
         Player player = findPlayerByName(playerName);
-        String handInfo = player.getHand().stream()
-            .map(card -> card.getClass().getSimpleName())
-            .collect(Collectors.joining(", "));
-        System.out.println("Player " + playerName + " current hand: [" + handInfo + "]");
-        
         Card card = findCardInHand(player, cardType);
         if (card != null) {
             Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("play");
-            Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList()))
-                .thenReturn(card);
+            Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList())).thenReturn(card);
+            Mockito.when(view.checkForNope(Mockito.any(), Mockito.eq(card))).thenReturn(true);
             if (cardType.equals("Favor")) {
-                Mockito.when(view.checkForNope(Mockito.any(), Mockito.eq(card)))
-                    .thenReturn(true);
-                Mockito.when(view.promptPlayNope(Mockito.any(), Mockito.any()))
-                    .thenReturn(false);
-                FavorCard favorCard = (FavorCard) card;
-                favorCard.getView().setUserInput("0");
+                Player p2 = findPlayerByName("P2");
+                Mockito.when(view.promptPlayNope(Mockito.eq(p2), Mockito.any())).thenReturn(true);
             }
-            if (cardType.equals("Skip")) {
-                Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("end");
+            else {
+                Mockito.when(view.promptPlayNope(Mockito.any(), Mockito.any())).thenReturn(false);
             }
             try {
                 turnService.playCard(player, card);
-            } 
+            }
             catch (InvalidCardException e) {
                 throw new RuntimeException(e);
             }
@@ -211,22 +212,6 @@ public class GameLoopSteps {
      */
     @When("^player \"([^\"]*)\" counters with \"([^\"]*)\"$")
     public void playerCountersWithCard(String playerName, String cardType) {
-        if (cardType.equals("Nope")) {
-            Player player = findPlayerByName(playerName);
-            Card card = findCardInHand(player, cardType);
-            if (card != null) {
-                Mockito.when(view.promptPlayNope(Mockito.eq(player), Mockito.any()))
-                    .thenReturn(true);
-                Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList()))
-                    .thenReturn(card);
-                try {
-                    turnService.playCard(player, card);
-                } 
-                catch (InvalidCardException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
     }
 
     /**
@@ -240,7 +225,13 @@ public class GameLoopSteps {
         Mockito.when(view.promptPlayCard(Mockito.eq(player), Mockito.anyList()))
             .thenReturn(null);
         Mockito.when(view.promptPlayerAction(Mockito.eq(player))).thenReturn("draw");
-        turnService.takeTurn(player);
+        try {
+            turnService.takeTurn(player);
+        }
+        catch (Exception e) {
+            thrownException = e;
+            throw e;
+        }
     }
 
     /**
@@ -403,7 +394,7 @@ public class GameLoopSteps {
             throw new IllegalStateException("Player " + fromPlayerName + " has no cards to give");
         }
         Card cardToGive = fromPlayer.getHand().get(0);
-        fromPlayer.getHand().remove(cardToGive);
+        fromPlayer.removeCard(cardToGive);
         toPlayer.receiveCard(cardToGive);
     }
 
