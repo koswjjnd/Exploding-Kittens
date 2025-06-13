@@ -1,6 +1,7 @@
 package explodingkittens.view;
 
 import explodingkittens.model.Card;
+import explodingkittens.model.CatCard;
 import explodingkittens.util.I18nUtil;
 import java.util.List;
 
@@ -42,6 +43,9 @@ public class HandView {
      * @return The display name of the card
      */
     private String getCardDisplayName(Card card) {
+        if (card instanceof CatCard) {
+            return ((CatCard) card).getCatType().name();
+        }
         String className = card.getClass().getSimpleName();
         // Remove "Card" suffix if present
         if (className.endsWith("Card")) {
