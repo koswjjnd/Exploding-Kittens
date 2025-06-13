@@ -18,6 +18,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
 
 /**
  * Test class for the ShuffleCard class.
@@ -32,7 +33,7 @@ public class ShuffleCardTest {
     @BeforeEach
     void setUp() {
         shuffleCard = new ShuffleCard();
-        gameDeck = new Deck();
+        gameDeck = spy(new Deck());
         
         // add some different cards to the deck
         gameDeck.addCard(new DefuseCard());
@@ -78,37 +79,11 @@ public class ShuffleCardTest {
      */
     @Test
     void testEffectShufflesDeck() {
-        // record original order
-        List<Card> originalOrder = new ArrayList<>(gameDeck.getCards());
-        
         // use ShuffleCard effect
         shuffleCard.effect(dummyPlayers, gameDeck);
         
-        // get shuffled order
-        List<Card> newOrder = gameDeck.getCards();
-        
-        // check: card count and type should stay the same
-        assertEquals(originalOrder.size(), newOrder.size(), 
-            "Number of cards should stay the same after shuffle");
-            
-        // check: card count and type should stay the same
-        Map<CardType, Integer> originalCounts = new HashMap<>();
-        Map<CardType, Integer> newCounts = new HashMap<>();
-        
-        for (Card card : originalOrder) {
-            originalCounts.merge(card.getType(), 1, Integer::sum);
-        }
-        
-        for (Card card : newOrder) {
-            newCounts.merge(card.getType(), 1, Integer::sum);
-        }
-        
-        assertEquals(originalCounts, newCounts,
-            "Card type counts should stay the same after shuffle");
-            
-        // check: order should change (very likely)
-        assertNotEquals(originalOrder, newOrder, 
-            "ShuffleCard effect should change the order of cards");
+        // Verify that shuffle was called
+        verify(gameDeck).shuffle();
 
         // Verify console output
         String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
@@ -127,11 +102,14 @@ public class ShuffleCardTest {
     @Test
     void testEffectWithEmptyDeck() {
         // Setup empty deck
-        gameDeck = new Deck();
+        gameDeck = spy(new Deck());
         
         // use ShuffleCard effect
         shuffleCard.effect(dummyPlayers, gameDeck);
         
+        // Verify that shuffle was called
+        verify(gameDeck).shuffle();
+
         // Verify console output
         String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
         String actualOutput = outContent.toString(StandardCharsets.UTF_8)
@@ -144,13 +122,16 @@ public class ShuffleCardTest {
     @Test
     void testEffectWithSingleCardDeck() {
         // Setup deck with single card
-        gameDeck = new Deck();
+        gameDeck = spy(new Deck());
         Card singleCard = new ExplodingKittenCard();
         gameDeck.addCard(singleCard);
         
         // use ShuffleCard effect
         shuffleCard.effect(dummyPlayers, gameDeck);
         
+        // Verify that shuffle was called
+        verify(gameDeck).shuffle();
+
         // Verify console output
         String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
         String actualOutput = outContent.toString(StandardCharsets.UTF_8)

@@ -14,8 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 class HairyPotatoCatCardTest {
@@ -117,6 +119,57 @@ class HairyPotatoCatCardTest {
             "Should throw IllegalStateException when no valid target players available"
         );
         assertEquals("No valid target players available", exception.getMessage());
+    }
+
+    @Test
+    void testValidateInputHandler() {
+        setupTwoHairyPotatoCatCards();
+        CatCard.setInputHandler(null);
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> hairyPotatoCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when input handler is null"
+        );
+        assertEquals("Input handler not set", exception.getMessage());
+    }
+
+    @Test
+    void testValidatePlayerTurns() {
+        setupTwoHairyPotatoCatCards();
+        when(currentPlayer.getLeftTurns()).thenReturn(0);
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> hairyPotatoCatCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when player has no turns left"
+        );
+        assertEquals("No turns left", exception.getMessage());
+    }
+
+    @Test
+    void testValidateTargetPlayer() {
+        // Setup two hairy potato cat cards
+        setupTwoHairyPotatoCatCards();
+        
+        // Make target player's hand empty
+        targetPlayerHand.clear();
+        
+        // Create a spy of the hairy potato cat card to override getAvailableTargets
+        HairyPotatoCatCard spyCard = org.mockito.Mockito.spy(hairyPotatoCatCard);
+        List<Player> mockTargets = new ArrayList<>();
+        mockTargets.add(targetPlayer);
+        
+        // Override getAvailableTargets to return our mock list
+        doReturn(mockTargets).when(spyCard).getAvailableTargets(anyList(), any(Player.class));
+        
+        // Verify exception is thrown
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> spyCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when target player has no cards"
+        );
+        assertEquals("Target player has no cards", exception.getMessage());
     }
 
     private void setupTwoHairyPotatoCatCards() {

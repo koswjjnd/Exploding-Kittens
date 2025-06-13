@@ -12,8 +12,10 @@ import java.util.List;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Assertions;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 class TacoCatCardTest {
@@ -241,6 +243,31 @@ class TacoCatCardTest {
         catch (CatCard.CatCardEffect effect) {
             verifyCatCardEffect(effect);
         }
+    }
+
+    @Test
+    void testValidateTargetPlayer() {
+        // Setup two taco cat cards
+        setupTwoTacoCatCards();
+        
+        // Make target player's hand empty
+        targetPlayerHand.clear();
+        
+        // Create a spy of the taco cat card to override getAvailableTargets
+        TacoCatCard spyCard = org.mockito.Mockito.spy(tacoCatCard);
+        List<Player> mockTargets = new ArrayList<>();
+        mockTargets.add(targetPlayer);
+        
+        // Override getAvailableTargets to return our mock list
+        doReturn(mockTargets).when(spyCard).getAvailableTargets(anyList(), any(Player.class));
+        
+        // Verify exception is thrown
+        IllegalStateException exception = Assertions.assertThrows(
+            IllegalStateException.class,
+            () -> spyCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when target player has no cards"
+        );
+        Assertions.assertEquals("Target player has no cards", exception.getMessage());
     }
 }
 

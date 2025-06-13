@@ -3,6 +3,9 @@ package explodingkittens.model;
 import explodingkittens.controller.GameContext;
 import explodingkittens.model.Card;
 import explodingkittens.model.DrawFromBottomCard;
+import explodingkittens.service.CardEffectService;
+import explodingkittens.service.TurnService;
+import explodingkittens.view.ConsoleGameView;
 import explodingkittens.view.GameView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -143,5 +147,34 @@ class DrawFromBottomCardTest {
     @Test
     void testNullDeckThrows() {
         assertThrows(IllegalArgumentException.class, () -> card.effect(turnOrder, null));
+    }
+
+    @Test
+    void testDrawExplodingKittenHandling() {
+        // Setup
+        ExplodingKittenCard ek = mock(ExplodingKittenCard.class);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(ek);
+        when(deck.getCards()).thenReturn(cards);
+        when(deck.removeBottomCard()).thenReturn(ek);
+        when(player.hasDefuse()).thenReturn(false);
+        when(player.getName()).thenReturn("TestPlayer");
+        
+        // Mock GameContext
+        mockedGameContext.when(GameContext::getCurrentPlayer).thenReturn(player);
+        mockedGameContext.when(GameContext::getTurnOrder).thenReturn(List.of(player));
+        mockedGameContext.when(GameContext::isGameOver).thenReturn(false);
+        
+        // Execute
+        card.effect(turnOrder, deck);
+        
+        // Verify
+        verify(deck).removeBottomCard();
+        verify(mockView).displayCardDrawnFromBottom(ek);
+        verify(player).hasDefuse();
+        verify(player).setAlive(false);
+        verify(player, Mockito.times(2)).getName();
+        verify(player).isAlive();
+        verify(player).setLeftTurns(0);
     }
 } 

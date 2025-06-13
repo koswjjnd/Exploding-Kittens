@@ -384,4 +384,23 @@ class CatRequestCardTest {
             "Should throw IllegalStateException when player has less than three cat cards of the same type"
         );
     }
+
+    @Test
+    @DisplayName("Test Case: Player has exactly zero turns left")
+    void testExactlyZeroTurnsLeft() {
+        // Set up current player with exactly zero turns left
+        currentPlayer.setLeftTurns(0);
+        currentPlayer.receiveCard(catRequestCard);
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        currentPlayer.receiveCard(new CatCard(CatType.TACOCAT));
+        
+        // Verify that effect throws IllegalStateException
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> catRequestCard.effect(turnOrder, gameDeck),
+            "Should throw IllegalStateException when player has exactly zero turns left"
+        );
+        assertEquals("No turns left", exception.getMessage());
+    }
 } 
