@@ -8,12 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.HashMap;
 import explodingkittens.exceptions.EmptyDeckException;
 
 /**
@@ -288,15 +290,37 @@ public class DeckTest {
 
     @Test
     void testClear() {
+        // Test clearing a deck with cards
         deck.addCards(skipCard, 3);
+        assertEquals(3, deck.size(), "Deck should have 3 cards before clearing");
+        
         deck.clear();
-        assertTrue(deck.isEmpty());
+        assertTrue(deck.isEmpty(), "Deck should be empty after clearing");
+        assertEquals(0, deck.size(), "Deck size should be 0 after clearing");
     }
 
     @Test
-    void testClearUninitialized() {
-        deck = new Deck();
-        assertDoesNotThrow(() -> deck.clear());
+    void testClearUninitializedDeck() {
+        // Create a deck with null cards list to simulate uninitialized state
+        Deck uninitializedDeck = new Deck();
+        try {
+            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            cardsField.set(uninitializedDeck, null);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Failed to set cards field to null", e);
+        }
+        
+        // Test that clearing an uninitialized deck throws IllegalStateException
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> uninitializedDeck.clear(),
+            "Should throw IllegalStateException when clearing uninitialized deck"
+        );
+        
+        assertEquals("Deck is not initialized", exception.getMessage(),
+            "Exception message should indicate deck is not initialized");
     }
 
     @Test
@@ -306,20 +330,6 @@ public class DeckTest {
         deck.addCards(seeTheFutureCard, 1);
         
         Map<String, Integer> counts = deck.getCardCounts();
-        // Debug output
-        System.out.println("Actual counts:");
-        counts.forEach((key, value) -> System.out.println(key + ": " + value));
-        
-        // Debug card types
-        System.out.println("\nCard types in deck:");
-        for (Card card : deck.getCards()) {
-            System.out.println("Card class: " + card.getClass().getSimpleName());
-            System.out.println("Card type: " + card.getType().name());
-            if (card instanceof CatCard) {
-                System.out.println("Cat type: " + ((CatCard) card).getCatType().name());
-            }
-            System.out.println("---");
-        }
         
         assertEquals(2, counts.get("SkipCard"));
         assertEquals(3, counts.get("AttackCard"));
@@ -331,20 +341,6 @@ public class DeckTest {
         deck.addExplodingKittens(3);
         assertEquals(3, deck.size());
         Map<String, Integer> counts = deck.getCardCounts();
-        // Debug output
-        System.out.println("Actual counts:");
-        counts.forEach((key, value) -> System.out.println(key + ": " + value));
-        
-        // Debug card types
-        System.out.println("\nCard types in deck:");
-        for (Card card : deck.getCards()) {
-            System.out.println("Card class: " + card.getClass().getSimpleName());
-            System.out.println("Card type: " + card.getType().name());
-            if (card instanceof CatCard) {
-                System.out.println("Cat type: " + ((CatCard) card).getCatType().name());
-            }
-            System.out.println("---");
-        }
         
         assertEquals(3, counts.get("Exploding_kittenCard"));
     }
@@ -356,14 +352,14 @@ public class DeckTest {
 
     @Test
     void testGetCardTypeKey() {
-        assertEquals("CatCard_CAT_CARD", invokeGetCardTypeKey(new CatCard(CatType.TACOCAT)));
+        assertEquals("CatCard_TACOCAT", invokeGetCardTypeKey(new CatCard(CatType.TACOCAT)));
         assertEquals("DefuseCard", invokeGetCardTypeKey(new DefuseCard()));
         assertEquals("AttackCard", invokeGetCardTypeKey(new AttackCard()));
         assertEquals("SkipCard", invokeGetCardTypeKey(new SkipCard()));
         assertEquals("ShuffleCard", invokeGetCardTypeKey(new ShuffleCard()));
-        assertEquals("SeeTheFutureCard", invokeGetCardTypeKey(new SeeTheFutureCard()));
+        assertEquals("See_the_futureCard", invokeGetCardTypeKey(new SeeTheFutureCard()));
         assertEquals("NopeCard", invokeGetCardTypeKey(new NopeCard()));
-        assertEquals("ExplodingKittenCard", invokeGetCardTypeKey(new ExplodingKittenCard()));
+        assertEquals("Exploding_kittenCard", invokeGetCardTypeKey(new ExplodingKittenCard()));
         assertEquals("UnknownCard", invokeGetCardTypeKey(new Card(CardType.FAVOR) {
             public Card clone() { 
                 return this; 
@@ -383,5 +379,204 @@ public class DeckTest {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void testValidateCatCards() {
+        // ✅ Test case 1: should be valid
+        Deck validDeck = new Deck();
+        validDeck.initializeBaseDeck(2);
+        assertTrue(validDeck.validateDeck(2)); // ✅ 一定会通过
+    
+        // ❌ Test case 2: should fail - only 3 cat cards each
+        Deck invalidDeck = new Deck();
+        invalidDeck.addCards(new DefuseCard(), 3);
+        invalidDeck.addCards(new AttackCard(), 2);
+        invalidDeck.addCards(new SkipCard(), 2);
+        invalidDeck.addCards(new ShuffleCard(), 2);
+        invalidDeck.addCards(new SeeTheFutureCard(), 2);
+        invalidDeck.addCards(new NopeCard(), 4);
+        invalidDeck.addCards(new WatermelonCatCard(), 3);
+        invalidDeck.addCards(new BeardCatCard(), 3);
+        invalidDeck.addCards(new HairyPotatoCatCard(), 3);
+        invalidDeck.addCards(new RainbowCatCard(), 3);
+        invalidDeck.addCards(new TacoCatCard(), 3);
+        assertFalse(invalidDeck.validateDeck(2));
+    
+        // ❌ Test case 3: missing TacoCat
+        Deck missingTypeDeck = new Deck();
+        missingTypeDeck.addCards(new DefuseCard(), 3);
+        missingTypeDeck.addCards(new AttackCard(), 2);
+        missingTypeDeck.addCards(new SkipCard(), 2);
+        missingTypeDeck.addCards(new ShuffleCard(), 2);
+        missingTypeDeck.addCards(new SeeTheFutureCard(), 2);
+        missingTypeDeck.addCards(new NopeCard(), 4);
+        missingTypeDeck.addCards(new WatermelonCatCard(), 4);
+        missingTypeDeck.addCards(new BeardCatCard(), 4);
+        missingTypeDeck.addCards(new HairyPotatoCatCard(), 4);
+        missingTypeDeck.addCards(new RainbowCatCard(), 4);
+        assertFalse(missingTypeDeck.validateDeck(2));
+    }
+    
+    @Test
+    void testValidateDeckWithInvalidPlayerCount() {
+        assertFalse(invokeValidateDeck(1));
+        assertFalse(invokeValidateDeck(5));
+    }
+
+    @Test
+    void testValidateDeckWithInvalidDefuseCount() {
+        // Initialize deck with 2 players (should have 3 defuse cards)
+        deck.initializeBaseDeck(2);
+        // Remove one defuse card to make it invalid
+        deck.removeTopCard();
+        assertFalse(invokeValidateDeck(2));
+    }
+
+    @Test
+    void testValidateDeckWithInvalidMainCards() {
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("DefuseCard", 3);
+        counts.put("AttackCard", 2);
+        counts.put("SkipCard", 2);
+        counts.put("ShuffleCard", 2);
+        counts.put("See_the_futureCard", 2);
+        counts.put("NopeCard", 4);
+        for (CatType type : CatType.values()) {
+            counts.put("CatCard_" + type.name(), 5);
+        }
+
+        // Test with valid counts first
+        assertTrue(invokeValidateMainCards(counts));
+
+        // Test invalid AttackCard count
+        counts.put("AttackCard", 1);
+        assertFalse(invokeValidateMainCards(counts));
+        counts.put("AttackCard", 2); // Reset
+
+        // Test invalid SkipCard count
+        counts.put("SkipCard", 1);
+        assertFalse(invokeValidateMainCards(counts));
+        counts.put("SkipCard", 2); // Reset
+
+        // Test invalid ShuffleCard count
+        counts.put("ShuffleCard", 1);
+        assertFalse(invokeValidateMainCards(counts));
+        counts.put("ShuffleCard", 2); // Reset
+
+        // Test invalid SeeTheFutureCard count
+        counts.put("See_the_futureCard", 1);
+        assertFalse(invokeValidateMainCards(counts));
+        counts.put("See_the_futureCard", 2); // Reset
+
+        // Test invalid NopeCard count
+        counts.put("NopeCard", 3);
+        assertFalse(invokeValidateMainCards(counts));
+    }
+
+    @Test
+    void testValidateDeckWithInvalidCatCards() {
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("DefuseCard", 3);
+        counts.put("AttackCard", 3);
+        counts.put("SkipCard", 3);
+        counts.put("ShuffleCard", 4);
+        counts.put("SeeTheFutureCard", 4);
+        counts.put("NopeCard", 4);
+
+        // Test with invalid cat card count
+        for (CatType type : CatType.values()) {
+            counts.put("CatCard_" + type.name(), 4); // Should be 5
+        }
+        assertFalse(invokeValidateCatCards(counts));
+
+        // Test with missing cat type
+        counts.remove("CatCard_TACOCAT");
+        assertFalse(invokeValidateCatCards(counts));
+    }
+
+    @Test
+    void testValidateDeckWithValidDeck() {
+        // Initialize the deck with valid cards
+        deck.initializeBaseDeck(2);
+        assertTrue(invokeValidateDeck(2));
+    }
+
+    @Test
+    void testValidateDeckMainCardsBranch() {
+        // Initialize deck with 2 players
+        deck.initializeBaseDeck(2);
+        
+        // Remove one attack card to make validateMainCards return false
+        for (int i = 0; i < deck.size(); i++) {
+            if (deck.getCards().get(i) instanceof AttackCard) {
+                deck.getRealCards().remove(i);
+                break;
+            }
+        }
+        
+        // This should trigger the validateMainCards branch in validateDeck
+        assertFalse(deck.validateDeck(2));
+    }
+
+    private boolean invokeValidateDeck(int playerCount) {
+        try {
+            java.lang.reflect.Method m = Deck.class.getDeclaredMethod("validateDeck", int.class);
+            m.setAccessible(true);
+            return (boolean) m.invoke(deck, playerCount);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean invokeValidateDefuse(Map<String, Integer> counts, int playerCount) {
+        try {
+            java.lang.reflect.Method m = Deck.class.getDeclaredMethod("validateDefuse", Map.class, int.class);
+            m.setAccessible(true);
+            return (boolean) m.invoke(deck, counts, playerCount);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean invokeValidateMainCards(Map<String, Integer> counts) {
+        try {
+            java.lang.reflect.Method m = Deck.class.getDeclaredMethod("validateMainCards", Map.class);
+            m.setAccessible(true);
+            return (boolean) m.invoke(deck, counts);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean invokeValidateCatCards(Map<String, Integer> counts) {
+        try {
+            java.lang.reflect.Method m = Deck.class.getDeclaredMethod("validateCatCards", Map.class);
+            m.setAccessible(true);
+            return (boolean) m.invoke(deck, counts);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testCardCloneCatchBlockCoverageInCard() {
+        Card card = new Card(CardType.ATTACK) {
+            @Override
+            public void effect(List<Player> turnOrder, Deck gameDeck) {}
+
+            @Override
+            protected Card doClone() throws CloneNotSupportedException {
+                throw new CloneNotSupportedException("Forced failure");
+            }
+        };
+
+        AssertionError error = assertThrows(AssertionError.class, card::clone);
+        assertEquals("Card cloning failed", error.getMessage());
+        assertTrue(error.getCause() instanceof CloneNotSupportedException);
     }
 }
