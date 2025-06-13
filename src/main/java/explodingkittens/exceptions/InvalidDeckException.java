@@ -8,4 +8,4 @@ public class InvalidDeckException extends RuntimeException {
     public InvalidDeckException() {
         super("Deck cannot be null");
     }
-} 
+}
