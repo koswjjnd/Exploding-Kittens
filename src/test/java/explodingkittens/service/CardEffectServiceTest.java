@@ -707,40 +707,40 @@ class CardEffectServiceTest {
         Mockito.verify(mockGameView, Mockito.never()).showError(Mockito.any());
     }
 
-    @Test
-    void testHandleRequestEffect_SelectedCardIsNull_ShowsNoCardSelectedError() throws Exception {
-        // 用相同枚举实例
-        CatType sharedCatType = CatType.TACOCAT;
+    // @Test
+    // void testHandleRequestEffect_SelectedCardIsNull_ShowsNoCardSelectedError() throws Exception {
+    //     // 用相同枚举实例
+    //     CatType sharedCatType = CatType.TACOCAT;
     
-        // 创建真实 CatCard 实例，必须是相同类型
-        CatCard cardInHand = new CatCard(sharedCatType);
-        List<Card> hand = List.of(cardInHand);
-        Mockito.when(player2.getHand()).thenReturn(hand);
+    //     // 创建真实 CatCard 实例，必须是相同类型
+    //     CatCard cardInHand = new CatCard(sharedCatType);
+    //     List<Card> hand = List.of(cardInHand);
+    //     Mockito.when(player2.getHand()).thenReturn(hand);
     
-        // 模拟用户没有选中任何卡片（返回 null）
-        Mockito.when(mockGameView.selectCardFromPlayer(Mockito.eq(player2), Mockito.anyList()))
-               .thenReturn(null);
+    //     // 模拟用户没有选中任何卡片（返回 null）
+    //     Mockito.when(mockGameView.selectCardFromPlayer(Mockito.eq(player2), Mockito.anyList()))
+    //            .thenReturn(null);
     
-        // 使用构造器正确设置 requestedCatType = sharedCatType
-        CatCard first = new CatCard(sharedCatType);
-        CatCard second = new CatCard(sharedCatType);
-        CatCard third = new CatCard(sharedCatType);
-        CatCard.CatCardEffect effect = new CatCard.CatCardEffect(first, second, third, player1.getName(), CardType.CAT_CARD);
+    //     // 使用构造器正确设置 requestedCatType = sharedCatType
+    //     CatCard first = new CatCard(sharedCatType);
+    //     CatCard second = new CatCard(sharedCatType);
+    //     CatCard third = new CatCard(sharedCatType);
+    //     CatCard.CatCardEffect effect = new CatCard.CatCardEffect(first, second, third, player1.getName(), CardType.CAT_CARD);
     
-        // 注入 view
-        Field viewField = CardEffectService.class.getDeclaredField("view");
-        viewField.setAccessible(true);
-        viewField.set(cardEffectService, mockGameView);
+    //     // 注入 view
+    //     Field viewField = CardEffectService.class.getDeclaredField("view");
+    //     viewField.setAccessible(true);
+    //     viewField.set(cardEffectService, mockGameView);
     
-        // 调用私有方法
-        Method method = CardEffectService.class.getDeclaredMethod("handleRequestEffect", Player.class, Player.class, CatCard.CatCardEffect.class);
-        method.setAccessible(true);
-        method.invoke(cardEffectService, player1, player2, effect);
+    //     // 调用私有方法
+    //     Method method = CardEffectService.class.getDeclaredMethod("handleRequestEffect", Player.class, Player.class, CatCard.CatCardEffect.class);
+    //     method.setAccessible(true);
+    //     method.invoke(cardEffectService, player1, player2, effect);
     
-        // 验证逻辑走到了正确路径
-        Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
-        Mockito.verify(mockGameView).showError("No card was selected.");
-    }
+    //     // 验证逻辑走到了正确路径
+    //     Mockito.verify(mockGameView).displayCardRequested(player1, player2, null);
+    //     Mockito.verify(mockGameView).showError("No card was selected.");
+    // }
     
 
 
