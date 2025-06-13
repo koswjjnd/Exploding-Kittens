@@ -43,12 +43,12 @@ public class Main {
             GameSetupView setupView   = new GameSetupView(mainScanner);
             PlayerService playerSvc   = new PlayerService();
             DealService   dealSvc     = new DealService();
-            GameSetupController setup = new GameSetupController(setupView, playerSvc, dealSvc);
+            GameSetupController setup = new GameSetupController(setupView, playerSvc, dealSvc, mainScanner);
 
             setup.setupGame();               
 
             /* ---------- Step 2 : main loop ---------- */
-            ConsoleGameView gameView = new ConsoleGameView(mainScanner);
+            ConsoleGameView gameView = new ConsoleGameView(new Scanner(System.in, StandardCharsets.UTF_8));
             GameController  gameCtrl = new GameController(gameView);
             gameCtrl.start();
 

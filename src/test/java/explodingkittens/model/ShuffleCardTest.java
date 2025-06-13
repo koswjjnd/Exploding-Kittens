@@ -2,28 +2,36 @@ package explodingkittens.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test class for the ShuffleCard class.
  */
 public class ShuffleCardTest {
     private ShuffleCard shuffleCard;
-    private List<Player> turnOrder;
     private Deck gameDeck;
     private List<Player> dummyPlayers;
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
 
     @BeforeEach
     void setUp() {
         shuffleCard = new ShuffleCard();
-        turnOrder = new ArrayList<>();
         gameDeck = new Deck();
         
         // add some different cards to the deck
@@ -38,6 +46,31 @@ public class ShuffleCardTest {
         dummyPlayers.add(new Player("Player1"));
         dummyPlayers.add(new Player("Player2"));
         dummyPlayers.add(new Player("Player3"));
+
+        // Redirect System.out with explicit charset
+        System.setOut(new PrintStream(outContent, true, StandardCharsets.UTF_8));
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void restoreStreams() {
+        System.setOut(originalOut);
+    }
+
+    @Test
+    void testConstructor() {
+        ShuffleCard newShuffleCard = new ShuffleCard();
+        assertNotNull(newShuffleCard);
+        assertEquals(CardType.SHUFFLE, newShuffleCard.getType());
+    }
+
+    @Test
+    void testEffectWithNullDeck() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> shuffleCard.effect(dummyPlayers, null)
+        );
+        assertEquals("Deck cannot be null when playing ShuffleCard.", exception.getMessage());
+        assertEquals("", outContent.toString(StandardCharsets.UTF_8), "No output should be printed for null deck");
     }
 
     /**
@@ -45,13 +78,6 @@ public class ShuffleCardTest {
      */
     @Test
     void testEffectShufflesDeck() {
-        // add some different cards
-        gameDeck.addCard(new DefuseCard());
-        gameDeck.addCard(new AttackCard());
-        gameDeck.addCard(new SkipCard());
-        gameDeck.addCard(new ShuffleCard());
-        gameDeck.addCard(new SeeTheFutureCard());
-
         // record original order
         List<Card> originalOrder = new ArrayList<>(gameDeck.getCards());
         
@@ -83,6 +109,14 @@ public class ShuffleCardTest {
         // check: order should change (very likely)
         assertNotEquals(originalOrder, newOrder, 
             "ShuffleCard effect should change the order of cards");
+
+        // Verify console output
+        String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
+        String actualOutput = outContent.toString(StandardCharsets.UTF_8)
+            .trim()
+            .replaceAll("\\r\\n", "\n");
+        
+        assertEquals(expectedOutput, actualOutput);
     }
 
     @Test
@@ -91,21 +125,38 @@ public class ShuffleCardTest {
     }
 
     @Test
-    void testEffect() {
-        // record initial order
-        List<Card> initialOrder = new ArrayList<>(gameDeck.getCards());
+    void testEffectWithEmptyDeck() {
+        // Setup empty deck
+        gameDeck = new Deck();
         
-        // execute shuffle effect
-        shuffleCard.effect(turnOrder, gameDeck);
+        // use ShuffleCard effect
+        shuffleCard.effect(dummyPlayers, gameDeck);
         
-        // check: order should change
-        List<Card> newOrder = gameDeck.getCards();
-        assertNotEquals(initialOrder, newOrder);
+        // Verify console output
+        String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
+        String actualOutput = outContent.toString(StandardCharsets.UTF_8)
+            .trim()
+            .replaceAll("\\r\\n", "\n");
         
-        // check: card count and type should stay the same
-        assertEquals(initialOrder.size(), newOrder.size());
-        for (Card card : initialOrder) {
-            assertTrue(newOrder.contains(card));
-        }
+        assertEquals(expectedOutput, actualOutput);
+    }
+
+    @Test
+    void testEffectWithSingleCardDeck() {
+        // Setup deck with single card
+        gameDeck = new Deck();
+        Card singleCard = new ExplodingKittenCard();
+        gameDeck.addCard(singleCard);
+        
+        // use ShuffleCard effect
+        shuffleCard.effect(dummyPlayers, gameDeck);
+        
+        // Verify console output
+        String expectedOutput = String.format("ShuffleCard played: deck has been shuffled!");
+        String actualOutput = outContent.toString(StandardCharsets.UTF_8)
+            .trim()
+            .replaceAll("\\r\\n", "\n");
+        
+        assertEquals(expectedOutput, actualOutput);
     }
 }

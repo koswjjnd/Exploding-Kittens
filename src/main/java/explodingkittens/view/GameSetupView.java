@@ -6,11 +6,13 @@ import explodingkittens.util.I18nUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * View interface for game setup phase, responsible for user interaction.
  */
 public class GameSetupView {
+    @SuppressFBWarnings({"EI_EXPOSE_REP2", "MS_MUTABLE_COLLECTION"})
     private final Scanner sc;
 
     /**
@@ -18,8 +20,9 @@ public class GameSetupView {
      * @param scanner the Scanner to use for input
      */
     public GameSetupView(Scanner scanner) {
-        // 使用防御性复制，创建一个新的 Scanner 对象
-        this.sc = new Scanner(scanner.useDelimiter("\\A").next());
+        // 直接使用传入的 Scanner 对象
+        // this.sc = new Scanner(scanner.useDelimiter("\\A").next());
+        this.sc = scanner;
     }
 
     /**

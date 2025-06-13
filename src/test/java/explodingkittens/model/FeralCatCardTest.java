@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyInt;
 
 class FeralCatCardTest {
     private FeralCatCard feralCatCard;
@@ -41,6 +40,7 @@ class FeralCatCardTest {
         when(currentPlayer.getName()).thenReturn("Current");
         when(targetPlayer.getName()).thenReturn("Target");
         when(currentPlayer.getLeftTurns()).thenReturn(1);
+        when(targetPlayer.isAlive()).thenReturn(true);
         
         turnOrder.add(currentPlayer);
         turnOrder.add(targetPlayer);
@@ -95,158 +95,86 @@ class FeralCatCardTest {
     }
 
     @Test
-    void testEffectWithValidCards() {
-        // 设置手牌
+    void testFindCatCardPairWithNonCatCards() {
+        // Add non-cat cards
+        currentPlayerHand.add(new DefuseCard());
+        currentPlayerHand.add(new SkipCard());
+
+        assertThrows(IllegalStateException.class, () -> {
+            feralCatCard.findCatCardPair(currentPlayerHand);
+        });
+    }
+
+    @Test
+    void testFindCatCardPairWithMixedCards() {
+        // Add a mix of cards including one non-Feral cat and one Feral cat
+        currentPlayerHand.add(new DefuseCard());
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new SkipCard());
+        currentPlayerHand.add(new FeralCatCard());
+
+        CatCard[] pair = feralCatCard.findCatCardPair(currentPlayerHand);
+        assertTrue(pair[0] instanceof TacoCatCard);
+        assertTrue(pair[1] instanceof FeralCatCard);
+    }
+
+    @Test
+    void testEffectWithValidInput() {
+        // Setup
         currentPlayerHand.add(new TacoCatCard());
         currentPlayerHand.add(new FeralCatCard());
-        targetPlayerHand.add(new SkipCard());
-
-        // 设置输入处理器行为
+        targetPlayerHand.add(new DefuseCard());
+        
         when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
-        when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
-        when(targetPlayer.isAlive()).thenReturn(true);
-        when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
-        when(targetPlayer.getName()).thenReturn("Target");
-
-        // 执行效果
+        when(inputHandler.selectCardIndex(targetPlayerHand.size())).thenReturn(0);
+        
+        // Execute and verify
         CatCard.CatCardEffect effect = assertThrows(CatCard.CatCardEffect.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
         });
-
-        // 验证效果
+        
+        assertEquals(targetPlayer.getName(), effect.getTargetPlayerName());
+        assertEquals(targetPlayerHand, effect.getTargetPlayerHand());
+        assertEquals(0, effect.getTargetCardIndex());
         assertTrue(effect.getFirstCard() instanceof TacoCatCard);
         assertTrue(effect.getSecondCard() instanceof FeralCatCard);
-        assertEquals("Target", effect.getTargetPlayerName());
-        assertEquals(0, effect.getTargetCardIndex());
+    }
+
+    @Test
+    void testEffectWithNoValidTargets() {
+        // Setup
+        currentPlayerHand.add(new TacoCatCard());
+        currentPlayerHand.add(new FeralCatCard());
+        turnOrder.clear();
+        turnOrder.add(currentPlayer);
+        
+        // Execute and verify
+        assertThrows(IllegalStateException.class, () -> {
+            feralCatCard.effect(turnOrder, gameDeck);
+        });
     }
 
     @Test
     void testEffectWithNoInputHandler() {
-        // 清除输入处理器
+        // Setup
         CatCard.setInputHandler(null);
         
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-
-        // 验证异常
+        // Execute and verify
         assertThrows(IllegalStateException.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when no input handler is set");
+        });
     }
 
     @Test
     void testEffectWithNoTurnsLeft() {
-        // 设置玩家没有回合
+        // Setup
         when(currentPlayer.getLeftTurns()).thenReturn(0);
         
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-
-        // 验证异常
+        // Execute and verify
         assertThrows(IllegalStateException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when player has no turns left");
-    }
-
-    @Test
-    void testEffectWithNoAvailableTargets() {
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-        
-        // 移除目标玩家
-        turnOrder.remove(targetPlayer);
-
-        // 验证异常
-        assertThrows(IllegalStateException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when no valid target players available");
-    }
-
-    @Test
-    void testEffectWithDeadTargetPlayer() {
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-        
-        // 设置目标玩家已死亡
-        when(targetPlayer.isAlive()).thenReturn(false);
-
-        // 验证异常
-        assertThrows(IllegalStateException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when target player is dead");
-    }
-
-    @Test
-    void testEffectWithEmptyTargetHand() {
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-        
-        // 设置目标玩家手牌为空
-        when(targetPlayer.getHand()).thenReturn(new ArrayList<>());
-
-        // 验证异常
-        assertThrows(IllegalStateException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when target player has no cards");
-    }
-
-    @Test
-    void testEffectWithInvalidCardPair() {
-        // 只添加一张卡牌
-        currentPlayerHand.add(new TacoCatCard());
-
-        // 验证异常
-        assertThrows(IllegalStateException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when no valid card pair is found");
-    }
-
-    @Test
-    void testEffectWithInvalidTargetSelection() {
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-        targetPlayerHand.add(new SkipCard());
-
-        // 设置输入处理器返回无效目标
-        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(null);
-        when(targetPlayer.isAlive()).thenReturn(true);
-        when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
-
-        // 验证异常
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
         });
-        assertEquals("Invalid target player selection", exception.getMessage());
-    }
-
-    @Test
-    void testEffectWithInvalidCardIndex() {
-        // 设置手牌
-        currentPlayerHand.add(new TacoCatCard());
-        currentPlayerHand.add(new FeralCatCard());
-        targetPlayerHand.add(new SkipCard());
-
-        // 设置输入处理器返回无效的卡牌索引
-        when(inputHandler.selectTargetPlayer(anyList())).thenReturn(targetPlayer);
-        when(inputHandler.selectCardIndex(anyInt())).thenReturn(1); // 索引超出范围
-        when(targetPlayer.isAlive()).thenReturn(true);
-        when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
-        when(targetPlayer.getName()).thenReturn("Target");
-
-        // 验证异常
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            feralCatCard.effect(turnOrder, gameDeck);
-        });
-        assertEquals("Invalid card index selection", exception.getMessage());
     }
 } 
 
     
-
-

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * The GameSetupController class manages the initial setup phase of the
@@ -37,21 +38,26 @@ public class GameSetupController {
     private final DealService dealService;
     private static final int MIN_PLAYERS = 2;
     private static final int MAX_PLAYERS = 4;
+    @SuppressFBWarnings({"EI_EXPOSE_REP2", "MS_MUTABLE_COLLECTION"})
+    private final Scanner scanner;
 
     /**
      * Constructs a GameSetupController with the given view and player service.
      * @param view the view to interact with the user
      * @param playerService the service to create and validate players
      * @param dealService the service to deal cards and initial hands
+     * @param scanner the scanner to use for CatCard input handler
      */
     public GameSetupController(
         GameSetupView view, 
         PlayerService playerService, 
-        DealService dealService
+        DealService dealService,
+        Scanner scanner
     ) {
         this.view = view;
         this.playerService = playerService;
         this.dealService = dealService;
+        this.scanner = scanner;
     }
 
     /**
@@ -78,7 +84,6 @@ public class GameSetupController {
         GameContext.setTurnOrder(players);
         GameContext.setGameOver(false);
 
-        Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8.name());
         CatCard.setInputHandler(new ConsoleCatCardStealInputHandler(scanner));
     }
 

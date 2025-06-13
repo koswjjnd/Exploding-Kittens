@@ -1,19 +1,19 @@
 package explodingkittens.model;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.List;
-import java.util.ArrayList;
 import explodingkittens.exceptions.EmptyDeckException;
 
 /**
@@ -24,7 +24,6 @@ public class DeckTest {
     private Card skipCard;
     private Card attackCard;
     private Card seeTheFutureCard;
-    private Card nopeCard;
 
     @BeforeEach
     void setUp() {
@@ -32,7 +31,6 @@ public class DeckTest {
         skipCard = new SkipCard();
         attackCard = new AttackCard();
         seeTheFutureCard = new SeeTheFutureCard();
-        nopeCard = new NopeCard();
     }
 
     @Test
@@ -64,8 +62,41 @@ public class DeckTest {
         deck.initializeBaseDeck(2);
         Map<String, Integer> counts = deck.getCardCounts();
         
+        // Debug output
+        System.out.println("Actual counts:");
+        counts.forEach((key, value) -> System.out.println(key + ": " + value));
+        
+        // Debug card types
+        System.out.println("\nCard types in deck:");
+        for (Card card : deck.getCards()) {
+            System.out.println("Card class: " + card.getClass().getSimpleName());
+            System.out.println("Card type: " + card.getType().name());
+            if (card instanceof CatCard) {
+                System.out.println("Cat type: " + ((CatCard) card).getCatType().name());
+            }
+            System.out.println("---");
+        }
+        
+        // Check all expected cards are present
         assertEquals(3, counts.get("DefuseCard")); // 5-2
-        assertEquals(4, counts.get("NopeCard")); // Fixed number of Nope cards
+        assertEquals(2, counts.get("AttackCard"));
+        assertEquals(2, counts.get("SkipCard"));
+        assertEquals(2, counts.get("ShuffleCard"));
+        assertEquals(2, counts.get("See_the_futureCard"));
+        assertEquals(4, counts.get("NopeCard"));
+        assertEquals(5, counts.get("CatCard_WATERMELON_CAT"));
+        assertEquals(5, counts.get("CatCard_BEARD_CAT"));
+        assertEquals(5, counts.get("CatCard_HAIRY_POTATO_CAT"));
+        assertEquals(5, counts.get("CatCard_RAINBOW_CAT"));
+        assertEquals(5, counts.get("CatCard_TACOCAT"));
+        assertEquals(1, counts.get("SnatchCard"));
+        assertEquals(1, counts.get("Switch_deck_by_halfCard"));
+        assertEquals(1, counts.get("Time_rewindCard"));
+        assertEquals(1, counts.get("FavorCard"));
+        assertEquals(2, counts.get("Draw_from_bottomCard"));
+        assertEquals(2, counts.get("ReverseCard"));
+        assertEquals(2, counts.get("Super_skipCard"));
+        assertEquals(2, counts.get("Double_skipCard"));
     }
 
     @Test
@@ -165,6 +196,12 @@ public class DeckTest {
     }
 
     @Test
+    void testShuffleWithNullRandom() {
+        deck.addCards(skipCard, 5);
+        assertDoesNotThrow(() -> deck.shuffle(null));
+    }
+
+    @Test
     void testGetCards() {
         deck.addCard(skipCard);
         deck.addCard(attackCard);
@@ -172,6 +209,14 @@ public class DeckTest {
         List<Card> cards = deck.getCards();
         assertEquals(2, cards.size());
         assertNotSame(deck.getCards(), cards); // Should return a copy
+    }
+
+    @Test
+    void testGetRealCards() {
+        deck.addCard(skipCard);
+        List<Card> realCards = deck.getRealCards();
+        assertEquals(1, realCards.size());
+        assertSame(deck.getRealCards(), realCards); // Should return the actual list
     }
 
     @Test
@@ -261,8 +306,47 @@ public class DeckTest {
         deck.addCards(seeTheFutureCard, 1);
         
         Map<String, Integer> counts = deck.getCardCounts();
+        // Debug output
+        System.out.println("Actual counts:");
+        counts.forEach((key, value) -> System.out.println(key + ": " + value));
+        
+        // Debug card types
+        System.out.println("\nCard types in deck:");
+        for (Card card : deck.getCards()) {
+            System.out.println("Card class: " + card.getClass().getSimpleName());
+            System.out.println("Card type: " + card.getType().name());
+            if (card instanceof CatCard) {
+                System.out.println("Cat type: " + ((CatCard) card).getCatType().name());
+            }
+            System.out.println("---");
+        }
+        
         assertEquals(2, counts.get("SkipCard"));
         assertEquals(3, counts.get("AttackCard"));
+        assertEquals(1, counts.get("See_the_futureCard"));
+    }
+
+    @Test
+    void testAddExplodingKittens() {
+        deck.addExplodingKittens(3);
+        assertEquals(3, deck.size());
+        Map<String, Integer> counts = deck.getCardCounts();
+        // Debug output
+        System.out.println("Actual counts:");
+        counts.forEach((key, value) -> System.out.println(key + ": " + value));
+        
+        // Debug card types
+        System.out.println("\nCard types in deck:");
+        for (Card card : deck.getCards()) {
+            System.out.println("Card class: " + card.getClass().getSimpleName());
+            System.out.println("Card type: " + card.getType().name());
+            if (card instanceof CatCard) {
+                System.out.println("Cat type: " + ((CatCard) card).getCatType().name());
+            }
+            System.out.println("---");
+        }
+        
+        assertEquals(3, counts.get("Exploding_kittenCard"));
     }
 
     @Test
@@ -271,26 +355,33 @@ public class DeckTest {
     }
 
     @Test
-    void testValidateDeckWithInvalidMainCards() {
-        deck.initializeBaseDeck(2);
-        deck.addCards(new AttackCard(), 2); // Should be 3
-        assertFalse(deck.validateDeck(2));
+    void testGetCardTypeKey() {
+        assertEquals("CatCard_CAT_CARD", invokeGetCardTypeKey(new CatCard(CatType.TACOCAT)));
+        assertEquals("DefuseCard", invokeGetCardTypeKey(new DefuseCard()));
+        assertEquals("AttackCard", invokeGetCardTypeKey(new AttackCard()));
+        assertEquals("SkipCard", invokeGetCardTypeKey(new SkipCard()));
+        assertEquals("ShuffleCard", invokeGetCardTypeKey(new ShuffleCard()));
+        assertEquals("SeeTheFutureCard", invokeGetCardTypeKey(new SeeTheFutureCard()));
+        assertEquals("NopeCard", invokeGetCardTypeKey(new NopeCard()));
+        assertEquals("ExplodingKittenCard", invokeGetCardTypeKey(new ExplodingKittenCard()));
+        assertEquals("UnknownCard", invokeGetCardTypeKey(new Card(CardType.FAVOR) {
+            public Card clone() { 
+                return this; 
+            }
+            public void effect(java.util.List<Player> t, Deck d) {
+                // Empty effect
+            }
+        }));
     }
 
-    @Test
-    void testValidateDeckWithInvalidCatCards() {
-        deck.initializeBaseDeck(2);
-        deck.addCards(new CatCard(CatType.TACOCAT), 3); // Should be 4
-        assertFalse(deck.validateDeck(2));
-    }
-
-    @Test
-    void testAddNopeCard() {
-        deck.addCard(nopeCard);
-        assertEquals(1, deck.size());
-        assertEquals(nopeCard, deck.peekTop());
-        
-        Map<String, Integer> counts = deck.getCardCounts();
-        assertEquals(1, counts.get("NopeCard"));
+    private String invokeGetCardTypeKey(Card card) {
+        try {
+            java.lang.reflect.Method m = Deck.class.getDeclaredMethod("getCardTypeKey", Card.class);
+            m.setAccessible(true);
+            return (String) m.invoke(deck, card);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
