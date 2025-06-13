@@ -12,6 +12,11 @@ public class I18nUtil {
     private static ResourceBundle messages;
     private static Locale currentLocale;
 
+    // ✅ Add this private constructor
+    private I18nUtil() {
+        // Prevent instantiation
+    }
+
     /**
      * Initialize the I18nUtil with the default locale (English).
      */
@@ -51,6 +56,7 @@ public class I18nUtil {
             return messages.getString(key);
         }
         catch (Exception e) {
+            System.out.println("Catch block hit: " + key + " - " + e.getClass().getName());
             return key; // Return the key if translation is not found
         }
     }
@@ -67,6 +73,7 @@ public class I18nUtil {
             return MessageFormat.format(message, params);
         }
         catch (Exception e) {
+            System.out.println("Catch block hit: " + key + " - " + e.getClass().getName());
             return key; // Return the key if translation is not found
         }
     }

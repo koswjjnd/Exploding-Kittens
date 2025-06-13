@@ -3,7 +3,8 @@ package explodingkittens.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Locale;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class I18nUtilTest {
 
@@ -26,8 +27,8 @@ class I18nUtilTest {
         assertEquals(Locale.ENGLISH, I18nUtil.getCurrentLocale());
 
         // Test setting Chinese locale (use zh_CN)
-        I18nUtil.setLocale(new Locale("zh", "CN"));
-        assertEquals(new Locale("zh", "CN"), I18nUtil.getCurrentLocale());
+        I18nUtil.setLocale(Locale.CHINESE);
+        assertEquals(Locale.CHINESE, I18nUtil.getCurrentLocale());
 
         // Test setting other locale
         Locale french = new Locale("fr");
@@ -66,6 +67,20 @@ class I18nUtilTest {
     }
 
     @Test
+    void testGetMessageCatchBlock() {
+        I18nUtil.initialize(); // 确保 messages 已初始化
+        String nonExistingKey = "this.key.does.not.exist";
+        assertEquals(nonExistingKey, I18nUtil.getMessage(nonExistingKey));
+    }
+
+    @Test
+    void testGetMessageWithParamsCatchBlock() {
+        I18nUtil.initialize(); // 确保 messages 已初始化
+        String nonExistingKey = "this.key.does.not.exist";
+        assertEquals(nonExistingKey, I18nUtil.getMessage(nonExistingKey, "foo", "bar"));
+    }
+
+    @Test
     void testToggleLanguage() {
         // Initial state should be English
         assertEquals(Locale.ENGLISH, I18nUtil.getCurrentLocale());
@@ -89,4 +104,7 @@ class I18nUtilTest {
         String messageWithNull = I18nUtil.getMessage("test.format", null, null);
         assertNotNull(messageWithNull);
     }
+
+	
+	
 }
