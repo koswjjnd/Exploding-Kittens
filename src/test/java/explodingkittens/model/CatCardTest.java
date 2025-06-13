@@ -462,7 +462,9 @@ class CatCardTest {
     @DisplayName("Test setInputHandler method")
     void testSetInputHandler() {
         // Test setting a valid input handler
-        CatCardStealInputHandler handler = new ConsoleCatCardStealInputHandler(new Scanner(System.in));
+        CatCardStealInputHandler handler = new ConsoleCatCardStealInputHandler(
+            new Scanner(new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)), 
+            StandardCharsets.UTF_8.name()));
         CatCard.setInputHandler(handler);
         
         // Test setting null input handler

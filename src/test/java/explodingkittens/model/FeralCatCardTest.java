@@ -106,11 +106,18 @@ class FeralCatCardTest {
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(0);
         when(targetPlayer.isAlive()).thenReturn(true);
         when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
+        when(targetPlayer.getName()).thenReturn("Target");
 
         // 执行效果
-        assertThrows(CatCard.CatCardEffect.class, () -> {
+        CatCard.CatCardEffect effect = assertThrows(CatCard.CatCardEffect.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
         });
+
+        // 验证效果
+        assertTrue(effect.getFirstCard() instanceof TacoCatCard);
+        assertTrue(effect.getSecondCard() instanceof FeralCatCard);
+        assertEquals("Target", effect.getTargetPlayerName());
+        assertEquals(0, effect.getTargetCardIndex());
     }
 
     @Test
@@ -212,9 +219,10 @@ class FeralCatCardTest {
         when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
 
         // 验证异常
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when invalid target player is selected");
+        });
+        assertEquals("Invalid target player selection", exception.getMessage());
     }
 
     @Test
@@ -229,11 +237,13 @@ class FeralCatCardTest {
         when(inputHandler.selectCardIndex(anyInt())).thenReturn(1); // 索引超出范围
         when(targetPlayer.isAlive()).thenReturn(true);
         when(targetPlayer.getHand()).thenReturn(targetPlayerHand);
+        when(targetPlayer.getName()).thenReturn("Target");
 
         // 验证异常
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             feralCatCard.effect(turnOrder, gameDeck);
-        }, "Should throw exception when invalid card index is selected");
+        });
+        assertEquals("Invalid card index selection", exception.getMessage());
     }
 } 
 
