@@ -302,17 +302,15 @@ public class DeckTest {
     @Test
     void testClearUninitializedDeck() {
         // Create a deck with null cards list to simulate uninitialized state
-        Deck uninitializedDeck = new Deck() {
-            {
-                try {
-                    java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
-                    cardsField.setAccessible(true);
-                    cardsField.set(this, null);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
+        Deck uninitializedDeck = new Deck();
+        try {
+            java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            cardsField.set(uninitializedDeck, null);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Failed to set cards field to null", e);
+        }
         
         // Test that clearing an uninitialized deck throws IllegalStateException
         IllegalStateException exception = assertThrows(
@@ -563,5 +561,22 @@ public class DeckTest {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void testCardCloneCatchBlockCoverageInCard() {
+        Card card = new Card(CardType.ATTACK) {
+            @Override
+            public void effect(List<Player> turnOrder, Deck gameDeck) {}
+
+            @Override
+            protected Card doClone() throws CloneNotSupportedException {
+                throw new CloneNotSupportedException("Forced failure");
+            }
+        };
+
+        AssertionError error = assertThrows(AssertionError.class, card::clone);
+        assertEquals("Card cloning failed", error.getMessage());
+        assertTrue(error.getCause() instanceof CloneNotSupportedException);
     }
 }

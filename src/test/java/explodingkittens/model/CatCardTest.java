@@ -475,7 +475,7 @@ class CatCardTest {
     }
 
     @Test
-    void testSelectTargetPlayer_noAvailablePlayers() {
+    void testSelectTargetPlayerNoAvailablePlayers() {
         CatCard card = new CatCard(CatType.TACOCAT);
         List<Player> turnOrder = new ArrayList<>();
         Player currentPlayer = new Player("A");
@@ -485,7 +485,7 @@ class CatCardTest {
     }
 
     @Test
-    void testSelectTargetPlayer_invalidSelection() {
+    void testSelectTargetPlayerInvalidSelection() {
         CatCard card = new CatCard(CatType.TACOCAT);
         List<Player> turnOrder = new ArrayList<>();
         Player currentPlayer = new Player("A");
@@ -507,7 +507,7 @@ class CatCardTest {
     }
 
     @Test
-    void testSelectCardIndex_invalidIndex() {
+    void testSelectCardIndexInvalidIndex() {
         CatCard card = new CatCard(CatType.TACOCAT);
         Player target = Mockito.mock(Player.class);
         Mockito.when(target.getHand()).thenReturn(List.of(new SkipCard(), new AttackCard()));
@@ -523,7 +523,7 @@ class CatCardTest {
     }
 
     @Test
-    void testValidatePlayerTurns_noTurnsLeft() {
+    void testValidatePlayerTurnsNoTurnsLeft() {
         CatCard card = new CatCard(CatType.TACOCAT);
         Player player = Mockito.mock(Player.class);
         Mockito.when(player.getLeftTurns()).thenReturn(0);
@@ -531,7 +531,7 @@ class CatCardTest {
     }
 
     @Test
-    void testValidateTargetPlayer_emptyHand() {
+    void testValidateTargetPlayerEmptyHand() {
         CatCard card = new CatCard(CatType.TACOCAT);
         Player player = Mockito.mock(Player.class);
         Mockito.when(player.getHand()).thenReturn(new ArrayList<>());
