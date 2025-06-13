@@ -1,6 +1,7 @@
 package explodingkittens.view;
 
 import explodingkittens.model.Card;
+import explodingkittens.model.CatCard;
 import java.util.List;
 
 /**
@@ -14,7 +15,12 @@ public class SeeTheFutureView {
     public void display(List<Card> cards) {
         System.out.println("===== You see the future cards =====");
         for (Card c : cards) {
-            System.out.println("- " + c.getType());
+            if (c instanceof CatCard) {
+                System.out.println("- " + ((CatCard) c).getCatType().name());
+            }
+            else {
+                System.out.println("- " + c.getType());
+            }
         }
     }
 }
