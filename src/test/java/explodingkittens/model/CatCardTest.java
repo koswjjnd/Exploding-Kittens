@@ -457,4 +457,15 @@ class CatCardTest {
             card.play(player, players);
         });
     }
+
+    @Test
+    @DisplayName("Test setInputHandler method")
+    void testSetInputHandler() {
+        // Test setting a valid input handler
+        CatCardStealInputHandler handler = new ConsoleCatCardStealInputHandler(new Scanner(System.in));
+        CatCard.setInputHandler(handler);
+        
+        // Test setting null input handler
+        CatCard.setInputHandler(null);
+    }
 }
