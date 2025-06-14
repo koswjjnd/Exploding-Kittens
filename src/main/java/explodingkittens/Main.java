@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
+
     /**
      * The main entry point of the Exploding Kittens game.
      * Initializes the game setup and starts the main game loop.
@@ -21,6 +22,12 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
+            if (args.length > 0 && "--test-throw".equals(args[0])) {
+                throw new GameOverException("Test game over");
+            }
+            if (args.length > 0 && "--throw-runtime".equals(args[0])) {
+                throw new RuntimeException("Test runtime exception");
+            }
             // Initialize I18n with default locale (English)
             I18nUtil.initialize();
             
@@ -51,7 +58,6 @@ public class Main {
             ConsoleGameView gameView = new ConsoleGameView(new Scanner(System.in, StandardCharsets.UTF_8));
             GameController  gameCtrl = new GameController(gameView);
             gameCtrl.start();
-
         } 
         catch (GameOverException ge) {
             System.out.println(I18nUtil.getMessage("game.end") + ": " + ge.getMessage());
