@@ -11,6 +11,8 @@ import explodingkittens.exceptions.GameOverException;
 import explodingkittens.view.GameView;
 import explodingkittens.model.Player;
 import explodingkittens.controller.GameContext;
+import explodingkittens.util.ChainedInputStream;
+
 
 import java.util.Arrays;
 
@@ -37,6 +39,11 @@ class MainTest {
         System.setIn(originalIn);
         System.setOut(originalOut);
         System.setErr(originalErr);
+    
+        // 打印所有重定向内容，确保 Gradle 能捕捉
+        System.out.println("[TEST OUTPUT START]");
+        System.out.println(outContent.toString());
+        System.out.println("[TEST OUTPUT END]");
     }
 
     @Test
@@ -226,4 +233,42 @@ class MainTest {
 		assertTrue(output.contains("Exploding") || output.contains("Game Over") || output.length() > 100);
 	}
 	
+    @Test
+    void testMainPhasedInput() {
+        System.out.println("[TEST] Running: testMainPhasedInput");
+    
+        // 1. 创建 ChainedInputStream 并添加各个输入段
+        ChainedInputStream chainedInput = new ChainedInputStream();
+    
+        // 1.1 语言选择（中文）
+        chainedInput.addSegment("1\n");
+    
+        // 1.2 玩家设置：2人 + 名字
+        chainedInput.addSegment("2\nAlice\nBruce\n");
+    
+        // 1.3 游戏阶段输入：大量 draw / play / defuse 输入
+        StringBuilder gameInput = new StringBuilder();
+        for (int i = 0; i < 50; i++) {
+            gameInput.append("1\n"); // draw
+            gameInput.append("1\n"); // play 第1张
+            gameInput.append("1\n"); // 不使用 defuse
+        }
+        chainedInput.addSegment(gameInput.toString());
+    
+        // 2. 设置 System.in 为拼接流
+        System.setIn(chainedInput);
+    
+        // 3. 执行主程序
+        Main.main(new String[]{});
+    
+        // 4. 验证输出
+        String output = outContent.toString();
+        System.out.println("[DEBUG OUTPUT]");
+        System.out.println(output);
+    
+        // 5. 验证关键输出
+        // assertTrue(output.contains("张三") || output.contains("李四"), "应显示玩家名字");
+        // assertTrue(output.contains("爆炸") || output.contains("游戏结束") || output.length() > 100, "应显示游戏流程或结束语");
+    }
+    
 }

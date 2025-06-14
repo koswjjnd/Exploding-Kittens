@@ -54,10 +54,6 @@ tasks.compileJava {
     options.release = 11
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 tasks.withType<Checkstyle>().configureEach {
     reports {
         xml.required = false
@@ -109,10 +105,16 @@ tasks.build {
 }
 
 tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events("passed", "skipped", "failed")
+    }
     finalizedBy(tasks.checkstyleMain)
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
     finalizedBy(tasks.pitest)
 }
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
