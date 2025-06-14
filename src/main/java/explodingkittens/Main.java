@@ -57,10 +57,7 @@ public class Main {
             /* ---------- Step 2 : main loop ---------- */
             ConsoleGameView gameView = new ConsoleGameView(new Scanner(System.in, StandardCharsets.UTF_8));
             GameController  gameCtrl = new GameController(gameView);
-            System.out.println("DEBUG: before gameCtrl.start()");
             gameCtrl.start();
-            System.out.println("DEBUG: after gameCtrl.start()");
-
         } 
         catch (GameOverException ge) {
             System.out.println(I18nUtil.getMessage("game.end") + ": " + ge.getMessage());

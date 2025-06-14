@@ -3,7 +3,8 @@ package explodingkittens.util;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ChainedInputStreamTest {
 
@@ -185,7 +186,8 @@ class ChainedInputStreamTest {
                 @SuppressWarnings("unused")
                 int bytesRead = stream.read(buffer, -1, 5);
                 fail("Expected IndexOutOfBoundsException");
-            } catch (IndexOutOfBoundsException e) {
+            } 
+            catch (IndexOutOfBoundsException e) {
                 // Expected exception
             }
         }
@@ -201,7 +203,8 @@ class ChainedInputStreamTest {
                 @SuppressWarnings("unused")
                 int bytesRead = stream.read(buffer, 0, -1);
                 fail("Expected IndexOutOfBoundsException");
-            } catch (IndexOutOfBoundsException e) {
+            } 
+            catch (IndexOutOfBoundsException e) {
                 // Expected exception
             }
         }
@@ -217,7 +220,8 @@ class ChainedInputStreamTest {
                 @SuppressWarnings("unused")
                 int bytesRead = stream.read(buffer, 0, 5);
                 fail("Expected IndexOutOfBoundsException");
-            } catch (IndexOutOfBoundsException e) {
+            } 
+            catch (IndexOutOfBoundsException e) {
                 // Expected exception
             }
         }

@@ -3,6 +3,7 @@ package explodingkittens.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,12 @@ public class ChainedInputStream extends InputStream {
      * @param input The string to be added as a new segment in the input stream
      */
     public void addSegment(String input) {
-        segments.add(new ByteArrayInputStream(input.getBytes()));
+        segments.add(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override
     public int read() throws IOException {
-        if (currentSegment >= segments.size()) {
+        if (segments.isEmpty() || currentSegment >= segments.size()) {
             return -1;
         }
 
@@ -42,7 +43,7 @@ public class ChainedInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if (currentSegment >= segments.size()) {
+        if (segments.isEmpty() || currentSegment >= segments.size()) {
             return -1;
         }
 
