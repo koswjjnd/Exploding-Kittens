@@ -15,6 +15,10 @@ public class ChainedInputStream extends InputStream {
         this.currentSegment = 0;
     }
 
+    /**
+     * Adds a new segment to the input stream chain.
+     * @param input The string to be added as a new segment in the input stream
+     */
     public void addSegment(String input) {
         segments.add(new ByteArrayInputStream(input.getBytes()));
     }
